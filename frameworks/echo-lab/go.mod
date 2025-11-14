@@ -1,6 +1,6 @@
-module github.com/LeeDark/learn-go-echo
+module github.com/LeeDark/go-web-labs/frameworks/echo-lab
 
-go 1.24
+go 1.24.4
 
 require github.com/labstack/echo/v4 v4.13.4
 
