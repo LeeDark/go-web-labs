@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/middleware/neutered"
 )
@@ -19,6 +20,13 @@ func main() {
 	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "Path to static assets")
 	flag.Parse()
 
+	// Use the slog.New() function to initialize a new structured logger, which
+	// writes to the standard out stream and uses the default settings.
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     slog.LevelDebug,
+		AddSource: true,
+	}))
+
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(neutered.NewFileSystem(http.Dir(cfg.staticDir)))
@@ -31,8 +39,9 @@ func main() {
 	mux.HandleFunc("GET /snippet/create", snippetCreate)
 	mux.HandleFunc("POST /snippet/create", snippetCreatePost)
 
-	log.Printf("starting server on %s", cfg.addr)
+	logger.Info("starting server", slog.String("addr", cfg.addr))
 
 	err := http.ListenAndServe(cfg.addr, mux)
-	log.Fatal(err)
+	logger.Error(err.Error())
+	os.Exit(1)
 }
