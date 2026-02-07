@@ -4,9 +4,10 @@ import (
 	"net/http"
 
 	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/middleware/neutered"
+	"github.com/justinas/alice"
 )
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(neutered.NewFileSystem(http.Dir(app.cfg.staticDir)))
@@ -19,5 +20,7 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("GET /snippet/create", app.snippetCreate)
 	mux.HandleFunc("POST /snippet/create", app.snippetCreatePost)
 
-	return mux
+	standard := alice.New(app.recoverPanic, app.logRequest, commonHeaders)
+
+	return standard.Then(mux)
 }
