@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 
 	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/models"
+	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/validator"
 )
 
 // Define a home handler function which writes a byte slice containing
@@ -63,10 +62,10 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type snippetCreateForm struct {
-	Title       string
-	Content     string
-	Expires     int
-	FieldErrors map[string]string
+	Title   string
+	Content string
+	Expires int
+	validator.Validator
 }
 
 // Add a snippetCreatePost handler function.
@@ -90,28 +89,18 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 
 	// Create an instance of the snippetCreateForm
 	form := snippetCreateForm{
-		Title:       r.PostForm.Get("title"),
-		Content:     r.PostForm.Get("content"),
-		Expires:     expires,
-		FieldErrors: map[string]string{},
+		Title:   r.PostForm.Get("title"),
+		Content: r.PostForm.Get("content"),
+		Expires: expires,
 	}
 
 	// Validating form data
-	if strings.TrimSpace(form.Title) == "" {
-		form.FieldErrors["title"] = "This field cannot be blank"
-	} else if utf8.RuneCountInString(form.Title) > 100 {
-		form.FieldErrors["title"] = "This field cannot be more than 100 characters long"
-	}
+	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
+	form.CheckField(validator.MaxChars(form.Title, 100), "title", "This field cannot be more than 100 characters long")
+	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be blank")
+	form.CheckField(validator.PermittedValue(form.Expires, 1, 7, 365), "expires", "This field must equal 1, 7 or 365")
 
-	if strings.TrimSpace(form.Content) == "" {
-		form.FieldErrors["content"] = "This field cannot be blank"
-	}
-
-	if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
-		form.FieldErrors["expires"] = "This field must equal 1, 7 or 365"
-	}
-
-	if len(form.FieldErrors) > 0 {
+	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, r, http.StatusUnprocessableEntity, "create.tmpl", data)
