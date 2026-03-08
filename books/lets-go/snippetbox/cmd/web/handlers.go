@@ -10,8 +10,7 @@ import (
 	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/validator"
 )
 
-// Define a home handler function which writes a byte slice containing
-// "Hello from Snippetbox" as the response body.
+// home handles the HTTP request for the application's homepage, rendering the latest snippets using "home.tmpl".
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	snippets, err := app.snippets.Latest()
 	if err != nil {
@@ -25,7 +24,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "home.tmpl", data)
 }
 
-// Add a snippetView handler function.
+// snippetView retrieves a snippet by its ID from the database and renders it using the "view.tmpl" template.
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id < 1 {
@@ -50,7 +49,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "view.tmpl", data)
 }
 
-// Add a snippetCreate handler function.
+// snippetCreate renders the snippet creation form template with default values for the form input fields.
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 
@@ -68,7 +67,7 @@ type snippetCreateForm struct {
 	validator.Validator `form:"-"`
 }
 
-// Add a snippetCreatePost handler function.
+// snippetCreatePost handles form submission for creating a new snippet, validates the data, and inserts it into the database.
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
 	// Limit the request body size to 4096 bytes
 	r.Body = http.MaxBytesReader(w, r.Body, 4096)
@@ -124,4 +123,38 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	app.sessionManager.Put(r.Context(), "flash", "Snippet successfully created!")
 
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
+}
+
+// userSignup handles displaying a form for signing up a new user.
+func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = userSignupForm{}
+	app.render(w, r, http.StatusOK, "signup.tmpl", data)
+}
+
+type userSignupForm struct {
+	Name                string `form:"name"`
+	Email               string `form:"email"`
+	Password            string `form:"password"`
+	validator.Validator `form:"-"`
+}
+
+// userSignupPost handles the creation of a new user account after form submission.
+func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Create a new user...")
+}
+
+// userLogin handles displaying a form for logging in a user.
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Display a form for logging in a user...")
+}
+
+// userLoginPost handles authenticating and logging in the user.
+func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Authenticate and login the user...")
+}
+
+// userLogoutPost handles the process of logging out the currently authenticated user.
+func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Logout the user...")
 }

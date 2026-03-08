@@ -27,7 +27,9 @@ type application struct {
 	cfg    *config
 	logger *slog.Logger
 
-	snippets      *models.SnippetModel
+	snippets *models.SnippetModel
+	users    *models.UserModel
+
 	templateCache map[string]*template.Template
 
 	formDecoder    *form.Decoder
@@ -68,6 +70,7 @@ func main() {
 		cfg:            &cfg,
 		logger:         logger,
 		snippets:       &models.SnippetModel{DB: db},
+		users:          &models.UserModel{DB: db},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
