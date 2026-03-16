@@ -3,17 +3,18 @@ package main
 import (
 	"net/http"
 
-	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/middleware/neutered"
+	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/ui"
 	"github.com/justinas/alice"
 )
 
 func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
-	fileServer := http.FileServer(neutered.NewFileSystem(http.Dir(app.cfg.staticDir)))
+	//fileServer := http.FileServer(neutered.NewFileSystem(http.Dir(app.cfg.staticDir)))
 
 	mux.Handle("/static", http.NotFoundHandler())
-	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
+	//mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
+	mux.Handle("GET /static/", http.FileServerFS(ui.Files))
 
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
