@@ -10,6 +10,10 @@ import (
 	"github.com/LeeDark/go-web-labs/books/lets-go/snippetbox/internal/validator"
 )
 
+func ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
+}
+
 // home handles the HTTP request for the application's homepage, rendering the latest snippets using "home.tmpl".
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	snippets, err := app.snippets.Latest()
