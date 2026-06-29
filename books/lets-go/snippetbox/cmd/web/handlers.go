@@ -164,6 +164,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, r, http.StatusUnprocessableEntity, "signup.tmpl", data)
+		return
 	}
 
 	err = app.users.Insert(form.Name, form.Email, form.Password)
@@ -174,9 +175,11 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 			data := app.newTemplateData(r)
 			data.Form = form
 			app.render(w, r, http.StatusUnprocessableEntity, "signup.tmpl", data)
+			return
 		} else {
 			app.serverError(w, r, err)
 		}
+		return
 	}
 
 	app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")

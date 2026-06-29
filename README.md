@@ -24,7 +24,7 @@ book-social  = applied project and portfolio proof
 
 ### Let's Go
 
-[books/lets-go](books/lets-go)
+[books/lets-go](books/lets-go/README.md)
 
 Study project based on *Let's Go* by Alex Edwards.
 
