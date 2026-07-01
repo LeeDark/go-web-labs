@@ -22,7 +22,7 @@ go-web-labs  = study, notes, small isolated labs, reusable patterns
 book-social  = applied project and portfolio proof
 ```
 
-The goal is not to learn everything forever. That way lies browser tabs, abandoned folders, and the quiet rustle of unpaid enlightenment. The goal is to make learning produce reusable patterns and portfolio proof.
+The goal is not to study indefinitely. The goal is to make learning produce reusable patterns and portfolio proof.
 
 ---
 
@@ -89,7 +89,7 @@ books/lets-go/README.md
 
 - Better handoff quality.
 - Better client-facing documentation habits.
-- Less chaos when returning to older work, a shocking innovation.
+- Less confusion when returning to older work.
 
 ### Estimate
 
@@ -107,7 +107,7 @@ High.
 
 **Goal:** close the existing `Let's Go` work as a stable study artifact.
 
-This stage is not about rewriting Snippetbox until it becomes a monument to perfection. It is about finishing, reviewing, documenting, and moving on.
+This stage is not about rewriting Snippetbox. It is about finishing, reviewing, documenting, and moving on.
 
 ### What to do
 
@@ -429,7 +429,7 @@ Do this before larger API/book work so later `book-social` changes have a basic 
 
 **Goal:** read and implement the API core parts of `Let's Go Further` in a way that directly helps `book-social` and Offer 1 Basic.
 
-Do not read it as an isolated pilgrimage. Use it as a practical reference while implementing real tasks. Books are useful. Worship is extra and usually billable to nobody.
+Do not read it as an isolated exercise. Use it as a practical reference while implementing real tasks.
 
 This stage covers the API core track in `books/lets-go-further`: project structure, JSON, validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses the same folder later for production-oriented notes and checklists.
 
@@ -648,7 +648,7 @@ Medium.
 
 **Goal:** use the production-oriented parts of `Let's Go Further` to support reliable API behavior and better handoff quality.
 
-This is the missing “make it less toy-like” layer. Not enterprise. Not cloud-native ceremonial robes. Just enough production discipline to avoid embarrassing yourself in front of a server.
+This is the production-readiness layer: not enterprise complexity, but enough production discipline to make the API easier to run, verify, and hand off.
 
 This stage extends the same `books/lets-go-further` area used in Stage 5. It should add production notes and small checklist files, not restart the API core implementation.
 
@@ -875,7 +875,7 @@ Future implementation in `go-microservices-starter`: 12–24 hours for a small f
 
 Low/medium.
 
-Do this after the Go Web foundation is useful. Do not run toward microservices just because the word sounds employable.
+Do this after the Go Web foundation is useful. Do not move microservices work into this repository prematurely.
 
 ---
 
@@ -885,7 +885,7 @@ Do this after the Go Web foundation is useful. Do not run toward microservices j
 
 **Goal:** package the learning and applied work into a clear portfolio proof for **Offer 1 Basic — Small Go Backend Fix / API Endpoint**.
 
-This is the stage where learning stops hiding in folders and starts explaining itself. Revolutionary stuff: documentation that says why the code exists.
+This stage packages the learning and applied work into documentation that explains what the code demonstrates.
 
 ### What to do
 
@@ -1062,7 +1062,7 @@ go-web-labs: close Let's Go
 - Full API write operations before `book-social` auth and validation are ready.
 - Microservices implementation in this repo.
 - NATS/Kafka/Temporal in `go-web-labs`.
-- Perfect framework abstraction, because that is how small repos become sad enterprises.
+- Perfect framework abstraction.
 
 ---
 
@@ -1153,4 +1153,4 @@ This repository should help demonstrate:
 
 `book-social` should prove that the fundamentals were applied in a real project.
 
-`go-microservices-starter` should become the next layer after the Go Web foundation is useful, not the place where every unresolved thought goes to start a distributed systems support group.
+`go-microservices-starter` should become the next layer after the Go Web foundation is useful, not a place for unresolved Go Web work.

@@ -63,7 +63,7 @@ Focus:
 - metrics;
 - build, audit, versioning, and deployment basics.
 
-This book should be read together with practical `book-social` v0.2 tasks, not as an isolated academic swamp.
+This book should be read together with practical `book-social` v0.2 tasks, not as an isolated study exercise.
 
 ## Frameworks and routers
 
@@ -149,4 +149,4 @@ docs/
 
 ## Notes
 
-This repository should stay small and useful. If a lab starts turning into a full product, move that work to `book-social` or create a dedicated demo project. Otherwise the repo becomes a museum of unfinished ambition, and humanity already has npm for that.
+This repository should stay small and useful. If a lab starts turning into a full product, move that work to `book-social` or create a dedicated demo project.
