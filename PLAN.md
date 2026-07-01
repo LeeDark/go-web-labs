@@ -48,7 +48,7 @@ The goal is not to learn everything forever. That way lies browser tabs, abandon
 
 ---
 
-# Current roadmap
+## Current roadmap
 
 ## Stage 0 — Repository consolidation
 
@@ -778,11 +778,13 @@ Medium.
 
 ## Stage 10 — Bridge to `go-microservices-starter`
 
-**Folder:** this repo should only contain notes/links; implementation belongs in `go-microservices-starter`
+**Folder:** `docs/bridge-to-go-microservices-starter.md`
 
 **Goal:** connect Go Web skills to the microservices/gRPC learning path without dragging microservices into this repository too early.
 
 `go-microservices-starter` is the second layer, not the first. For Basic-level paid work, the useful parts are service contracts, local infra, health checks, config, logging, simple workers, and simple service-to-service calls.
+
+Implementation belongs in `go-microservices-starter`; this repository should only contain notes and links.
 
 ### What to do
 
@@ -977,11 +979,11 @@ High after:
 
 ---
 
-# Relation to `book-social`
+## Relation to `book-social`
 
 `book-social` is the main applied proof for Go Web skills.
 
-## `book-social` v0.1
+### `book-social` v0.1
 
 Finish as baseline:
 
@@ -990,7 +992,7 @@ Finish as baseline:
 - HTMX spike.
 - Decision: keep Go templates or move to Templ.
 
-## `book-social` v0.2
+### `book-social` v0.2
 
 Use `go-web-labs` topics while implementing:
 
@@ -1011,7 +1013,7 @@ Use `go-web-labs` topics while implementing:
     - `GET /api/genres/{slug}`.
 12. OpenAPI only for `/api/*`.
 
-## Recommended order
+### Recommended order
 
 Do not add the JSON API slice before catalog read models are stable.
 
@@ -1028,9 +1030,9 @@ v0.1 baseline
 
 ---
 
-# Practical priority
+## Practical priority
 
-## Current focus
+### Current focus
 
 1. Close `Let's Go` with review + README.
 2. Finish `book-social` v0.1.
@@ -1040,7 +1042,7 @@ v0.1 baseline
 6. Add OpenAPI/security labs after real API endpoints exist.
 7. Add portfolio proof package after there is enough applied proof.
 
-## Not now
+### Not now
 
 - Full Echo/Gin comparison.
 - Large standalone REST project duplicating `book-social`.
@@ -1052,7 +1054,7 @@ v0.1 baseline
 
 ---
 
-# Suggested repository map
+## Suggested repository map
 
 ```text
 books/
@@ -1074,6 +1076,11 @@ labs/
     README.md
   integrations/
     README.md
+frameworks/
+  echo-lab/
+    README.md
+  templ/
+    README.md
 docs/
   book-social-links.md
   bridge-to-go-microservices-starter.md
@@ -1088,7 +1095,7 @@ docs/
 
 ---
 
-# Offer 1 Basic proof checklist
+## Offer 1 Basic proof checklist
 
 This repository should help demonstrate:
 
@@ -1109,7 +1116,7 @@ This repository should help demonstrate:
 
 ---
 
-# Stage estimates summary
+## Stage estimates summary
 
 | Stage | Name                                      |                                 Estimate | Priority                |
 |------:|-------------------------------------------|-----------------------------------------:|-------------------------|
@@ -1128,7 +1135,7 @@ This repository should help demonstrate:
 
 ---
 
-# Short positioning summary
+## Short positioning summary
 
 `go-web-labs` should prove that the fundamentals were studied intentionally.
 
