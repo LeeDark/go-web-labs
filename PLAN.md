@@ -431,6 +431,8 @@ Do this before larger API/book work so later `book-social` changes have a basic 
 
 Do not read it as an isolated pilgrimage. Use it as a practical reference while implementing real tasks. Books are useful. Worship is extra and usually billable to nobody.
 
+This stage covers the API core track in `books/lets-go-further`: project structure, JSON, validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses the same folder later for production-oriented notes and checklists.
+
 ### What to do
 
 - Study API project structure.
@@ -466,8 +468,8 @@ GET /api/genres/{slug}
 
 ### Output
 
-- `books/lets-go-further` project or notes.
-- README with learned API patterns.
+- API core project work or notes in `books/lets-go-further`.
+- README sections with learned API patterns.
 - Notes linking selected patterns to `book-social`.
 
 ### Offer mapping
@@ -648,6 +650,8 @@ Medium.
 
 This is the missing “make it less toy-like” layer. Not enterprise. Not cloud-native ceremonial robes. Just enough production discipline to avoid embarrassing yourself in front of a server.
 
+This stage extends the same `books/lets-go-further` area used in Stage 5. It should add production notes and small checklist files, not restart the API core implementation.
+
 ### What to do
 
 - Study and document background tasks.
@@ -681,8 +685,8 @@ request logging middleware
 
 ### Output
 
-- Production API notes.
-- Small checklist files.
+- Production API notes in `books/lets-go-further`.
+- Small checklist files under `docs/checklists/`.
 - Clear decision about what is applied now vs later.
 - Links to `book-social` tasks where relevant.
 
