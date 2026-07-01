@@ -23,7 +23,7 @@ Priority labels:
 Reference only / cheat sheet.
 - Networking
 - Internet, TCP/IP
-- HTTP Protocol
+- HTTP protocol
 - Web servers (nginx, apache, caddy)
 
 ## Application types
@@ -43,24 +43,24 @@ Reference only / cheat sheet.
 
 ## Go HTTP Stack
 - net/http
-- Routing, API Endpoints
+- Routing and API endpoints
 - Middleware
-- HTTP Request Context
-- Stateful HTTP, Sessions, Cookies
-- HTML Templates & Dynamic Templates, MPA
+- HTTP request context
+- Stateful HTTP, sessions, cookies
+- HTML templates and dynamic templates, MPA
 - HTML Forms
-- HTML/Static Embedding
-- JSON Requests/Responses, SPA
-- CRUD, Operations
+- HTML/static embedding
+- JSON requests/responses, SPA
+- CRUD operations
 - Validation
-- Filtering, Sorting, Pagination, etc
+- Filtering, sorting, and pagination
 - Think about
   - Redirects
   - File uploads, multipart
   - Error responses
   - Idempotency basics
   - API versioning basics
-  - HTML escaping, Template safety
+  - HTML escaping, template safety
 
 ## Security
 - Security core
@@ -69,18 +69,16 @@ Reference only / cheat sheet.
   - CSRF — Later
 - Authentication — Later
 - Authorization — Later
-- Security, Protection, Resilience
+- Security, protection, resilience
   - Rate limiting — Later
   - Basic abuse protection — Later
 
 ## Web frameworks
-- chi
-- echo
-- gin
-- fiber
-- gorilla/mux
-
-## Advanced Topics
+- chi — Current primary router/framework
+- echo — Later comparison
+- gin — Later comparison
+- fiber — Reference only
+- gorilla/mux — Reference only
 
 # Supporting Topics
 
@@ -92,16 +90,23 @@ Reference only / cheat sheet.
 - Engineering hygiene
   - Logging — Later
   - Errors, Error handling — Next
-  - Quality Control, Linters — Later
-  - Building, Versioning — Later
+  - Quality control, linters — Later
+  - Building, versioning — Later
 
 ## Quality & Operations
-- Current / Next
-  - Testing
-- Later
-  - Deployment, Hosting
+- Testing — Stage 5
+  - Table-driven tests
+  - Handler tests
+  - Service tests
+  - Integration test basics
+- Production operations — Stage 8
+  - Graceful shutdown
+  - Health checks
+  - Metrics basics
+  - Build, audit, versioning
+  - Deployment and hosting basics
+- Later / reference
   - Caching basics
-  - Graceful Shutdown
   - Observability
 
 ## Relational Databases
@@ -114,8 +119,8 @@ Reference only / cheat sheet.
   - Indexes
   - Profiling
 - Data access — Later
-  - Databases packages, sqlc, Query builders
-  - ORM, Gorm
+  - database/sql, sqlc, query builders
+  - ORM, GORM
 
 ## Skills
 - SOLID — Reference only
@@ -126,8 +131,10 @@ Reference only / cheat sheet.
 - Frontend: HTML, CSS, JavaScript — Reference only
 - Git — Current
 - NoSQL — Reference only
-- Security & Hashing Algorithms — Later
+- Security and hashing algorithms — Later
 
 ## AI
-- AI Assisted Coding & Prompt Engineering Roadmap
-- 
+- AI-assisted code review — Current
+- AI-assisted documentation drafts — Current
+- AI-assisted test idea generation — Later
+- Prompting workflow notes — Later
