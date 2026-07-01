@@ -419,6 +419,8 @@ DELETE /books/{id} -> 204
 
 High after `Let's Go` closure.
 
+Do this before larger API/book work so later `book-social` changes have a basic testing foundation.
+
 ---
 
 ## Stage 5 — `Let's Go Further`: API Core
@@ -492,7 +494,9 @@ GET /api/genres/{slug}
 
 ### Priority
 
-High after `Let's Go` closure and `book-social` v0.1 baseline.
+High after `Let's Go` closure, `book-social` v0.1 baseline, and basic testing notes or lab coverage.
+
+Use this as a reference while building `book-social` v0.2 foundation and the later JSON API slice.
 
 ---
 
@@ -1015,14 +1019,17 @@ Use `go-web-labs` topics while implementing:
 
 ### Recommended order
 
-Do not add the JSON API slice before catalog read models are stable.
+Do not add the JSON API slice before catalog read models are stable. Keep the testing foundation ahead of larger API work.
 
 ```text
-v0.1 baseline
+go-web-labs: close Let's Go
+→ book-social: v0.1 baseline
+→ go-web-labs: testing lab or testing notes
 → v0.2 quality + DB foundation
 → v0.2 schema
 → v0.2 catalog read models
 → v0.2 MPA catalog update
+→ Let's Go Further API Core notes as reference
 → read-only JSON API slice
 → OpenAPI for /api/*
 → security/auth improvements
@@ -1036,11 +1043,12 @@ v0.1 baseline
 
 1. Close `Let's Go` with review + README.
 2. Finish `book-social` v0.1.
-3. Start `Let's Go Further` notes.
-4. Build `book-social` v0.2 foundation.
-5. Add read-only JSON API slice in `book-social` after catalog read models.
-6. Add OpenAPI/security labs after real API endpoints exist.
-7. Add portfolio proof package after there is enough applied proof.
+3. Add testing lab or testing notes.
+4. Build `book-social` v0.2 quality + DB foundation, schema, and catalog read models.
+5. Use `Let's Go Further` API Core as a reference while building the v0.2 API-related work.
+6. Add read-only JSON API slice in `book-social` after catalog read models are stable.
+7. Add OpenAPI/security labs after real API endpoints exist.
+8. Add portfolio proof package after there is enough applied proof.
 
 ### Not now
 
@@ -1124,8 +1132,8 @@ This repository should help demonstrate:
 |     1 | Close / refresh `Let's Go`                |                                     3–6h | Current                 |
 |     2 | REST API basics                           |                                    8–14h | Medium                  |
 |     3 | Handler → Service → Repository            |                                    8–16h | Medium                  |
-|     4 | Testing lab                               |                                    8–16h | High                    |
-|     5 | `Let's Go Further`: API Core              |                                   25–45h | High                    |
+|     4 | Testing lab                               |                                    8–16h | High after Stage 1      |
+|     5 | `Let's Go Further`: API Core              |                                   25–45h | High after v0.1 + tests |
 |     6 | OpenAPI lab                               |                                    6–12h | Medium                  |
 |     7 | API security basic                        |                                   10–20h | Medium                  |
 |     8 | `Let's Go Further`: Production API Topics |                                   15–30h | Medium                  |
