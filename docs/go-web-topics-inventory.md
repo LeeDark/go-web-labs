@@ -6,8 +6,10 @@ Use `PLAN.md` for stage order and current priorities. Use this file to collect t
 
 Priority labels:
 
-- Current: active or near-active repo focus.
-- Next: planned soon after the current focus.
+- Finished: covered by Stage 0 or Stage 1.
+- Active: part of the current parallel work.
+- Stage 2: book learning track, `Let's Go Further` API Core.
+- Offer 1 foundation: Stages 3-7, freelance path labs and notes.
 - Later: useful, but not immediate.
 - Reference only: awareness topic, not planned implementation in this repository.
 
@@ -24,28 +26,28 @@ Reference only / cheat sheet.
 - Networking
 - Internet, TCP/IP
 - HTTP protocol
-- HTTP methods and status codes — Current
-- Headers, content types, content negotiation — Next
-- URL structure, query strings, path params — Current
+- HTTP methods and status codes — Finished / Offer 1 foundation
+- Headers, content types, content negotiation — Stage 2 / Offer 1 foundation
+- URL structure, query strings, path params — Finished / Offer 1 foundation
 - DNS basics — Reference only
 - Web servers (nginx, apache, caddy)
 - Reverse proxy basics — Later
 
 ## Application types
-- MPA — Current
-- Server-rendered Go app — Current
-- API-only Backend — Next
-- REST API backend — Next
+- MPA — Finished
+- Server-rendered Go app — Finished
+- API-only Backend — Stage 2 / Offer 1 foundation
+- REST API backend — Stage 2 / Offer 1 foundation
 - SPA — Reference only
 - Hybrid MPA + JSON endpoints — Later
 - Rendering layer: SSR/CSR, Hybrid — Reference only
 
 ## API Design
-- REST — Next
-- Resource naming — Next
-- Request/response shape conventions — Next
-- Error response format — Next
-- OpenAPI, API docs — Later
+- REST — Stage 2 / Offer 1 foundation
+- Resource naming — Stage 2 / Offer 1 foundation
+- Request/response shape conventions — Stage 2 / Offer 1 foundation
+- Error response format — Stage 2 / Offer 1 foundation
+- OpenAPI, API docs — Offer 1 foundation
 - Pagination styles: limit/offset, cursor — Later
 - Filtering and sorting conventions — Later
 - Backward-compatible API changes — Later
@@ -60,19 +62,19 @@ Reference only / cheat sheet.
 - Routing and API endpoints
 - Middleware
 - HTTP request context
-- Request parsing: path, query, body — Current
-- Response writing: status, headers, body — Current
-- Content type handling — Next
+- Request parsing: path, query, body — Finished / Offer 1 foundation
+- Response writing: status, headers, body — Finished / Offer 1 foundation
+- Content type handling — Stage 2 / Offer 1 foundation
 - Stateful HTTP, sessions, cookies
 - HTML templates and dynamic templates, MPA
-- Template layouts and partials — Current
+- Template layouts and partials — Finished
 - HTML forms
-- Form validation and redisplay — Current
-- Flash messages — Current
+- Form validation and redisplay — Finished
+- Flash messages — Finished
 - HTML/static embedding
-- Static files — Current
+- Static files — Finished
 - JSON requests/responses, SPA
-- JSON decoding limits and unknown fields — Next
+- JSON decoding limits and unknown fields — Stage 2 / Offer 1 foundation
 - CRUD operations
 - Validation
 - Filtering, sorting, and pagination
@@ -95,9 +97,9 @@ Reference only / cheat sheet.
 - Authorization — Later
 - Security, protection, resilience
   - Password hashing — Later
-  - Secure cookie flags — Current / Later
+  - Secure cookie flags — Finished / Later
   - Session fixation basics — Later
-  - Input validation vs output escaping — Current
+  - Input validation vs output escaping — Finished / Offer 1 foundation
   - Secrets/config handling — Later
   - Request body size limits — Later
   - Rate limiting — Later
@@ -105,8 +107,8 @@ Reference only / cheat sheet.
   - Safe logging of sensitive data — Later
 
 ## Web frameworks
-- net/http — Current base stack
-- chi — Current primary router/framework
+- net/http — Finished base stack / Offer 1 foundation
+- chi — Active primary router/framework
 - echo — Later comparison
 - gin — Later comparison
 - fiber — Reference only
@@ -116,31 +118,31 @@ Reference only / cheat sheet.
 
 ## Application structure
 - Skeleton
-  - `cmd/` and `internal/` package layout — Next
-  - Handler dependencies and app struct — Current / Next
-  - Layering: Handlers, Services, Repositories — Next
-  - Dependency Injection — Next
-  - DTOs vs domain models — Next
-  - Repository interfaces — Next
+  - `cmd/` and `internal/` package layout — Offer 1 foundation
+  - Handler dependencies and app struct — Finished / Offer 1 foundation
+  - Layering: Handlers, Services, Repositories — Offer 1 foundation
+  - Dependency Injection — Offer 1 foundation
+  - DTOs vs domain models — Offer 1 foundation
+  - Repository interfaces — Offer 1 foundation
   - Configuration — Later
 - Engineering hygiene
   - Logging — Later
-  - Errors, Error handling — Next
-  - Error boundaries between layers — Next
+  - Errors, Error handling — Stage 2 / Offer 1 foundation
+  - Error boundaries between layers — Offer 1 foundation
   - Quality control, linters — Later
   - Building, versioning — Later
 
 ## Quality & Operations
-- Local verification — Current
+- Local verification — Finished / Active
   - Golden path local run command
   - README run/test commands
   - `go test ./...`
-- Testing — Stage 5
+- Testing — Offer 1 foundation, Stage 5
   - Table-driven tests
   - Handler tests
   - Service tests
   - Integration test basics
-- Production operations — Stage 8
+- Production operations — Later, Stage 8
   - Graceful shutdown
   - Graceful shutdown signal handling
   - Health checks
@@ -174,17 +176,17 @@ Reference only / cheat sheet.
   - Migrations rollback policy
 
 ## Skills
-- Small, reviewable changes — Current
-- Debugging with logs and tests — Current
-- Reading existing code before refactoring — Current
-- Documentation discipline — Current
+- Small, reviewable changes — Active
+- Debugging with logs and tests — Active
+- Reading existing code before refactoring — Active
+- Documentation discipline — Active
 - SOLID — Reference only
-- YAGNI — Current
-- KISS — Current
+- YAGNI — Active
+- KISS — Active
 
 ## Adjacent topics
 - Frontend: HTML, CSS, JavaScript — Reference only
-- Git — Current
+- Git — Active
 - HTMX — Reference only / later comparison
 - Templ — Reference only / later comparison
 - Docker basics — Later
@@ -193,11 +195,11 @@ Reference only / cheat sheet.
 - Security and hashing algorithms — Later
 
 ## AI
-- AI-assisted code review — Current
-- AI-assisted documentation drafts — Current
-- AI-assisted review checklist — Current
-- AI-assisted README cleanup — Current
+- AI-assisted code review — Active
+- AI-assisted documentation drafts — Active
+- AI-assisted review checklist — Active
+- AI-assisted README cleanup — Active
 - AI-assisted test idea generation — Later
 - AI-assisted test case brainstorming — Later
 - Prompting workflow notes — Later
-- Human verification of AI output — Current
+- Human verification of AI output — Active

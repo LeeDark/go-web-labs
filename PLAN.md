@@ -54,6 +54,8 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
 
 **Folder:** repository root
 
+**Status:** Finished.
+
 **Goal:** make the repository understandable as a learning path and portfolio-support repo.
 
 #### What to do
@@ -97,13 +99,15 @@ books/lets-go/README.md
 
 #### Priority
 
-High.
+Finished.
 
 ---
 
 ### Stage 1 — Close / refresh `Let's Go`
 
 **Folder:** `books/lets-go`
+
+**Status:** Finished.
 
 **Goal:** close the existing `Let's Go` work as a stable study artifact.
 
@@ -197,7 +201,7 @@ Optional exercises: separate backlog, not a priority.
 
 #### Priority
 
-Current focus.
+Finished.
 
 ---
 
@@ -274,7 +278,7 @@ GET /api/genres/{slug}
 
 #### Priority
 
-High after `Let's Go` closure and `book-social` v0.1 baseline.
+Active.
 
 Use this as the next book-based API foundation before the standalone labs.
 
@@ -364,7 +368,7 @@ GET /api/genres/{slug}
 
 #### Priority
 
-Medium.
+Active.
 
 ---
 
@@ -434,7 +438,7 @@ type BookRepository interface {
 
 #### Priority
 
-Medium.
+Active.
 
 If `book-social` v0.2 already covers this well, this lab can be shortened to notes + tiny example.
 
@@ -496,7 +500,7 @@ DELETE /books/{id} -> 204
 
 #### Priority
 
-High after Stage 4.
+Active.
 
 Use this to add a testing foundation for the API and layered labs.
 
@@ -565,7 +569,7 @@ labs/openapi/README.md
 
 #### Priority
 
-Medium, after real API endpoints exist.
+Active, after real API endpoint examples exist.
 
 ---
 
@@ -638,7 +642,7 @@ PATCH /books/{id}
 
 #### Priority
 
-Medium.
+Active.
 
 ---
 
@@ -714,7 +718,7 @@ request logging middleware
 
 #### Priority
 
-Medium after Stage 2 API Core and at least one real API example exists.
+Later, after Stage 2 API Core and the Offer 1 foundation labs.
 
 ---
 
@@ -780,7 +784,7 @@ valid webhook signature -> 204
 
 #### Priority
 
-Medium.
+Later.
 
 ---
 
@@ -873,7 +877,7 @@ Future implementation in `go-microservices-starter`: 12–24 hours for a small f
 
 #### Priority
 
-Low/medium.
+Later.
 
 Do this after the Go Web foundation is useful. Do not move microservices work into this repository prematurely.
 
@@ -1025,18 +1029,28 @@ Use `go-web-labs` topics as references while implementing:
 
 ### Recommended order
 
-Keep `book-social` implementation work separate from this repository's stage order. For this repository, use the stage sequence below. For `book-social`, do not add the JSON API slice before catalog read models are stable.
+Stages 0 and 1 are finished. The next work has two parallel tracks:
+
+- Book learning track: Stage 2, `Let's Go Further`: API Core.
+- Offer 1 freelance track: Stages 3-7, covering REST basics, layering, testing, OpenAPI, and API security.
+
+Keep `book-social` implementation work separate from this repository's stage order. For `book-social`, do not add the JSON API slice before catalog read models are stable.
 
 ```text
+Finished:
+Stage 0: Repository consolidation
 Stage 1: close Let's Go
-→ external checkpoint: finish book-social v0.1 baseline
-→ Stage 2: Let's Go Further API Core
-→ Stage 3: REST API basics
-→ Stage 4: Handler → Service → Repository
-→ Stage 5: Testing lab
-→ Stage 6: OpenAPI lab
-→ Stage 7: API security basic
-→ Stage 8: Let's Go Further Production API Topics
+
+Active in parallel:
+Stage 2: Let's Go Further API Core
+Stage 3: REST API basics
+Stage 4: Handler → Service → Repository
+Stage 5: Testing lab
+Stage 6: OpenAPI lab
+Stage 7: API security basic
+
+Later:
+Stage 8: Let's Go Further Production API Topics
 → Stage 9: Integration / External API lab
 → Stage 10: Bridge to go-microservices-starter
 → Stage 11: Offer 1 Basic Portfolio Package
@@ -1048,18 +1062,27 @@ Stage 1: close Let's Go
 
 ### Current focus
 
-1. Close `Let's Go` with review + README.
-2. Finish `book-social` v0.1.
-3. Stage 2: work through `Let's Go Further` API Core.
-4. Stage 3: build REST API basics.
-5. Stage 4: practice Handler → Service → Repository structure.
-6. Stage 5: add testing lab or testing notes.
-7. Stage 6: add OpenAPI lab after real API endpoints exist.
-8. Stage 7: add API security basic notes/examples.
-9. Stage 8: add `Let's Go Further` production API notes/checklists.
-10. Stage 9: build Integration / External API lab.
-11. Stage 10: add bridge notes to `go-microservices-starter`.
-12. Stage 11: add portfolio proof package after there is enough applied proof.
+Finished:
+
+1. Stage 0: Repository consolidation.
+2. Stage 1: Close / refresh `Let's Go`.
+
+Active in parallel:
+
+1. Stage 2: work through `Let's Go Further` API Core as the book reading/writing learning project.
+2. Stages 3-7: build the Offer 1 freelance path foundation:
+   - Stage 3: REST API basics;
+   - Stage 4: Handler → Service → Repository;
+   - Stage 5: Testing lab;
+   - Stage 6: OpenAPI lab;
+   - Stage 7: API security basic.
+
+Later:
+
+1. Stage 8: add `Let's Go Further` production API notes/checklists.
+2. Stage 9: build Integration / External API lab.
+3. Stage 10: add bridge notes to `go-microservices-starter`.
+4. Stage 11: add portfolio proof package after there is enough applied proof.
 
 ### Not now
 
@@ -1139,17 +1162,17 @@ This repository should help demonstrate:
 
 | Stage | Name                                      |                                 Estimate | Priority                |
 |------:|-------------------------------------------|-----------------------------------------:|-------------------------|
-|     0 | Repository consolidation                  |                                     2–4h | High                    |
-|     1 | Close / refresh `Let's Go`                |                                     3–6h | Current                 |
-|     2 | `Let's Go Further`: API Core              |                                   25–45h | High after v0.1         |
-|     3 | REST API basics                           |                                    8–14h | Medium                  |
-|     4 | Handler → Service → Repository            |                                    8–16h | Medium                  |
-|     5 | Testing lab                               |                                    8–16h | High after Stage 4      |
-|     6 | OpenAPI lab                               |                                    6–12h | Medium                  |
-|     7 | API security basic                        |                                   10–20h | Medium                  |
-|     8 | `Let's Go Further`: Production API Topics |                                   15–30h | Medium                  |
-|     9 | Integration / External API lab            |                                   10–18h | Medium                  |
-|    10 | Bridge to `go-microservices-starter`      | 4–8h notes, 12–24h future implementation | Low/Medium              |
+|     0 | Repository consolidation                  |                                     2–4h | Finished                |
+|     1 | Close / refresh `Let's Go`                |                                     3–6h | Finished                |
+|     2 | `Let's Go Further`: API Core              |                                   25–45h | Active                  |
+|     3 | REST API basics                           |                                    8–14h | Active                  |
+|     4 | Handler → Service → Repository            |                                    8–16h | Active                  |
+|     5 | Testing lab                               |                                    8–16h | Active                  |
+|     6 | OpenAPI lab                               |                                    6–12h | Active                  |
+|     7 | API security basic                        |                                   10–20h | Active                  |
+|     8 | `Let's Go Further`: Production API Topics |                                   15–30h | Later                   |
+|     9 | Integration / External API lab            |                                   10–18h | Later                   |
+|    10 | Bridge to `go-microservices-starter`      | 4–8h notes, 12–24h future implementation | Later                   |
 |    11 | Offer 1 Basic Portfolio Package           |                                    6–12h | High after proof exists |
 
 ---

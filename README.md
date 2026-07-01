@@ -13,14 +13,19 @@ book-social  = applied project and portfolio proof
 
 ## Current priority
 
-1. Close / refresh `Let's Go`.
-2. Finish `book-social` v0.1 as an external checkpoint.
-3. Work through `Let's Go Further` API Core.
-4. Build REST API basics.
-5. Practice Handler → Service → Repository structure.
-6. Add testing lab or testing notes.
-7. Add OpenAPI and API security notes after real API endpoints exist.
-8. Add production API notes, integrations, bridge notes, and portfolio proof after the core stages.
+Finished:
+
+1. Repository consolidation.
+2. Close / refresh `Let's Go`.
+
+Active in parallel:
+
+1. Book learning track: work through `Let's Go Further` API Core.
+2. Offer 1 freelance track: build REST API basics, Handler → Service → Repository, testing, OpenAPI, and API security notes.
+
+Later:
+
+1. Add production API notes, integrations, bridge notes, and portfolio proof after the core stages.
 
 ## Books
 
@@ -148,9 +153,10 @@ docs/
   offer-1-basic-proof.md
   checklists/
 AGENTS.md
-repository-context.md
 PLAN.md
 README.md
+repository-context.md
+task-history.md
 ```
 
 ## Notes
