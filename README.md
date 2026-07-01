@@ -14,11 +14,13 @@ book-social  = applied project and portfolio proof
 ## Current priority
 
 1. Close / refresh `Let's Go`.
-2. Add README and TODO notes for the existing `Let's Go` work.
-3. Use `Let's Go Further` as a practical reference for API, DB, security, and operations topics.
-4. Apply the important patterns in `book-social` v0.2.
-5. Add a small read-only JSON API slice in `book-social` after the catalog read model is stable.
-6. Add OpenAPI and API security notes after real API endpoints exist.
+2. Finish `book-social` v0.1 as an external checkpoint.
+3. Work through `Let's Go Further` API Core.
+4. Build REST API basics.
+5. Practice Handler → Service → Repository structure.
+6. Add testing lab or testing notes.
+7. Add OpenAPI and API security notes after real API endpoints exist.
+8. Add production API notes, integrations, bridge notes, and portfolio proof after the core stages.
 
 ## Books
 
@@ -63,7 +65,7 @@ Focus:
 - metrics;
 - build, audit, versioning, and deployment basics.
 
-This book should be read together with practical `book-social` v0.2 tasks, not as an isolated study exercise.
+Use the API core parts after closing `Let's Go`. Use the production-oriented parts later for production notes and small checklists.
 
 ## Frameworks and routers
 
@@ -86,7 +88,7 @@ Later comparison topic. Not a current priority.
 | Repo folder | Skill | Purpose |
 |---|---|---|
 | [books/lets-go](books/lets-go) | Go web fundamentals | Close the existing `Let's Go` work and document reusable patterns. |
-| [books/lets-go-further](books/lets-go-further) | REST API and production API patterns | Study API, DB, security, and operations topics while applying them in `book-social`. |
+| [books/lets-go-further](books/lets-go-further) | REST API and production API patterns | Use API core topics after `Let's Go`, then add production notes and checklists later. |
 | [labs/rest-api](labs/rest-api) | REST API basics | Small optional API lab for routes, JSON, validation, and error responses. Do not duplicate `book-social`. |
 | [labs/layered-api](labs/layered-api) | Handler → Service → Repository | Small layering example or notes that can be compared with `book-social`. |
 | [labs/testing](labs/testing) | Testing basics | Unit tests, handler tests, fake repositories, and basic integration testing patterns. |

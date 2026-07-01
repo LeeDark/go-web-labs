@@ -201,7 +201,86 @@ Current focus.
 
 ---
 
-## Stage 2 — REST API basics
+## Stage 2 — `Let's Go Further`: API Core
+
+**Folder:** `books/lets-go-further`
+
+**Goal:** read and implement the API core parts of `Let's Go Further` in a way that directly helps Offer 1 Basic.
+
+Do not read it as an isolated exercise. Use it as a practical reference while implementing real tasks.
+
+This stage covers the API core track in `books/lets-go-further`: project structure, JSON, validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses the same folder later for production-oriented notes and checklists.
+
+### What to do
+
+- Study API project structure.
+- Implement JSON responses.
+- Implement JSON requests.
+- Add validation.
+- Study SQL migrations.
+- Practice CRUD.
+- Practice filtering, sorting, and pagination.
+- Keep notes about patterns worth applying in future API work.
+
+### Example
+
+Possible API endpoints from the book-style lab:
+
+```text
+GET    /v1/healthcheck
+GET    /v1/movies
+GET    /v1/movies/{id}
+POST   /v1/movies
+PATCH  /v1/movies/{id}
+DELETE /v1/movies/{id}
+```
+
+Possible later applied equivalent:
+
+```text
+GET /api/books
+GET /api/books/{slug}
+GET /api/authors/{slug}
+GET /api/genres/{slug}
+```
+
+### Output
+
+- API core project work or notes in `books/lets-go-further`.
+- README sections with learned API patterns.
+- Notes linking selected patterns to future applied work.
+
+### Offer mapping
+
+- Add JSON endpoint.
+- Add pagination/filtering.
+- Add DB query.
+- Add migration.
+- Fix validation.
+- Improve API behavior.
+
+### Applied later
+
+- Catalog read models.
+- Read-only JSON API slice.
+- Error responses.
+- API tests.
+- Migrations strategy.
+- Filtering/sorting/pagination for catalog.
+
+### Estimate
+
+25–45 hours.
+
+### Priority
+
+High after `Let's Go` closure and `book-social` v0.1 baseline.
+
+Use this as the next book-based API foundation before the standalone labs.
+
+---
+
+## Stage 3 — REST API basics
 
 **Folder:** `labs/rest-api`
 
@@ -289,7 +368,7 @@ Medium.
 
 ---
 
-## Stage 3 — Handler → Service → Repository
+## Stage 4 — Handler → Service → Repository
 
 **Folder:** `labs/layered-api`
 
@@ -361,7 +440,7 @@ If `book-social` v0.2 already covers this well, this lab can be shortened to not
 
 ---
 
-## Stage 4 — Testing lab
+## Stage 5 — Testing lab
 
 **Folder:** `labs/testing`
 
@@ -417,88 +496,9 @@ DELETE /books/{id} -> 204
 
 ### Priority
 
-High after `Let's Go` closure.
+High after Stage 4.
 
-Do this before larger API/book work so later `book-social` changes have a basic testing foundation.
-
----
-
-## Stage 5 — `Let's Go Further`: API Core
-
-**Folder:** `books/lets-go-further`
-
-**Goal:** read and implement the API core parts of `Let's Go Further` in a way that directly helps `book-social` and Offer 1 Basic.
-
-Do not read it as an isolated exercise. Use it as a practical reference while implementing real tasks.
-
-This stage covers the API core track in `books/lets-go-further`: project structure, JSON, validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses the same folder later for production-oriented notes and checklists.
-
-### What to do
-
-- Study API project structure.
-- Implement JSON responses.
-- Implement JSON requests.
-- Add validation.
-- Study SQL migrations.
-- Practice CRUD.
-- Practice filtering, sorting, and pagination.
-- Keep notes about patterns worth applying in `book-social`.
-
-### Example
-
-Possible API endpoints from the book-style lab:
-
-```text
-GET    /v1/healthcheck
-GET    /v1/movies
-GET    /v1/movies/{id}
-POST   /v1/movies
-PATCH  /v1/movies/{id}
-DELETE /v1/movies/{id}
-```
-
-Possible `book-social` equivalent:
-
-```text
-GET /api/books
-GET /api/books/{slug}
-GET /api/authors/{slug}
-GET /api/genres/{slug}
-```
-
-### Output
-
-- API core project work or notes in `books/lets-go-further`.
-- README sections with learned API patterns.
-- Notes linking selected patterns to `book-social`.
-
-### Offer mapping
-
-- Add JSON endpoint.
-- Add pagination/filtering.
-- Add DB query.
-- Add migration.
-- Fix validation.
-- Improve API behavior.
-
-### Applied in `book-social`
-
-- Catalog read models.
-- Read-only JSON API slice.
-- Error responses.
-- API tests.
-- Migrations strategy.
-- Filtering/sorting/pagination for catalog.
-
-### Estimate
-
-25–45 hours.
-
-### Priority
-
-High after `Let's Go` closure, `book-social` v0.1 baseline, and basic testing notes or lab coverage.
-
-Use this as a reference while building `book-social` v0.2 foundation and the later JSON API slice.
+Use this to add a testing foundation for the API and layered labs.
 
 ---
 
@@ -714,7 +714,7 @@ request logging middleware
 
 ### Priority
 
-Medium after API Core and v0.2 foundation.
+Medium after Stage 2 API Core and at least one real API example exists.
 
 ---
 
@@ -1002,7 +1002,9 @@ Finish as baseline:
 
 ### `book-social` v0.2
 
-Use `go-web-labs` topics while implementing:
+`book-social` v0.2 is parallel applied work, not part of this repository's stage order.
+
+Use `go-web-labs` topics as references while implementing:
 
 1. Quality + DB foundation.
 2. SQLite/PostgreSQL + migrations.
@@ -1023,20 +1025,21 @@ Use `go-web-labs` topics while implementing:
 
 ### Recommended order
 
-Do not add the JSON API slice before catalog read models are stable. Keep the testing foundation ahead of larger API work.
+Keep `book-social` implementation work separate from this repository's stage order. For this repository, use the stage sequence below. For `book-social`, do not add the JSON API slice before catalog read models are stable.
 
 ```text
-go-web-labs: close Let's Go
-→ book-social: v0.1 baseline
-→ go-web-labs: testing lab or testing notes
-→ v0.2 quality + DB foundation
-→ v0.2 schema
-→ v0.2 catalog read models
-→ v0.2 MPA catalog update
-→ Let's Go Further API Core notes as reference
-→ read-only JSON API slice
-→ OpenAPI for /api/*
-→ security/auth improvements
+Stage 1: close Let's Go
+→ external checkpoint: finish book-social v0.1 baseline
+→ Stage 2: Let's Go Further API Core
+→ Stage 3: REST API basics
+→ Stage 4: Handler → Service → Repository
+→ Stage 5: Testing lab
+→ Stage 6: OpenAPI lab
+→ Stage 7: API security basic
+→ Stage 8: Let's Go Further Production API Topics
+→ Stage 9: Integration / External API lab
+→ Stage 10: Bridge to go-microservices-starter
+→ Stage 11: Offer 1 Basic Portfolio Package
 ```
 
 ---
@@ -1047,12 +1050,16 @@ go-web-labs: close Let's Go
 
 1. Close `Let's Go` with review + README.
 2. Finish `book-social` v0.1.
-3. Add testing lab or testing notes.
-4. Build `book-social` v0.2 quality + DB foundation, schema, and catalog read models.
-5. Use `Let's Go Further` API Core as a reference while building the v0.2 API-related work.
-6. Add read-only JSON API slice in `book-social` after catalog read models are stable.
-7. Add OpenAPI/security labs after real API endpoints exist.
-8. Add portfolio proof package after there is enough applied proof.
+3. Stage 2: work through `Let's Go Further` API Core.
+4. Stage 3: build REST API basics.
+5. Stage 4: practice Handler → Service → Repository structure.
+6. Stage 5: add testing lab or testing notes.
+7. Stage 6: add OpenAPI lab after real API endpoints exist.
+8. Stage 7: add API security basic notes/examples.
+9. Stage 8: add `Let's Go Further` production API notes/checklists.
+10. Stage 9: build Integration / External API lab.
+11. Stage 10: add bridge notes to `go-microservices-starter`.
+12. Stage 11: add portfolio proof package after there is enough applied proof.
 
 ### Not now
 
@@ -1134,10 +1141,10 @@ This repository should help demonstrate:
 |------:|-------------------------------------------|-----------------------------------------:|-------------------------|
 |     0 | Repository consolidation                  |                                     2–4h | High                    |
 |     1 | Close / refresh `Let's Go`                |                                     3–6h | Current                 |
-|     2 | REST API basics                           |                                    8–14h | Medium                  |
-|     3 | Handler → Service → Repository            |                                    8–16h | Medium                  |
-|     4 | Testing lab                               |                                    8–16h | High after Stage 1      |
-|     5 | `Let's Go Further`: API Core              |                                   25–45h | High after v0.1 + tests |
+|     2 | `Let's Go Further`: API Core              |                                   25–45h | High after v0.1         |
+|     3 | REST API basics                           |                                    8–14h | Medium                  |
+|     4 | Handler → Service → Repository            |                                    8–16h | Medium                  |
+|     5 | Testing lab                               |                                    8–16h | High after Stage 4      |
 |     6 | OpenAPI lab                               |                                    6–12h | Medium                  |
 |     7 | API security basic                        |                                   10–20h | Medium                  |
 |     8 | `Let's Go Further`: Production API Topics |                                   15–30h | Medium                  |
