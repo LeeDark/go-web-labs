@@ -147,6 +147,10 @@ docs/
   book-social-links.md
   offer-1-basic-proof.md
   checklists/
+AGENTS.md
+repository-context.md
+PLAN.md
+README.md
 ```
 
 ## Notes

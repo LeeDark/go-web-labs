@@ -50,13 +50,13 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
 
 ## Current roadmap
 
-## Stage 0 — Repository consolidation
+### Stage 0 — Repository consolidation
 
 **Folder:** repository root
 
 **Goal:** make the repository understandable as a learning path and portfolio-support repo.
 
-### What to do
+#### What to do
 
 - Update the root `README.md`.
 - Clarify the relation with `book-social`.
@@ -68,7 +68,7 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
   - `repository-context.md`;
   - optionally `task-history.md`.
 
-### Example
+#### Example
 
 ```text
 README.md
@@ -78,30 +78,30 @@ repository-context.md
 books/lets-go/README.md
 ```
 
-### Output
+#### Output
 
 - Clean root README.
 - Updated PLAN.
 - Clear repo map.
 - AI-agent context files for future Codex work.
 
-### Offer mapping
+#### Offer mapping
 
 - Better handoff quality.
 - Better client-facing documentation habits.
 - Less confusion when returning to older work.
 
-### Estimate
+#### Estimate
 
 2–4 hours.
 
-### Priority
+#### Priority
 
 High.
 
 ---
 
-## Stage 1 — Close / refresh `Let's Go`
+### Stage 1 — Close / refresh `Let's Go`
 
 **Folder:** `books/lets-go`
 
@@ -109,7 +109,7 @@ High.
 
 This stage is not about rewriting Snippetbox. It is about finishing, reviewing, documenting, and moving on.
 
-### What to do
+#### What to do
 
 - Ask Codex to review the current implementation.
 - Fix only important issues.
@@ -127,7 +127,7 @@ This stage is not about rewriting Snippetbox. It is about finishing, reviewing, 
 - Do not start `Let's Go Further` in this task.
 - Do not rewrite the app.
 
-### Example
+#### Example
 
 README structure:
 
@@ -167,13 +167,13 @@ Study project based on "Let's Go" by Alex Edwards.
 ...
 ```
 
-### Output
+#### Output
 
 - Reviewed `Let's Go` project.
 - README with run/test commands and learned patterns.
 - TODO list for optional exercises.
 
-### Offer mapping
+#### Offer mapping
 
 - HTTP fundamentals.
 - MPA basics.
@@ -181,7 +181,7 @@ Study project based on "Let's Go" by Alex Edwards.
 - Basic testing.
 - Better explanation of old code during client handoff.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - Handler organization.
 - Template rendering.
@@ -189,19 +189,19 @@ Study project based on "Let's Go" by Alex Edwards.
 - Sessions/cookies foundation.
 - Integration/acceptance test thinking.
 
-### Estimate
+#### Estimate
 
 3–6 hours for review + README.
 
 Optional exercises: separate backlog, not a priority.
 
-### Priority
+#### Priority
 
 Current focus.
 
 ---
 
-## Stage 2 — `Let's Go Further`: API Core
+### Stage 2 — `Let's Go Further`: API Core
 
 **Folder:** `books/lets-go-further`
 
@@ -211,7 +211,7 @@ Do not read it as an isolated exercise. Use it as a practical reference while im
 
 This stage covers the API core track in `books/lets-go-further`: project structure, JSON, validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses the same folder later for production-oriented notes and checklists.
 
-### What to do
+#### What to do
 
 - Study API project structure.
 - Implement JSON responses.
@@ -222,7 +222,7 @@ This stage covers the API core track in `books/lets-go-further`: project structu
 - Practice filtering, sorting, and pagination.
 - Keep notes about patterns worth applying in future API work.
 
-### Example
+#### Example
 
 Possible API endpoints from the book-style lab:
 
@@ -244,13 +244,13 @@ GET /api/authors/{slug}
 GET /api/genres/{slug}
 ```
 
-### Output
+#### Output
 
 - API core project work or notes in `books/lets-go-further`.
 - README sections with learned API patterns.
 - Notes linking selected patterns to future applied work.
 
-### Offer mapping
+#### Offer mapping
 
 - Add JSON endpoint.
 - Add pagination/filtering.
@@ -259,7 +259,7 @@ GET /api/genres/{slug}
 - Fix validation.
 - Improve API behavior.
 
-### Applied later
+#### Applied later
 
 - Catalog read models.
 - Read-only JSON API slice.
@@ -268,11 +268,11 @@ GET /api/genres/{slug}
 - Migrations strategy.
 - Filtering/sorting/pagination for catalog.
 
-### Estimate
+#### Estimate
 
 25–45 hours.
 
-### Priority
+#### Priority
 
 High after `Let's Go` closure and `book-social` v0.1 baseline.
 
@@ -280,7 +280,7 @@ Use this as the next book-based API foundation before the standalone labs.
 
 ---
 
-## Stage 3 — REST API basics
+### Stage 3 — REST API basics
 
 **Folder:** `labs/rest-api`
 
@@ -288,7 +288,7 @@ Use this as the next book-based API foundation before the standalone labs.
 
 This can be a tiny isolated lab, but it should not grow into a second `book-social`. If a feature is becoming large, apply it in `book-social` instead.
 
-### What to do
+#### What to do
 
 - Build a minimal API-only backend.
 - Use `net/http` or Chi.
@@ -300,7 +300,7 @@ This can be a tiny isolated lab, but it should not grow into a second `book-soci
 - Use in-memory storage first.
 - Add README with curl examples.
 
-### Example
+#### Example
 
 ```text
 GET    /health
@@ -333,13 +333,13 @@ Possible error shape:
 }
 ```
 
-### Output
+#### Output
 
 - Small REST API lab.
 - README with curl examples.
 - Notes about patterns later applied in `book-social`.
 
-### Offer mapping
+#### Offer mapping
 
 - Add endpoint.
 - Fix endpoint.
@@ -347,7 +347,7 @@ Possible error shape:
 - Add validation.
 - Improve error response format.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 The stronger proof should eventually be a read-only JSON API slice in `book-social` v0.2:
 
@@ -358,23 +358,23 @@ GET /api/authors/{slug}
 GET /api/genres/{slug}
 ```
 
-### Estimate
+#### Estimate
 
 8–14 hours.
 
-### Priority
+#### Priority
 
 Medium.
 
 ---
 
-## Stage 4 — Handler → Service → Repository
+### Stage 4 — Handler → Service → Repository
 
 **Folder:** `labs/layered-api`
 
 **Goal:** practice backend layering without turning the lab into architecture cosplay.
 
-### What to do
+#### What to do
 
 - Split code into handler, service, and repository layers.
 - Keep handlers focused on HTTP.
@@ -384,7 +384,7 @@ Medium.
 - Add in-memory repository for tests.
 - Keep dependency injection boring and explicit.
 
-### Example
+#### Example
 
 ```text
 cmd/api/
@@ -407,20 +407,20 @@ type BookRepository interface {
 }
 ```
 
-### Output
+#### Output
 
 - Small layered API example.
 - README explaining where each responsibility belongs.
 - Notes to compare with `book-social` structure.
 
-### Offer mapping
+#### Offer mapping
 
 - Fix service logic.
 - Add business rule.
 - Add DB-backed endpoint.
 - Improve maintainability around a small feature.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - Catalog service.
 - Catalog repository.
@@ -428,11 +428,11 @@ type BookRepository interface {
 - Author details read model.
 - Future user/auth services.
 
-### Estimate
+#### Estimate
 
 8–16 hours.
 
-### Priority
+#### Priority
 
 Medium.
 
@@ -440,13 +440,13 @@ If `book-social` v0.2 already covers this well, this lab can be shortened to not
 
 ---
 
-## Stage 5 — Testing lab
+### Stage 5 — Testing lab
 
 **Folder:** `labs/testing`
 
 **Goal:** support the client-facing promise: “I can add or fix backend behavior and cover it with tests.”
 
-### What to do
+#### What to do
 
 - Add table-driven tests.
 - Add service unit tests.
@@ -456,7 +456,7 @@ If `book-social` v0.2 already covers this well, this lab can be shortened to not
 - Add test DB bootstrap notes.
 - Document test commands.
 
-### Example
+#### Example
 
 Minimal tests:
 
@@ -470,31 +470,31 @@ PATCH /books/{id} -> 200
 DELETE /books/{id} -> 204
 ```
 
-### Output
+#### Output
 
 - 5–10 focused tests.
 - README with test commands.
 - Notes about testing patterns applied in `book-social`.
 
-### Offer mapping
+#### Offer mapping
 
 - Add tests for an existing route.
 - Fix bug and cover it with tests.
 - Improve QA around a small backend change.
 - Make small client work safer.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - v0.1 integration/acceptance tests.
 - v0.2 repository tests.
 - v0.2 handler tests.
 - Auth flow tests later.
 
-### Estimate
+#### Estimate
 
 8–16 hours.
 
-### Priority
+#### Priority
 
 High after Stage 4.
 
@@ -502,17 +502,17 @@ Use this to add a testing foundation for the API and layered labs.
 
 ---
 
-## Stage 6 — OpenAPI lab
+### Stage 6 — OpenAPI lab
 
 **Folder:** `labs/openapi`
 
 **Goal:** document actual API contracts, not imaginary HTML endpoints wearing an OpenAPI costume.
 
-### Rule
+#### Rule
 
 OpenAPI should be added after there is a real `/api/*` slice in `book-social`.
 
-### What to do
+#### What to do
 
 - Add minimal `openapi.yaml`.
 - Describe paths.
@@ -523,7 +523,7 @@ OpenAPI should be added after there is a real `/api/*` slice in `book-social`.
 - Add tags.
 - Add README with usage notes.
 
-### Example
+#### Example
 
 Only document JSON API endpoints:
 
@@ -541,41 +541,41 @@ labs/openapi/openapi.yaml
 labs/openapi/README.md
 ```
 
-### Output
+#### Output
 
 - Minimal OpenAPI spec.
 - README with usage notes.
 - Optional notes on how this maps to `book-social`.
 
-### Offer mapping
+#### Offer mapping
 
 - Document existing API.
 - Add endpoint with contract.
 - Improve frontend/client handoff.
 - Improve API examples for Upwork/client tasks.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - OpenAPI for `/api/*` only.
 - MPA endpoint docs stay in `docs/endpoints.md`.
 
-### Estimate
+#### Estimate
 
 6–12 hours.
 
-### Priority
+#### Priority
 
 Medium, after real API endpoints exist.
 
 ---
 
-## Stage 7 — API security basic
+### Stage 7 — API security basic
 
 **Folder:** `labs/security`
 
 **Goal:** cover REST API + OpenAPI + API Security basics for interviews and small freelance tasks.
 
-### What to do
+#### What to do
 
 - Create an API security checklist.
 - Add small examples where useful.
@@ -589,7 +589,7 @@ Medium, after real API endpoints exist.
 - Cover safe error messages.
 - Cover logging without leaking secrets.
 
-### Example
+#### Example
 
 Minimal protected resource rule:
 
@@ -609,13 +609,13 @@ GET  /books/{id}
 PATCH /books/{id}
 ```
 
-### Output
+#### Output
 
 - Security checklist.
 - Small examples.
 - Links to `book-social` implementation notes.
 
-### Offer mapping
+#### Offer mapping
 
 - Add basic auth check.
 - Fix insecure endpoint.
@@ -623,7 +623,7 @@ PATCH /books/{id}
 - Add CORS config.
 - Review API security risks.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - v0.2 HTTP middleware foundation.
 - Sessions/cookies.
@@ -632,17 +632,17 @@ PATCH /books/{id}
 - Basic protected route.
 - Safe error messages.
 
-### Estimate
+#### Estimate
 
 10–20 hours.
 
-### Priority
+#### Priority
 
 Medium.
 
 ---
 
-## Stage 8 — `Let's Go Further`: Production API Topics
+### Stage 8 — `Let's Go Further`: Production API Topics
 
 **Folder:** `books/lets-go-further`
 
@@ -652,7 +652,7 @@ This is the production-readiness layer: not enterprise complexity, but enough pr
 
 This stage extends the same `books/lets-go-further` area used in Stage 5. It should add production notes and small checklist files, not restart the API core implementation.
 
-### What to do
+#### What to do
 
 - Study and document background tasks.
 - Study and document graceful shutdown.
@@ -662,7 +662,7 @@ This stage extends the same `books/lets-go-further` area used in Stage 5. It sho
 - Decide what belongs in `book-social` v0.2 and what should wait.
 - Add notes, not a huge framework.
 
-### Example
+#### Example
 
 Possible topics/files:
 
@@ -683,14 +683,14 @@ request ID middleware
 request logging middleware
 ```
 
-### Output
+#### Output
 
 - Production API notes in `books/lets-go-further`.
 - Small checklist files under `docs/checklists/`.
 - Clear decision about what is applied now vs later.
 - Links to `book-social` tasks where relevant.
 
-### Offer mapping
+#### Offer mapping
 
 - Improve reliability of a Go backend.
 - Add graceful shutdown.
@@ -699,7 +699,7 @@ request logging middleware
 - Add build/test/audit commands.
 - Improve local verification and handoff notes.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - v0.2 HTTP middleware foundation.
 - Graceful shutdown.
@@ -708,23 +708,23 @@ request logging middleware
 - Make/CI quality flow.
 - Release notes and tag discipline.
 
-### Estimate
+#### Estimate
 
 15–30 hours.
 
-### Priority
+#### Priority
 
 Medium after Stage 2 API Core and at least one real API example exists.
 
 ---
 
-## Stage 9 — Integration / External API lab
+### Stage 9 — Integration / External API lab
 
 **Folder:** `labs/integrations`
 
 **Goal:** prepare for common Upwork tasks: connect an external API, fix a webhook, add timeout/retry behavior.
 
-### What to do
+#### What to do
 
 - Build a small HTTP client wrapper.
 - Use context timeouts.
@@ -734,7 +734,7 @@ Medium after Stage 2 API Core and at least one real API example exists.
 - Add basic signature verification mock.
 - Add tests with fake server.
 
-### Example
+#### Example
 
 Possible endpoints:
 
@@ -754,37 +754,37 @@ invalid webhook signature -> 401
 valid webhook signature -> 204
 ```
 
-### Output
+#### Output
 
 - Small integration demo.
 - Tests for success, timeout, and external error.
 - README with notes.
 
-### Offer mapping
+#### Offer mapping
 
 - Add simple external API integration.
 - Fix webhook handler.
 - Add timeout to external dependency call.
 - Improve error handling around integration.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - Future book metadata import.
 - Future email/notification integration.
 - Future webhook-style exercises.
 - Better external dependency handling.
 
-### Estimate
+#### Estimate
 
 10–18 hours.
 
-### Priority
+#### Priority
 
 Medium.
 
 ---
 
-## Stage 10 — Bridge to `go-microservices-starter`
+### Stage 10 — Bridge to `go-microservices-starter`
 
 **Folder:** `docs/bridge-to-go-microservices-starter.md`
 
@@ -794,7 +794,7 @@ Medium.
 
 Implementation belongs in `go-microservices-starter`; this repository should only contain notes and links.
 
-### What to do
+#### What to do
 
 - Add a small note file linking Go Web patterns to `go-microservices-starter`.
 - Identify what moves from REST/API practice to service-oriented practice.
@@ -802,7 +802,7 @@ Implementation belongs in `go-microservices-starter`; this repository should onl
 - Do not add NATS/Kafka/Temporal here.
 - Keep this repo focused on Go Web.
 
-### Example
+#### Example
 
 Possible note file:
 
@@ -836,13 +836,13 @@ add health/readiness endpoint
 document local run command
 ```
 
-### Output
+#### Output
 
 - Bridge note in this repository.
 - Clear separation of responsibilities between repos.
 - Future task list for `go-microservices-starter`.
 
-### Offer mapping
+#### Offer mapping
 
 - REST endpoint fix.
 - gRPC method fix.
@@ -851,11 +851,11 @@ document local run command
 - Local development setup.
 - Tests around existing API behavior.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 Not directly. `book-social` remains the applied Go Web/MPA/API project.
 
-### Applied in `go-microservices-starter`
+#### Applied in `go-microservices-starter`
 
 - gRPC basics.
 - Service contracts.
@@ -865,13 +865,13 @@ Not directly. `book-social` remains the applied Go Web/MPA/API project.
 - Simple worker/background task.
 - Simple service-to-service call.
 
-### Estimate
+#### Estimate
 
 4–8 hours for notes and planning.
 
 Future implementation in `go-microservices-starter`: 12–24 hours for a small focused service-boundary task.
 
-### Priority
+#### Priority
 
 Low/medium.
 
@@ -879,7 +879,7 @@ Do this after the Go Web foundation is useful. Do not move microservices work in
 
 ---
 
-## Stage 11 — Offer 1 Basic Portfolio Package
+### Stage 11 — Offer 1 Basic Portfolio Package
 
 **Folder:** `docs/`
 
@@ -887,7 +887,7 @@ Do this after the Go Web foundation is useful. Do not move microservices work in
 
 This stage packages the learning and applied work into documentation that explains what the code demonstrates.
 
-### What to do
+#### What to do
 
 - Create or update `docs/offer-1-basic-proof.md`.
 - Create or update `docs/book-social-links.md`.
@@ -897,7 +897,7 @@ This stage packages the learning and applied work into documentation that explai
 - Add short case-study style notes.
 - Keep it concise.
 
-### Example
+#### Example
 
 Possible files:
 
@@ -952,14 +952,14 @@ Possible case study structure:
 - add small integration
 ```
 
-### Output
+#### Output
 
 - Portfolio proof document.
 - Links from root README.
 - Clear “what this repo proves” explanation.
 - Clear mapping from study to applied project.
 
-### Offer mapping
+#### Offer mapping
 
 - Small Go backend fix.
 - REST API endpoint task.
@@ -967,17 +967,17 @@ Possible case study structure:
 - Basic tests and docs.
 - Local verification and handoff notes.
 
-### Applied in `book-social`
+#### Applied in `book-social`
 
 - Link to concrete features, not vague claims.
 - Use `book-social` as the main implementation proof.
 - Use `go-web-labs` as learning and pattern proof.
 
-### Estimate
+#### Estimate
 
 6–12 hours.
 
-### Priority
+#### Priority
 
 High after:
 
