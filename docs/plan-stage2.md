@@ -14,7 +14,7 @@ Source:
 
 - Private study copy of *Let's Go Further* by Alex Edwards.
 - Repository roadmap: `PLAN.md`, Stage 2 — `Let's Go Further`: API Core
-- AI workflow guide: `AI_AUGMENTED_DEVELOPER.md`
+- AI workflow guide: `docs/ai/ai-augmented-development-workflow.md`
 
 Target folder:
 

@@ -155,8 +155,8 @@ docs/
 AGENTS.md
 PLAN.md
 README.md
-repository-context.md
-task-history.md
+docs/ai/repository-context.md
+docs/ai/task-history.md
 ```
 
 ## Notes

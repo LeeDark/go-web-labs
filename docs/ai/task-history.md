@@ -16,7 +16,7 @@ Completed work:
 - created `books/lets-go/README.md`;
 - added guided exercises as TODO backlog;
 - created `AGENTS.md`;
-- created `repository-context.md`.
+- created `docs/ai/repository-context.md`.
 
 Notes:
 

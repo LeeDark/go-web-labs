@@ -67,8 +67,8 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
 - Add TODO sections instead of trying to complete every exercise immediately.
 - Add or maintain:
   - `AGENTS.md`;
-  - `repository-context.md`;
-  - optionally `task-history.md`.
+  - `docs/ai/repository-context.md`;
+  - optionally `docs/ai/task-history.md`.
 
 #### Example
 
@@ -76,7 +76,7 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
 README.md
 PLAN.md
 AGENTS.md
-repository-context.md
+docs/ai/repository-context.md
 books/lets-go/README.md
 ```
 
