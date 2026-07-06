@@ -2,6 +2,7 @@ go 1.26.4
 
 use (
 	./books/lets-go
+	./books/lets-go-further
 	./frameworks/echo-lab
 	./frameworks/templ
 )
