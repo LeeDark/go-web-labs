@@ -54,10 +54,10 @@ Out of scope for this plan:
 
 ## Repository Setup Checklist
 
-- [ ] Create `books/lets-go-further`.
-- [ ] Create a small README for the stage.
-- [ ] Create a Go module for the practice API if the implementation starts.
-- [ ] Add the module to `go.work` if needed.
+- [x] Create `books/lets-go-further`.
+- [x] Create a small README for the stage.
+- [x] Create a Go module for the practice API if the implementation starts.
+- [x] Add the module to `go.work` if needed.
 - [ ] Record run commands in the README.
 - [ ] Record test commands in the README.
 - [ ] Keep private book files out of public documentation.
@@ -77,6 +77,17 @@ For every chapter below:
 
 ## Chapter 1: Introduction
 
+### Summary
+
+Chapter 1 introduces the Greenlight project: a JSON API for managing movie data.
+The chapter is mostly orientation. It explains the project goal, the expected
+API shape, the use of PostgreSQL for persistence, and the tools/background that
+will be useful while following the book.
+
+For this repository, Greenlight is a study project. The goal is to extract
+practical API patterns for future Go backend work, not to treat the book
+architecture as the only correct design for every project.
+
 ### Topics
 
 - Greenlight API purpose.
@@ -85,21 +96,51 @@ For every chapter below:
 - Prerequisites and expected background.
 - Go version and supporting tools.
 
+### Main Concepts
+
+- Greenlight is a REST-style JSON API.
+- The core resource is `movies`.
+- PostgreSQL will be used as persistent storage.
+- The book assumes basic comfort with Go, HTTP, SQL, and terminal tools.
+- The book gradually moves from API basics toward production concerns.
+- Not every later topic belongs to the current Stage 2 scope.
+
+### API Shape Noted
+
+Core API endpoints for the first API Core pass:
+
+- `GET /v1/healthcheck`
+- `GET /v1/movies`
+- `POST /v1/movies`
+- `GET /v1/movies/:id`
+- `PATCH /v1/movies/:id`
+- `DELETE /v1/movies/:id`
+
+Later endpoints for users, authentication, tokens, metrics, and debug behavior
+are useful, but outside the first API Core pass.
+
 ### Checklist
 
-- [ ] Capture the purpose of the book project in my own words.
-- [ ] List the core API endpoints that will matter for chapters 1-9.
-- [ ] Identify which endpoints belong to the API Core scope.
-- [ ] Check local Go version.
-- [ ] Check local availability of `curl`.
-- [ ] Decide whether to install optional tools only when needed.
-- [ ] Note the difference between studying Greenlight and building portfolio projects.
+- [x] Capture the purpose of the book project in my own words.
+- [x] List the core API endpoints that will matter for chapters 1-9.
+- [x] Identify which endpoints belong to the API Core scope.
+- [x] Check the local Go version.
+- [x] Check local availability of `curl`.
+- [x] Decide whether to install optional tools only when needed.
+- [x] Note the difference between studying Greenlight and building portfolio projects.
 
 ### Classification
 
-- [ ] Apply now: API endpoint map and study scope.
-- [ ] Postpone: production deployment endpoint concerns.
-- [ ] Ignore for now: anything from later user/auth/deployment chapters.
+- [x] Apply now: API endpoint map and study scope.
+- [x] Postpone: production deployment endpoint concerns.
+- [x] Ignore for now: anything from later user/auth/deployment chapters.
+
+### Personal Takeaway
+
+This chapter defines the boundary for the work. I am studying a
+production-style API project, but for now I only need the API core: structure,
+JSON handling, validation, database access, CRUD, filtering, sorting, and
+pagination.
 
 ## Chapter 2: Getting Started
 
