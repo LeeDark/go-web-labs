@@ -197,7 +197,7 @@ Study project based on "Let's Go" by Alex Edwards.
 
 3–6 hours for review + README.
 
-Optional exercises: separate backlog, not a priority.
+Optional exercises: a separate backlog, not a priority.
 
 #### Priority
 
@@ -217,7 +217,7 @@ This stage covers the API core track in `books/lets-go-further`: project structu
 
 #### What to do
 
-- Study API project structure.
+- Study the API project structure.
 - Implement JSON responses.
 - Implement JSON requests.
 - Add validation.
@@ -258,7 +258,7 @@ GET /api/genres/{slug}
 
 - Add JSON endpoint.
 - Add pagination/filtering.
-- Add DB query.
+- Add a DB query.
 - Add migration.
 - Fix validation.
 - Improve API behavior.
@@ -290,7 +290,7 @@ Use this as the next book-based API foundation before the standalone labs.
 
 **Goal:** capture basic REST/API patterns that directly support Offer 1 Basic.
 
-This can be a tiny isolated lab, but it should not grow into a second `book-social`. If a feature is becoming large, apply it in `book-social` instead.
+This can be a tiny-isolated lab, but it should not grow into a second `book-social`. If a feature is becoming large, apply it in `book-social` instead.
 
 #### What to do
 
@@ -385,7 +385,7 @@ Active.
 - Keep services focused on use cases and business rules.
 - Keep repositories focused on data access.
 - Use request/response DTOs separately from domain models.
-- Add in-memory repository for tests.
+- Add an in-memory repository for tests.
 - Keep dependency injection boring and explicit.
 
 #### Example
@@ -440,7 +440,7 @@ type BookRepository interface {
 
 Active.
 
-If `book-social` v0.2 already covers this well, this lab can be shortened to notes + tiny example.
+If `book-social` v0.2 already covers this well, this lab can be shortened to notes and tiny example.
 
 ---
 
@@ -483,7 +483,7 @@ DELETE /books/{id} -> 204
 #### Offer mapping
 
 - Add tests for an existing route.
-- Fix bug and cover it with tests.
+- Fix the bug and cover it with tests.
 - Improve QA around a small backend change.
 - Make small client work safer.
 
@@ -522,7 +522,7 @@ OpenAPI should be added after there is a real `/api/*` slice in `book-social`.
 - Describe paths.
 - Describe request schemas.
 - Describe response schemas.
-- Describe common error response schema.
+- Describe a common error response schema.
 - Add examples.
 - Add tags.
 - Add README with usage notes.
@@ -554,7 +554,7 @@ labs/openapi/README.md
 #### Offer mapping
 
 - Document existing API.
-- Add endpoint with contract.
+- Add endpoint with the contract.
 - Improve frontend/client handoff.
 - Improve API examples for Upwork/client tasks.
 
@@ -691,13 +691,13 @@ request logging middleware
 
 - Production API notes in `books/lets-go-further`.
 - Small checklist files under `docs/checklists/`.
-- Clear decision about what is applied now vs later.
+- Clear decision about what is applied now vs. later.
 - Links to `book-social` tasks where relevant.
 
 #### Offer mapping
 
-- Improve reliability of a Go backend.
-- Add graceful shutdown.
+- Improve the reliability of a Go backend.
+- Add a graceful shutdown.
 - Add health endpoint.
 - Add basic metrics.
 - Add build/test/audit commands.
@@ -736,7 +736,7 @@ Later, after Stage 2 API Core and the Offer 1 foundation labs.
 - Create a fake external API.
 - Create a webhook receiver.
 - Add basic signature verification mock.
-- Add tests with fake server.
+- Add tests with a fake server.
 
 #### Example
 
@@ -768,7 +768,7 @@ valid webhook signature -> 204
 
 - Add simple external API integration.
 - Fix webhook handler.
-- Add timeout to external dependency call.
+- Add timeout to an external dependency call.
 - Improve error handling around integration.
 
 #### Applied in `book-social`
@@ -961,7 +961,7 @@ Possible case study structure:
 - Portfolio proof document.
 - Links from root README.
 - Clear “what this repo proves” explanation.
-- Clear mapping from study to applied project.
+- Clear mapping from a study to an applied project.
 
 #### Offer mapping
 
@@ -1016,7 +1016,7 @@ Use `go-web-labs` topics as references while implementing:
 4. Catalog read models.
 5. Catalog MPA update.
 6. MPA endpoint docs.
-7. HTTP middleware + graceful shutdown.
+7. HTTP middleware and graceful shutdown.
 8. Sessions/cookies.
 9. User module.
 10. Login/register/logout.
@@ -1032,9 +1032,9 @@ Use `go-web-labs` topics as references while implementing:
 Stages 0 and 1 are finished. The next work has two parallel tracks:
 
 - Book learning track: Stage 2, `Let's Go Further`: API Core.
-- Offer 1 freelance track: Stages 3-7, covering REST basics, layering, testing, OpenAPI, and API security.
+- Offer one freelance track: Stages 3–7, covering REST basics, layering, testing, OpenAPI, and API security.
 
-Keep `book-social` implementation work separate from this repository's stage order. For `book-social`, do not add the JSON API slice before catalog read models are stable.
+Keep `book-social` implementation work separate from this repository's stage order. For `book-social`, do not add the JSON API slice before catalog-read models are stable.
 
 ```text
 Finished:
@@ -1070,7 +1070,7 @@ Finished:
 Active in parallel:
 
 1. Stage 2: work through `Let's Go Further` API Core as the book reading/writing learning project.
-2. Stages 3-7: build the Offer 1 freelance path foundation:
+2. Stages 3–7: build the Offer 1 freelance path foundation:
    - Stage 3: REST API basics;
    - Stage 4: Handler → Service → Repository;
    - Stage 5: Testing lab;
@@ -1080,9 +1080,9 @@ Active in parallel:
 Later:
 
 1. Stage 8: add `Let's Go Further` production API notes/checklists.
-2. Stage 9: build Integration / External API lab.
+2. Stage 9: build an Integration / External API lab.
 3. Stage 10: add bridge notes to `go-microservices-starter`.
-4. Stage 11: add portfolio proof package after there is enough applied proof.
+4. Stage 11: add a portfolio proof package after there is enough applied proof.
 
 ### Not now
 
