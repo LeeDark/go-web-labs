@@ -144,6 +144,19 @@ pagination.
 
 ## Chapter 2: Getting Started
 
+### Summary
+
+Chapter 2 sets up the first working version of the Greenlight API. The project
+gets a small Go module, an API entry point under `cmd/api`, a basic HTTP server,
+configuration from command-line flags, structured logging with `slog`, and an
+`application` struct for sharing dependencies with handlers.
+
+The chapter also introduces the first API routes: a healthcheck endpoint and
+placeholder movie endpoints. Routing is moved into a dedicated `routes.go` file
+and handled with `httprouter`, which gives clean path parameters, method-aware
+routing, automatic `405 Method Not Allowed` responses, and useful `OPTIONS`
+behavior.
+
 ### Topics
 
 - Project setup and skeleton structure.
@@ -154,30 +167,70 @@ pagination.
 - API endpoints and RESTful routing.
 - Route parameter parsing.
 
+### Main Concepts
+
+- Keep executable application code under `cmd/api`.
+- Add `internal`, `migrations`, `bin`, and deployment-related folders only when
+  they have a real purpose in this repository.
+- Use command-line flags for simple environment-specific configuration.
+- Store configuration and shared dependencies on an `application` struct.
+- Define handlers and helpers as methods on `application` for consistency.
+- Use server timeouts from the beginning.
+- Keep route declarations in one place with `routes.go`.
+- Use `/v1` path prefixing for visible API versioning.
+- Prefer REST-style resource URLs like `/v1/movies/:id`.
+- Use HTTP methods semantically: `GET` reads, `POST` creates, `PUT` replaces,
+  `PATCH` partially updates, and `DELETE` deletes.
+- Extract repeated route parameter parsing into a small helper.
+
+### API Shape Noted
+
+Implemented in this chapter:
+
+- `GET /v1/healthcheck`
+- `POST /v1/movies`
+- `GET /v1/movies/:id`
+
+Planned for later API Core chapters:
+
+- `GET /v1/movies`
+- `PATCH /v1/movies/:id`
+- `DELETE /v1/movies/:id`
+
 ### Checklist
 
-- [ ] Create the initial project skeleton under `books/lets-go-further`.
-- [ ] Add `cmd/api`.
-- [ ] Add `internal` only when there is code that belongs there.
-- [ ] Add `migrations` only when database work begins.
-- [ ] Add a basic `main.go`.
-- [ ] Add configuration fields for port and environment.
-- [ ] Add a structured logger.
-- [ ] Add an application struct for shared dependencies.
-- [ ] Start a basic HTTP server.
-- [ ] Add `GET /v1/healthcheck`.
-- [ ] Add route definitions in a dedicated routes file.
-- [ ] Add placeholder movie routes.
-- [ ] Add a helper for reading positive integer `id` route parameters.
-- [ ] Verify the healthcheck endpoint with `curl`.
-- [ ] Record the run command in the README.
+- [x] Create the initial project skeleton under `books/lets-go-further`.
+- [x] Add `cmd/api`.
+- [x] Add `internal` only when there is code that belongs there.
+- [x] Add `migrations` only when database work begins.
+- [x] Add a basic `main.go`.
+- [x] Add configuration fields for port and environment.
+- [x] Add a structured logger.
+- [x] Add an application struct for shared dependencies.
+- [x] Start a basic HTTP server.
+- [x] Add `GET /v1/healthcheck`.
+- [x] Add route definitions in a dedicated routes file.
+- [x] Add placeholder movie routes.
+- [x] Add a helper for reading positive integer `id` route parameters.
+- [x] Verify the healthcheck endpoint with `curl`.
+- [x] Record the run command in the README.
 
 ### Classification
 
-- [ ] Apply now: project skeleton, config, logger, application struct, healthcheck.
-- [ ] Apply now: RESTful route shape for movie resources.
-- [ ] Postpone: production server scripts and deployment folders.
-- [ ] Ignore for now: framework comparison.
+- [x] Apply now: project skeleton, config, logger, application struct, healthcheck.
+- [x] Apply now: RESTful route shape for movie resources.
+- [x] Postpone: production server scripts and deployment folders.
+- [x] Ignore for now: framework comparison.
+
+### Personal Takeaway
+
+This chapter establishes the first useful API skeleton. The most reusable
+patterns are the `config` struct, the `application` dependency container,
+centralized routes, explicit server timeouts, REST-style endpoint naming, and
+the small helper for parsing positive integer URL IDs.
+
+The current responses are intentionally plain text. JSON responses and JSON
+error behavior belong to Chapter 3.
 
 ## Chapter 3: Sending JSON Responses
 
