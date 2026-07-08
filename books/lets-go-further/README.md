@@ -70,6 +70,30 @@ Keep route definitions, handlers, and small helpers separated early. This keeps
 `main.go` focused on wiring configuration, dependencies, logging, and the HTTP
 server.
 
+### Chapter 3: Sending JSON Responses
+
+Chapter 3 replaces plain-text API responses with JSON responses.
+
+Implemented pieces:
+
+- reusable `writeJSON()` helper
+- `envelope` type for consistent response shapes
+- JSON healthcheck response
+- dummy movie JSON response under a `movie` envelope
+- `Movie` response struct with JSON tags
+- hidden internal fields with `json:"-"`
+- omitted empty or zero-value fields where appropriate
+- custom `Runtime` JSON formatting
+- reusable JSON error response helpers
+- custom JSON `404 Not Found` and `405 Method Not Allowed` responses
+- panic recovery middleware for JSON `500 Internal Server Error` responses
+
+Useful pattern:
+
+Encode the response before writing headers, then send every successful and error
+response through one small JSON helper. This keeps the API response contract
+consistent and makes later metadata or headers easier to add.
+
 ## How to Run
 
 From this folder:
@@ -98,6 +122,6 @@ TODO: add when tests are introduced.
 
 ## TODO
 
-- Verify the healthcheck endpoint with `curl`.
-- Convert plain-text responses to JSON in Chapter 3.
-- Add JSON error responses in Chapter 3.
+- Verify Chapter 3 JSON responses with `curl -i`.
+- Add JSON request parsing in Chapter 4.
+- Add validation in Chapter 4.

@@ -234,6 +234,17 @@ error behavior belong to Chapter 3.
 
 ## Chapter 3: Sending JSON Responses
 
+### Summary
+
+Chapter 3 changes the API from plain-text responses to structured JSON
+responses. The chapter starts with a simple fixed-format JSON string, then moves
+to Go's `encoding/json` package and a reusable `writeJSON()` helper.
+
+The important design idea is consistency. Successful responses should use the
+same JSON-writing path, response bodies should have a predictable envelope, and
+client-facing errors should also be JSON. Internal error details belong in logs;
+clients should receive clear and stable messages.
+
 ### Topics
 
 - Fixed-format JSON responses.
@@ -243,25 +254,76 @@ error behavior belong to Chapter 3.
 - Custom JSON output.
 - JSON error messages.
 
+### Main Concepts
+
+- Set `Content-Type: application/json` for JSON responses.
+- JSON can be written as plain text, but `json.Marshal()` is safer and more
+  reusable for dynamic responses.
+- Encode the response before writing headers, so encoding errors can still be
+  handled cleanly.
+- Centralize JSON response writing in a helper that accepts status, data, and
+  optional headers.
+- Add a trailing newline to JSON responses for easier terminal reading.
+- Exported struct fields are required for JSON encoding.
+- Use struct tags to define the public API shape instead of exposing Go field
+  names directly.
+- Use `json:"-"` for fields that should never be exposed.
+- Use `omitzero` when zero values should be left out of the response.
+- Use `omitempty` mainly when empty slices or maps should be omitted.
+- Wrap response data in envelopes such as `movie`, `error`, or `system_info`.
+- Envelopes make responses consistent and leave room for metadata later.
+- Implement `MarshalJSON()` on small domain types when the default JSON shape is
+  not the API shape that clients should see.
+- Keep detailed server errors in logs and return generic JSON messages for
+  unexpected failures.
+- Configure router-level `404` and `405` handlers so routing errors also use
+  the API's JSON error format.
+- Use panic recovery middleware to return a JSON `500` response for handler
+  panics.
+- Panic recovery middleware does not catch panics from background goroutines.
+
+### API Shape Noted
+
+Chapter 3 keeps the same early endpoints, but changes their response format:
+
+- `GET /v1/healthcheck` returns JSON with status and system information.
+- `GET /v1/movies/:id` returns a dummy movie inside a `movie` envelope.
+- Not-found and method-not-allowed cases return JSON error envelopes.
+
 ### Checklist
 
-- [ ] Replace plain-text healthcheck output with JSON.
-- [ ] Add a reusable JSON response helper.
-- [ ] Use response envelopes where they improve consistency.
-- [ ] Create a movie response shape.
-- [ ] Encode structs rather than manually building JSON strings.
-- [ ] Add custom JSON formatting only where it has a concrete purpose.
-- [ ] Add reusable JSON error response helpers.
-- [ ] Return JSON for common API errors.
-- [ ] Verify responses with `curl -i`.
-- [ ] Record response examples in the README or notes.
+- [x] Replace plain-text healthcheck output with JSON.
+- [x] Add a reusable JSON response helper.
+- [x] Use response envelopes where they improve consistency.
+- [x] Create a movie response shape.
+- [x] Encode structs rather than manually building JSON strings.
+- [x] Add custom JSON formatting only where it has a concrete purpose.
+- [x] Add reusable JSON error response helpers.
+- [x] Return JSON for common API errors.
+- [x] Add custom router error handlers for JSON `404` and `405` responses.
+- [x] Add panic recovery middleware.
+- [x] Verify compilation with `go test ./...`.
+- [x] Record response behavior in the README or notes.
 
 ### Classification
 
-- [ ] Apply now: JSON helper, response envelopes, structured errors.
-- [ ] Apply now: consistent `Content-Type` behavior.
-- [ ] Postpone: advanced JSON customization unless needed by the book task.
-- [ ] Ignore for now: cosmetic response formatting not useful for APIs.
+- [x] Apply now: JSON helper, response envelopes, structured errors.
+- [x] Apply now: consistent `Content-Type` behavior.
+- [x] Apply now: custom JSON for the `Runtime` domain type.
+- [x] Apply now: JSON `404`, `405`, and `500` behavior.
+- [x] Postpone: broader JSON customization until a domain type needs it.
+- [x] Ignore for now: cosmetic response formatting not useful for APIs.
+
+### Personal Takeaway
+
+This chapter introduces the first API response contract. The key pattern is not
+just "return JSON", but "return JSON through one consistent path". For future Go
+backend work, the reusable pieces are the `writeJSON()` helper, response
+envelopes, small domain-specific JSON types, centralized error helpers, and
+router-level JSON error handling.
+
+One code-style note from the chapter: the basic `range` loop for copying headers
+is clearer than using `maps.Insert()` here, even though both can work.
 
 ## Chapter 4: Parsing JSON Requests
 
