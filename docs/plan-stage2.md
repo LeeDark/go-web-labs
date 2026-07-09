@@ -327,6 +327,12 @@ is clearer than using `maps.Insert()` here, even though both can work.
 
 ## Chapter 4: Parsing JSON Requests
 
+### Summary
+
+Chapter 4 adds the request side of JSON APIs. The main flow is: decode a JSON
+body into a small input struct, convert it into a domain value, validate it, and
+return clear JSON errors when the request is bad.
+
 ### Topics
 
 - JSON decoding.
@@ -335,26 +341,45 @@ is clearer than using `maps.Insert()` here, even though both can work.
 - Custom JSON decoding.
 - Input validation.
 
+### Main Concepts
+
+- Use `json.Decoder` for request bodies.
+- Decode into a pointer destination.
+- Decode into an input struct, not directly into the domain model.
+- Use a reusable `readJSON()` helper for consistent request parsing.
+- Return clear `400 Bad Request` errors for malformed, empty, oversized,
+  unknown-field, or multi-value JSON bodies.
+- Use `UnmarshalJSON()` for domain-specific JSON input such as `"107 mins"`.
+- Treat validation separately from decoding.
+- Return `422 Unprocessable Entity` for business-rule validation failures.
+- Keep reusable validation helpers in `internal/validator`.
+- Keep movie-specific validation close to the movie domain type.
+
 ### Checklist
 
-- [ ] Add request body decoding for create movie.
-- [ ] Add a reusable JSON request decoding helper.
-- [ ] Return clear JSON errors for malformed requests.
-- [ ] Restrict unexpected input fields.
-- [ ] Handle empty or invalid request bodies.
-- [ ] Add custom decoding where the domain type needs it.
-- [ ] Add validation for title, year, runtime, and genres.
-- [ ] Keep validation separate enough to reuse.
-- [ ] Verify valid create requests with `curl`.
-- [ ] Verify invalid create requests with `curl`.
-- [ ] Record request examples in notes.
+- [x] Add request body decoding for create movie.
+- [x] Add a reusable JSON request decoding helper.
+- [x] Return clear JSON errors for malformed requests.
+- [x] Restrict unexpected input fields.
+- [x] Handle empty or invalid request bodies.
+- [x] Add custom decoding where the domain type needs it.
+- [x] Add validation for title, year, runtime, and genres.
+- [x] Keep validation separate enough to reuse.
+- [x] Record request behavior in notes.
 
 ### Classification
 
-- [ ] Apply now: JSON decoding helper, bad request handling, validation.
-- [ ] Apply now: strict request input behavior.
-- [ ] Postpone: advanced custom decoding until required by a domain type.
-- [ ] Ignore for now: accepting loose client input for convenience.
+- [x] Apply now: JSON decoding helper, bad request handling, validation.
+- [x] Apply now: strict request input behavior.
+- [x] Apply now: custom runtime decoding.
+- [x] Postpone: persistence and real create responses until database chapters.
+- [x] Ignore for now: accepting loose client input for convenience.
+
+### Personal Takeaway
+
+Chapter 4 defines the input contract. Decoding protects the API from invalid
+JSON shape; validation protects the domain rules. Keeping those steps separate
+makes handlers easier to reason about.
 
 ## Chapter 5: Database Setup and Configuration
 
@@ -525,13 +550,13 @@ is clearer than using `maps.Insert()` here, even though both can work.
 
 ## Suggested Study Sessions
 
-- [ ] Session 1: Chapter 1 and local prerequisites.
-- [ ] Session 2: Chapter 2 project skeleton and healthcheck.
-- [ ] Session 3: Chapter 2 routing and route parameter helper.
-- [ ] Session 4: Chapter 3 JSON response helpers.
-- [ ] Session 5: Chapter 3 JSON error responses.
-- [ ] Session 6: Chapter 4 JSON request decoding.
-- [ ] Session 7: Chapter 4 validation.
+- [x] Session 1: Chapter 1 and local prerequisites.
+- [x] Session 2: Chapter 2 project skeleton and healthcheck.
+- [x] Session 3: Chapter 2 routing and route parameter helper.
+- [x] Session 4: Chapter 3 JSON response helpers.
+- [x] Session 5: Chapter 3 JSON error responses.
+- [x] Session 6: Chapter 4 JSON request decoding.
+- [x] Session 7: Chapter 4 validation.
 - [ ] Session 8: Chapter 5 PostgreSQL connection.
 - [ ] Session 9: Chapter 6 migrations.
 - [ ] Session 10: Chapter 7 create and fetch movie.
