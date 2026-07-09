@@ -383,31 +383,50 @@ makes handlers easier to reason about.
 
 ## Chapter 5: Database Setup and Configuration
 
+### Summary
+
+Chapter 5 starts the persistence layer by setting up PostgreSQL and wiring a
+database connection pool into the API.
+
 ### Topics
 
 - PostgreSQL setup.
 - Database connection.
 - Database connection pool configuration.
 
+### Main Concepts
+
+- Create a local `greenlight` database and `greenlight` database user.
+- Enable the `citext` PostgreSQL extension for later case-insensitive text.
+- Use `database/sql` with the `lib/pq` PostgreSQL driver.
+- Keep the DSN configurable with `GREENLIGHT_DB_DSN` and `-db-dsn`.
+- `sql.Open()` creates a pool; `PingContext()` verifies the connection.
+- Configure pool limits for open, idle, and idle-timeout connections.
+
 ### Checklist
 
-- [ ] Decide the local PostgreSQL setup for this stage.
-- [ ] Create a local database for the practice API.
-- [ ] Add database DSN configuration.
-- [ ] Connect to PostgreSQL from the API.
-- [ ] Ping the database during startup.
-- [ ] Add connection pool settings.
-- [ ] Pass database dependencies through the application structure.
-- [ ] Document required environment variables or flags.
-- [ ] Document local database setup commands.
-- [ ] Verify the API starts with a working database connection.
+- [x] Decide the local PostgreSQL setup for this stage.
+- [x] Create a local database for the practice API.
+- [x] Add database DSN configuration.
+- [x] Connect to PostgreSQL from the API.
+- [x] Ping the database during startup.
+- [x] Add connection pool settings.
+- [x] Document required environment variables or flags.
+- [x] Record database setup behavior in notes.
 
 ### Classification
 
-- [ ] Apply now: PostgreSQL connection and pool configuration.
-- [ ] Apply now: explicit local database setup notes.
-- [ ] Postpone: production database setup.
-- [ ] Ignore for now: non-PostgreSQL database alternatives.
+- [x] Apply now: PostgreSQL connection and pool configuration.
+- [x] Apply now: explicit local database setup notes.
+- [x] Postpone: migrations and persistence to later chapters.
+- [x] Postpone: production database setup.
+- [x] Ignore for now: non-PostgreSQL database alternatives.
+
+### Personal Takeaway
+
+This chapter is about startup safety: configure the DSN outside code, open a
+pool, ping it with a timeout, and set conservative pool limits before using the
+database in handlers.
 
 ## Chapter 6: SQL Migrations
 

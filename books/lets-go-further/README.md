@@ -112,6 +112,22 @@ Useful pattern:
 Decode into a small input struct, copy into the domain model, then validate the
 domain value before continuing.
 
+### Chapter 5: Database Setup and Configuration
+
+Chapter 5 introduces PostgreSQL and configures the API database connection pool.
+
+Implemented pieces:
+
+- `GREENLIGHT_DB_DSN` / `-db-dsn` configuration
+- `lib/pq` PostgreSQL driver
+- `openDB()` helper with `PingContext()`
+- connection pool settings for open, idle, and idle-timeout connections
+
+Useful pattern:
+
+Keep database credentials outside code, verify the connection at startup, and
+configure pool limits explicitly.
+
 ## How to Run
 
 From this folder:
@@ -140,6 +156,6 @@ TODO: add when tests are introduced.
 
 ## TODO
 
-- Verify Chapter 4 request parsing and validation with `curl -i`.
-- Add PostgreSQL setup notes in Chapter 5.
-- Add database configuration in Chapter 5.
+- Verify Chapter 5 database startup locally.
+- Add SQL migration notes in Chapter 6.
+- Document migration commands in Chapter 6.
