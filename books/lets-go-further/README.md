@@ -94,6 +94,24 @@ Encode the response before writing headers, then send every successful and error
 response through one small JSON helper. This keeps the API response contract
 consistent and makes later metadata or headers easier to add.
 
+### Chapter 4: Parsing JSON Requests
+
+Chapter 4 adds JSON request parsing and validation for `POST /v1/movies`.
+
+Implemented pieces:
+
+- reusable `readJSON()` helper
+- strict request body handling
+- `400 Bad Request` JSON errors for invalid JSON input
+- custom `Runtime` JSON decoding
+- reusable `internal/validator` package
+- movie validation with `422 Unprocessable Entity` responses
+
+Useful pattern:
+
+Decode into a small input struct, copy into the domain model, then validate the
+domain value before continuing.
+
 ## How to Run
 
 From this folder:
@@ -122,6 +140,6 @@ TODO: add when tests are introduced.
 
 ## TODO
 
-- Verify Chapter 3 JSON responses with `curl -i`.
-- Add JSON request parsing in Chapter 4.
-- Add validation in Chapter 4.
+- Verify Chapter 4 request parsing and validation with `curl -i`.
+- Add PostgreSQL setup notes in Chapter 5.
+- Add database configuration in Chapter 5.
