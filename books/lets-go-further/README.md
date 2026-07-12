@@ -128,6 +128,22 @@ Useful pattern:
 Keep database credentials outside code, verify the connection at startup, and
 configure pool limits explicitly.
 
+### Chapter 6: SQL Migrations
+
+Chapter 6 adds versioned SQL migrations for the Greenlight database schema.
+
+Implemented pieces:
+
+- `movies` table migration
+- rollback migration for the `movies` table
+- movie check-constraint migration
+- rollback migration for the constraints
+
+Useful pattern:
+
+Keep schema changes as ordered `up` and `down` files so the database can be
+recreated or rolled back predictably.
+
 ## How to Run
 
 From this folder:
@@ -156,6 +172,6 @@ TODO: add when tests are introduced.
 
 ## TODO
 
-- Verify Chapter 5 database startup locally.
-- Add SQL migration notes in Chapter 6.
-- Document migration commands in Chapter 6.
+- Verify Chapter 6 migrations locally.
+- Add CRUD notes in Chapter 7.
+- Connect movie handlers to database persistence in Chapter 7.

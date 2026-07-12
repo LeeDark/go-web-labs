@@ -430,30 +430,49 @@ database in handlers.
 
 ## Chapter 6: SQL Migrations
 
+### Summary
+
+Chapter 6 introduces SQL migrations for versioning database schema changes.
+The chapter creates the `movies` table and adds database-level constraints.
+
 ### Topics
 
 - Purpose of SQL migrations.
 - Creating and applying migrations.
 - Tracking schema changes.
 
+### Main Concepts
+
+- Use paired `up` and `down` migration files.
+- Number migrations so schema changes run in order.
+- Track applied migrations with the tool-managed `schema_migrations` table.
+- Keep schema changes in version control with the code.
+- Add database constraints for important domain rules.
+- If a migration fails and becomes dirty, fix the database state manually and
+  force the correct migration version.
+
 ### Checklist
 
-- [ ] Choose the migration tool used by the book for this stage.
-- [ ] Add migration files under `migrations`.
-- [ ] Create the movies table migration.
-- [ ] Add a rollback migration.
-- [ ] Run migrations locally.
-- [ ] Verify the resulting schema.
-- [ ] Document migration commands.
-- [ ] Add migration commands to the README or Makefile only when useful.
-- [ ] Record common migration failure cases.
+- [x] Choose the migration tool used by the book for this stage.
+- [x] Add migration files under `migrations`.
+- [x] Create the movies table migration.
+- [x] Add a rollback migration.
+- [x] Add movie check constraints.
+- [x] Document migration commands.
+- [x] Record common migration failure cases.
 
 ### Classification
 
-- [ ] Apply now: versioned SQL migrations.
-- [ ] Apply now: local migration commands.
-- [ ] Postpone: deployment migration process.
-- [ ] Ignore for now: ORM-based schema management.
+- [x] Apply now: versioned SQL migrations.
+- [x] Apply now: local migration commands.
+- [x] Apply now: database constraints for core rules.
+- [x] Postpone: deployment migration process.
+- [x] Ignore for now: ORM-based schema management.
+
+### Personal Takeaway
+
+Migrations make the database schema reproducible. Application validation is still
+needed, but database constraints provide a final safety layer for persisted data.
 
 ## Chapter 7: CRUD Operations
 
