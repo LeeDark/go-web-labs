@@ -595,8 +595,8 @@ needed, but database constraints provide a final safety layer for persisted data
 - [x] Session 5: Chapter 3 JSON error responses.
 - [x] Session 6: Chapter 4 JSON request decoding.
 - [x] Session 7: Chapter 4 validation.
-- [ ] Session 8: Chapter 5 PostgreSQL connection.
-- [ ] Session 9: Chapter 6 migrations.
+- [x] Session 8: Chapter 5 PostgreSQL connection.
+- [x] Session 9: Chapter 6 migrations.
 - [ ] Session 10: Chapter 7 create and fetch movie.
 - [ ] Session 11: Chapter 7 update and delete movie.
 - [ ] Session 12: Chapter 8 partial updates.

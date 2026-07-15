@@ -22,7 +22,8 @@ go-web-labs  = study, notes, small isolated labs, reusable patterns
 book-social  = applied project and portfolio proof
 ```
 
-The goal is not to study indefinitely. The goal is to make learning produce reusable patterns and portfolio proof.
+The goal is not to study indefinitely. The goal is to make learning produce reusable patterns and
+portfolio proof.
 
 ---
 
@@ -34,17 +35,17 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
 4. Treat Echo and Gin as later comparison topics, not current priorities.
 5. Use `Let's Go Further` as a practical reference while building API features in `book-social`.
 6. Each meaningful folder should have a small README with:
-   - purpose;
-   - run commands;
-   - test commands;
-   - learned patterns;
-   - TODOs.
+    - purpose;
+    - run commands;
+    - test commands;
+    - learned patterns;
+    - TODOs.
 7. Every larger stage should answer:
-   - what to do;
-   - example;
-   - output;
-   - offer mapping;
-   - relation to `book-social`.
+    - what to do;
+    - example;
+    - output;
+    - offer mapping;
+    - relation to `book-social`.
 
 ---
 
@@ -66,9 +67,9 @@ The goal is not to study indefinitely. The goal is to make learning produce reus
 - Add folder-level READMEs where useful.
 - Add TODO sections instead of trying to complete every exercise immediately.
 - Add or maintain:
-  - `AGENTS.md`;
-  - `docs/ai/repository-context.md`;
-  - optionally `docs/ai/task-history.md`.
+    - `AGENTS.md`;
+    - `docs/ai/repository-context.md`;
+    - optionally `docs/ai/task-history.md`.
 
 #### Example
 
@@ -111,7 +112,8 @@ Finished.
 
 **Goal:** close the existing `Let's Go` work as a stable study artifact.
 
-This stage is not about rewriting Snippetbox. It is about finishing, reviewing, documenting, and moving on.
+This stage is not about rewriting Snippetbox. It is about finishing, reviewing, documenting, and
+moving on.
 
 #### What to do
 
@@ -119,14 +121,14 @@ This stage is not about rewriting Snippetbox. It is about finishing, reviewing, 
 - Fix only important issues.
 - Add or improve `books/lets-go/README.md`.
 - Document learned patterns:
-  - `net/http` basics;
-  - routing;
-  - middleware;
-  - templates;
-  - forms;
-  - sessions/cookies;
-  - database access;
-  - basic testing.
+    - `net/http` basics;
+    - routing;
+    - middleware;
+    - templates;
+    - forms;
+    - sessions/cookies;
+    - database access;
+    - basic testing.
 - Add guided exercises as TODO, not as a blocker.
 - Do not start `Let's Go Further` in this task.
 - Do not rewrite the app.
@@ -209,11 +211,15 @@ Finished.
 
 **Folder:** `books/lets-go-further`
 
-**Goal:** read and implement the API core parts of `Let's Go Further` in a way that directly helps Offer 1 Basic.
+**Goal:** read and implement the API core parts of `Let's Go Further` in a way that directly helps
+Offer 1 Basic.
 
-Do not read it as an isolated exercise. Use it as a practical reference while implementing real tasks.
+Do not read it as an isolated exercise. Use it as a practical reference while implementing real
+tasks.
 
-This stage covers the API core track in `books/lets-go-further`: project structure, JSON, validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses the same folder later for production-oriented notes and checklists.
+This stage covers the API core track in `books/lets-go-further`: project structure, JSON,
+validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses
+the same folder later for production-oriented notes and checklists.
 
 #### What to do
 
@@ -290,7 +296,8 @@ Use this as the next book-based API foundation before the standalone labs.
 
 **Goal:** capture basic REST/API patterns that directly support Offer 1 Basic.
 
-This can be a tiny-isolated lab, but it should not grow into a second `book-social`. If a feature is becoming large, apply it in `book-social` instead.
+This can be a tiny-isolated lab, but it should not grow into a second `book-social`. If a feature is
+becoming large, apply it in `book-social` instead.
 
 #### What to do
 
@@ -319,10 +326,10 @@ Possible response shape:
 
 ```json
 {
-  "data": {
-    "id": 1,
-    "title": "Example Book"
-  }
+    "data": {
+        "id": 1,
+        "title": "Example Book"
+    }
 }
 ```
 
@@ -330,10 +337,10 @@ Possible error shape:
 
 ```json
 {
-  "error": {
-    "code": "validation_failed",
-    "message": "Request validation failed"
-  }
+    "error": {
+        "code": "validation_failed",
+        "message": "Request validation failed"
+    }
 }
 ```
 
@@ -405,9 +412,9 @@ Possible interface:
 
 ```go
 type BookRepository interface {
-    ListBooks(ctx context.Context) ([]Book, error)
-    GetBook(ctx context.Context, id int64) (Book, error)
-    CreateBook(ctx context.Context, input CreateBookInput) (Book, error)
+ListBooks(ctx context.Context) ([]Book, error)
+GetBook(ctx context.Context, id int64) (Book, error)
+CreateBook(ctx context.Context, input CreateBookInput) (Book, error)
 }
 ```
 
@@ -448,7 +455,8 @@ If `book-social` v0.2 already covers this well, this lab can be shortened to not
 
 **Folder:** `labs/testing`
 
-**Goal:** support the client-facing promise: “I can add or fix backend behavior and cover it with tests.”
+**Goal:** support the client-facing promise: “I can add or fix backend behavior and cover it with
+tests.”
 
 #### What to do
 
@@ -650,11 +658,14 @@ Active.
 
 **Folder:** `books/lets-go-further`
 
-**Goal:** use the production-oriented parts of `Let's Go Further` to support reliable API behavior and better handoff quality.
+**Goal:** use the production-oriented parts of `Let's Go Further` to support reliable API behavior
+and better handoff quality.
 
-This is the production-readiness layer: not enterprise complexity, but enough production discipline to make the API easier to run, verify, and hand off.
+This is the production-readiness layer: not enterprise complexity, but enough production discipline
+to make the API easier to run, verify, and hand off.
 
-This stage extends the same `books/lets-go-further` area used in Stage 5. It should add production notes and small checklist files, not restart the API core implementation.
+This stage extends the same `books/lets-go-further` area used in Stage 2. It should add production
+notes and small checklist files, not restart the API core implementation.
 
 #### What to do
 
@@ -726,7 +737,8 @@ Later, after Stage 2 API Core and the Offer 1 foundation labs.
 
 **Folder:** `labs/integrations`
 
-**Goal:** prepare for common Upwork tasks: connect an external API, fix a webhook, add timeout/retry behavior.
+**Goal:** prepare for common Upwork tasks: connect an external API, fix a webhook, add timeout/retry
+behavior.
 
 #### What to do
 
@@ -792,11 +804,15 @@ Later.
 
 **Folder:** `docs/bridge-to-go-microservices-starter.md`
 
-**Goal:** connect Go Web skills to the microservices/gRPC learning path without dragging microservices into this repository too early.
+**Goal:** connect Go Web skills to the microservices/gRPC learning path without dragging
+microservices into this repository too early.
 
-`go-microservices-starter` is the second layer, not the first. For Basic-level paid work, the useful parts are service contracts, local infra, health checks, config, logging, simple workers, and simple service-to-service calls.
+`go-microservices-starter` is the second layer, not the first. For Basic-level paid work, the useful
+parts are service contracts, local infra, health checks, config, logging, simple workers, and simple
+service-to-service calls.
 
-Implementation belongs in `go-microservices-starter`; this repository should only contain notes and links.
+Implementation belongs in `go-microservices-starter`; this repository should only contain notes and
+links.
 
 #### What to do
 
@@ -873,13 +889,15 @@ Not directly. `book-social` remains the applied Go Web/MPA/API project.
 
 4–8 hours for notes and planning.
 
-Future implementation in `go-microservices-starter`: 12–24 hours for a small focused service-boundary task.
+Future implementation in `go-microservices-starter`: 12–24 hours for a small focused
+service-boundary task.
 
 #### Priority
 
 Later.
 
-Do this after the Go Web foundation is useful. Do not move microservices work into this repository prematurely.
+Do this after the Go Web foundation is useful. Do not move microservices work into this repository
+prematurely.
 
 ---
 
@@ -887,9 +905,11 @@ Do this after the Go Web foundation is useful. Do not move microservices work in
 
 **Folder:** `docs/`
 
-**Goal:** package the learning and applied work into a clear portfolio proof for **Offer 1 Basic — Small Go Backend Fix / API Endpoint**.
+**Goal:** package the learning and applied work into a clear portfolio proof for **Offer 1 Basic —
+Small Go Backend Fix / API Endpoint**.
 
-This stage packages the learning and applied work into documentation that explains what the code demonstrates.
+This stage packages the learning and applied work into documentation that explains what the code
+demonstrates.
 
 #### What to do
 
@@ -1032,9 +1052,11 @@ Use `go-web-labs` topics as references while implementing:
 Stages 0 and 1 are finished. The next work has two parallel tracks:
 
 - Book learning track: Stage 2, `Let's Go Further`: API Core.
-- Offer one freelance track: Stages 3–7, covering REST basics, layering, testing, OpenAPI, and API security.
+- Offer one freelance track: Stages 3–7, covering REST basics, layering, testing, OpenAPI, and API
+  security.
 
-Keep `book-social` implementation work separate from this repository's stage order. For `book-social`, do not add the JSON API slice before catalog-read models are stable.
+Keep `book-social` implementation work separate from this repository's stage order. For
+`book-social`, do not add the JSON API slice before catalog-read models are stable.
 
 ```text
 Finished:
@@ -1071,11 +1093,11 @@ Active in parallel:
 
 1. Stage 2: work through `Let's Go Further` API Core as the book reading/writing learning project.
 2. Stages 3–7: build the Offer 1 freelance path foundation:
-   - Stage 3: REST API basics;
-   - Stage 4: Handler → Service → Repository;
-   - Stage 5: Testing lab;
-   - Stage 6: OpenAPI lab;
-   - Stage 7: API security basic.
+    - Stage 3: REST API basics;
+    - Stage 4: Handler → Service → Repository;
+    - Stage 5: Testing lab;
+    - Stage 6: OpenAPI lab;
+    - Stage 7: API security basic.
 
 Later:
 
@@ -1183,4 +1205,5 @@ This repository should help demonstrate:
 
 `book-social` should prove that the fundamentals were applied in a real project.
 
-`go-microservices-starter` should become the next layer after the Go Web foundation is useful, not a place for unresolved Go Web work.
+`go-microservices-starter` should become the next layer after the Go Web foundation is useful, not a
+place for unresolved Go Web work.

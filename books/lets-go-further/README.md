@@ -144,6 +144,38 @@ Useful pattern:
 Keep schema changes as ordered `up` and `down` files so the database can be
 recreated or rolled back predictably.
 
+## Local PostgreSQL and Migrations
+
+The API opens a PostgreSQL connection during startup, so create the local role
+and database before running it. In a `psql` session with sufficient privileges:
+
+```sql
+CREATE ROLE greenlight WITH LOGIN PASSWORD 'greenlight';
+CREATE DATABASE greenlight OWNER greenlight;
+\c greenlight
+CREATE EXTENSION IF NOT EXISTS citext;
+```
+
+Set the DSN for both the API and the migration tool:
+
+```sh
+export GREENLIGHT_DB_DSN='postgres://greenlight:greenlight@localhost/greenlight?sslmode=disable'
+```
+
+This project uses the `migrate` CLI from `golang-migrate`. Install the pinned
+version once (ensure your Go bin directory is on `PATH`):
+
+```sh
+go install github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
+```
+
+From this folder, apply the migrations or roll back the latest migration:
+
+```sh
+migrate -path=./greenlight/migrations -database="$GREENLIGHT_DB_DSN" up
+migrate -path=./greenlight/migrations -database="$GREENLIGHT_DB_DSN" down 1
+```
+
 ## How to Run
 
 From this folder:
@@ -172,6 +204,5 @@ TODO: add when tests are introduced.
 
 ## TODO
 
-- Verify Chapter 6 migrations locally.
 - Add CRUD notes in Chapter 7.
 - Connect movie handlers to database persistence in Chapter 7.
