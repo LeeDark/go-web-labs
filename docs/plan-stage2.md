@@ -383,33 +383,57 @@ makes handlers easier to reason about.
 
 ## Chapter 5: Database Setup and Configuration
 
+### Summary
+
+Chapter 5 starts the persistence layer by setting up PostgreSQL and wiring a
+database connection pool into the API.
+
 ### Topics
 
 - PostgreSQL setup.
 - Database connection.
 - Database connection pool configuration.
 
+### Main Concepts
+
+- Create a local `greenlight` database and `greenlight` database user.
+- Enable the `citext` PostgreSQL extension for later case-insensitive text.
+- Use `database/sql` with the `lib/pq` PostgreSQL driver.
+- Keep the DSN configurable with `GREENLIGHT_DB_DSN` and `-db-dsn`.
+- `sql.Open()` creates a pool; `PingContext()` verifies the connection.
+- Configure pool limits for open, idle, and idle-timeout connections.
+
 ### Checklist
 
-- [ ] Decide the local PostgreSQL setup for this stage.
-- [ ] Create a local database for the practice API.
-- [ ] Add database DSN configuration.
-- [ ] Connect to PostgreSQL from the API.
-- [ ] Ping the database during startup.
-- [ ] Add connection pool settings.
-- [ ] Pass database dependencies through the application structure.
-- [ ] Document required environment variables or flags.
-- [ ] Document local database setup commands.
-- [ ] Verify the API starts with a working database connection.
+- [x] Decide the local PostgreSQL setup for this stage.
+- [x] Create a local database for the practice API.
+- [x] Add database DSN configuration.
+- [x] Connect to PostgreSQL from the API.
+- [x] Ping the database during startup.
+- [x] Add connection pool settings.
+- [x] Document required environment variables or flags.
+- [x] Record database setup behavior in notes.
 
 ### Classification
 
-- [ ] Apply now: PostgreSQL connection and pool configuration.
-- [ ] Apply now: explicit local database setup notes.
-- [ ] Postpone: production database setup.
-- [ ] Ignore for now: non-PostgreSQL database alternatives.
+- [x] Apply now: PostgreSQL connection and pool configuration.
+- [x] Apply now: explicit local database setup notes.
+- [x] Postpone: migrations and persistence to later chapters.
+- [x] Postpone: production database setup.
+- [x] Ignore for now: non-PostgreSQL database alternatives.
+
+### Personal Takeaway
+
+This chapter is about startup safety: configure the DSN outside code, open a
+pool, ping it with a timeout, and set conservative pool limits before using the
+database in handlers.
 
 ## Chapter 6: SQL Migrations
+
+### Summary
+
+Chapter 6 introduces SQL migrations for versioning database schema changes.
+The chapter creates the `movies` table and adds database-level constraints.
 
 ### Topics
 
@@ -417,24 +441,38 @@ makes handlers easier to reason about.
 - Creating and applying migrations.
 - Tracking schema changes.
 
+### Main Concepts
+
+- Use paired `up` and `down` migration files.
+- Number migrations so schema changes run in order.
+- Track applied migrations with the tool-managed `schema_migrations` table.
+- Keep schema changes in version control with the code.
+- Add database constraints for important domain rules.
+- If a migration fails and becomes dirty, fix the database state manually and
+  force the correct migration version.
+
 ### Checklist
 
-- [ ] Choose the migration tool used by the book for this stage.
-- [ ] Add migration files under `migrations`.
-- [ ] Create the movies table migration.
-- [ ] Add a rollback migration.
-- [ ] Run migrations locally.
-- [ ] Verify the resulting schema.
-- [ ] Document migration commands.
-- [ ] Add migration commands to the README or Makefile only when useful.
-- [ ] Record common migration failure cases.
+- [x] Choose the migration tool used by the book for this stage.
+- [x] Add migration files under `migrations`.
+- [x] Create the movies table migration.
+- [x] Add a rollback migration.
+- [x] Add movie check constraints.
+- [x] Document migration commands.
+- [x] Record common migration failure cases.
 
 ### Classification
 
-- [ ] Apply now: versioned SQL migrations.
-- [ ] Apply now: local migration commands.
-- [ ] Postpone: deployment migration process.
-- [ ] Ignore for now: ORM-based schema management.
+- [x] Apply now: versioned SQL migrations.
+- [x] Apply now: local migration commands.
+- [x] Apply now: database constraints for core rules.
+- [x] Postpone: deployment migration process.
+- [x] Ignore for now: ORM-based schema management.
+
+### Personal Takeaway
+
+Migrations make the database schema reproducible. Application validation is still
+needed, but database constraints provide a final safety layer for persisted data.
 
 ## Chapter 7: CRUD Operations
 
