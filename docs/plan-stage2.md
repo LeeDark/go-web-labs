@@ -476,6 +476,18 @@ needed, but database constraints provide a final safety layer for persisted data
 
 ## Chapter 7: CRUD Operations
 
+### Summary
+
+Chapter 7 replaces the placeholder movie behavior with PostgreSQL-backed CRUD.
+The HTTP handlers decode and validate API input, while `MovieModel` owns the
+SQL for inserting, fetching, replacing, and deleting movie rows.
+
+The useful boundary is deliberately small: handlers translate HTTP concerns,
+the model translates database results, and `data.ErrRecordNotFound` prevents
+`sql.ErrNoRows` from leaking out of the data package. The update endpoint uses
+`PUT` as a full replacement in this chapter. Partial updates, optimistic
+locking, and query timeouts belong to Chapter 8.
+
 ### Topics
 
 - Movie model setup.
@@ -484,29 +496,67 @@ needed, but database constraints provide a final safety layer for persisted data
 - Updating a movie.
 - Deleting a movie.
 
+### Main Concepts
+
+- Group concrete data models in `data.Models` and inject them into the
+  application during startup.
+- Keep SQL and PostgreSQL array conversion in the data package.
+- Return generated `id`, `created_at`, and `version` from an insert.
+- Translate `sql.ErrNoRows` into a package-level domain error.
+- Validate a complete replacement before writing it to the database.
+- Use the affected-row count to distinguish a successful delete from a
+  missing record.
+- Return `201 Created` and a `Location` header after a successful insert.
+
+### API Shape Noted
+
+- `POST /v1/movies` — create and return a movie with `201 Created`.
+- `GET /v1/movies/{id}` — fetch one movie or return `404 Not Found`.
+- `PUT /v1/movies/{id}` — fully replace the editable movie fields.
+- `DELETE /v1/movies/{id}` — delete one movie or return `404 Not Found`.
+
 ### Checklist
 
-- [ ] Add the movie model.
-- [ ] Add a model layer for database access.
-- [ ] Add create movie database logic.
-- [ ] Connect `POST /v1/movies` to database persistence.
-- [ ] Add fetch movie by ID logic.
-- [ ] Connect `GET /v1/movies/{id}` to database reads.
-- [ ] Add update movie logic.
-- [ ] Connect movie update route to the model layer.
-- [ ] Add delete movie logic.
-- [ ] Connect movie delete route to the model layer.
-- [ ] Map not-found database cases to API responses.
-- [ ] Map validation/database errors to clear API responses.
-- [ ] Verify CRUD behavior with `curl`.
-- [ ] Add focused tests if the implementation shape makes them practical.
+- [x] Add the movie model.
+- [x] Add a model layer for database access.
+- [x] Add create movie database logic.
+- [x] Connect `POST /v1/movies` to database persistence.
+- [x] Add fetch movie by ID logic.
+- [x] Connect `GET /v1/movies/{id}` to database reads.
+- [x] Add update movie logic.
+- [x] Connect the `PUT` movie replacement route to the model layer.
+- [x] Add delete movie logic.
+- [x] Connect the movie delete route to the model layer.
+- [x] Map not-found database cases to API responses.
+- [x] Map validation and unexpected database errors to safe API responses.
+- [x] Exercise CRUD behavior with `curl` during the study session.
+- [x] Postpone focused model/handler tests until the implementation has an
+  appropriate test boundary; record this explicitly instead of adding a broad
+  abstraction only for Chapter 7 tests.
 
 ### Classification
 
-- [ ] Apply now: model layer, CRUD handlers, error mapping.
-- [ ] Apply now: separation between handlers and database logic.
-- [ ] Postpone: generic repository abstractions unless duplication proves it is needed.
-- [ ] Ignore for now: implementing unrelated resources.
+- [x] Apply now: model layer, CRUD handlers, error mapping.
+- [x] Apply now: separation between handlers and database logic.
+- [x] Postpone: generic repository abstractions unless duplication proves it
+  is needed.
+- [x] Ignore for now: implementing unrelated resources.
+
+### Review — 2026-07-21
+
+- `go test ./...` compiles all packages successfully; no automated tests exist
+  yet.
+- `go vet ./...` passes, and `gofmt` reports no differences.
+- The review did not repeat the PostgreSQL-backed `curl` flow because it
+  depends on the local database and DSN; the manual checklist records the
+  completed study session.
+- Follow-up: align two client-visible validation messages with their rules.
+  `ValidateMovie` permits the year 1888 but says it must be greater than 1888,
+  and it enforces at most 5 genres but says “more than 1 genres”.
+- Follow-up: `writeJSON` returns `nil` after calling `ResponseWriter.Write`, so
+  response write failures cannot reach the existing handler error path.
+- Deferred to Chapter 8: PATCH semantics, query timeouts, and version-based
+  optimistic concurrency control.
 
 ## Chapter 8: Advanced CRUD Operations
 
@@ -575,16 +625,17 @@ needed, but database constraints provide a final safety layer for persisted data
 
 ## Cross-Chapter Deliverables
 
-- [ ] `books/lets-go-further/README.md` explains purpose, run commands, test commands, and learned patterns.
-- [ ] Notes capture chapter summaries in my own words.
-- [ ] API can be run locally.
-- [ ] Healthcheck endpoint works.
-- [ ] Movie CRUD endpoints work.
+- [x] `books/lets-go-further/README.md` explains purpose, run commands, test
+  commands, and learned patterns.
+- [ ] Notes capture chapter summaries in my own words for all chapters 1–9.
+- [x] API can be run locally.
+- [x] Healthcheck endpoint works.
+- [x] Movie CRUD endpoints work.
 - [ ] Filtering, sorting, and pagination endpoint works.
-- [ ] Database migrations are documented and repeatable.
-- [ ] JSON request and response behavior is consistent.
-- [ ] Validation failures return useful JSON responses.
-- [ ] Any skipped topic is explicitly marked as postponed or ignored.
+- [x] Database migrations are documented and repeatable.
+- [x] JSON request and response behavior is consistent.
+- [x] Validation failures return useful JSON responses.
+- [x] Any skipped topic is explicitly marked as postponed or ignored.
 
 ## Suggested Study Sessions
 
@@ -597,8 +648,8 @@ needed, but database constraints provide a final safety layer for persisted data
 - [x] Session 7: Chapter 4 validation.
 - [x] Session 8: Chapter 5 PostgreSQL connection.
 - [x] Session 9: Chapter 6 migrations.
-- [ ] Session 10: Chapter 7 create and fetch movie.
-- [ ] Session 11: Chapter 7 update and delete movie.
+- [x] Session 10: Chapter 7 create and fetch movie.
+- [x] Session 11: Chapter 7 update and delete movie.
 - [ ] Session 12: Chapter 8 partial updates.
 - [ ] Session 13: Chapter 8 concurrency control and timeouts.
 - [ ] Session 14: Chapter 9 list endpoint and filters.
@@ -611,7 +662,7 @@ needed, but database constraints provide a final safety layer for persisted data
 - [ ] Each chapter has a short summary.
 - [ ] Each chapter has at least one practical task or explicit reason to skip.
 - [ ] The practice API implements the API Core behavior from chapters 1-9.
-- [ ] Run and test commands are documented.
+- [x] Run and test commands are documented.
 - [ ] Useful patterns are mapped to future Go backend API work.
 - [ ] Postponed topics are clearly separated from current work.
 - [ ] No chapters beyond 9 are started as part of this plan.

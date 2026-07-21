@@ -7,7 +7,7 @@ Study project based on *Let's Go Further* by Alex Edwards.
 This folder is for practicing production-style Go API patterns through the
 Greenlight project.
 
-Current focus: API Core.
+Current focus: API Core. Chapters 1–7 are complete; Chapter 8 is next.
 
 ## Current Scope
 
@@ -144,6 +144,41 @@ Useful pattern:
 Keep schema changes as ordered `up` and `down` files so the database can be
 recreated or rolled back predictably.
 
+### Chapter 7: CRUD Operations
+
+Chapter 7 connects the movie endpoints to PostgreSQL and completes the first
+database-backed CRUD pass.
+
+Implemented pieces:
+
+- `data.Models` as the application-level collection of concrete data models
+- `MovieModel.Insert()`, `Get()`, `Update()`, and `Delete()` SQL methods
+- PostgreSQL array conversion for movie genres
+- `sql.ErrNoRows` mapping to `data.ErrRecordNotFound`
+- `POST /v1/movies` with validation, `201 Created`, and a `Location` header
+- `GET /v1/movies/:id` backed by the database
+- `PUT /v1/movies/:id` as a validated full replacement
+- version increment on update
+- `DELETE /v1/movies/:id` with affected-row not-found detection
+- safe `404` and `500` handler mappings for model errors
+
+Useful pattern:
+
+Keep request decoding and HTTP status handling in handlers, and keep SQL,
+driver-specific values, and database error translation in the model layer. A
+small concrete model is enough here; a generic repository abstraction would
+not improve this study step.
+
+Review follow-ups:
+
+- Align validation messages with their rules: the year 1888 is accepted even
+  though the message says “greater than 1888”, and the genre rule allows up to
+  5 even though its message says “more than 1 genres”.
+- Return the error from `ResponseWriter.Write()` in `writeJSON()` so handler
+  logging can observe failed response writes.
+- Leave partial updates, query timeouts, and optimistic concurrency control for
+  Chapter 8.
+
 ## Local PostgreSQL and Migrations
 
 The API opens a PostgreSQL connection during startup, so create the local role
@@ -194,15 +229,37 @@ Example requests:
 
 ```sh
 curl -i localhost:4000/v1/healthcheck
-curl -i -X POST localhost:4000/v1/movies
-curl -i localhost:4000/v1/movies/123
+
+curl -i -X POST localhost:4000/v1/movies \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Casablanca","year":1942,"runtime":"102 mins","genres":["drama"]}'
+
+curl -i localhost:4000/v1/movies/1
+
+curl -i -X PUT localhost:4000/v1/movies/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Casablanca","year":1942,"runtime":"102 mins","genres":["drama","romance"]}'
+
+curl -i -X DELETE localhost:4000/v1/movies/1
 ```
 
 ## How to Test
 
-TODO: add when tests are introduced.
+From this folder:
+
+```sh
+go test ./...
+go vet ./...
+```
+
+These commands currently provide compilation and static checks. Focused model
+or handler tests have not been added yet.
 
 ## TODO
 
-- Add CRUD notes in Chapter 7.
-- Connect movie handlers to database persistence in Chapter 7.
+- Align the Chapter 7 year and genre validation messages with their rules.
+- Propagate response write errors from `writeJSON()`.
+- Continue with Chapter 8 partial updates, query timeouts, and optimistic
+  concurrency control.
+- Add focused model or handler tests when an appropriate test boundary is in
+  place.
