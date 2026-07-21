@@ -46,6 +46,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 
 	return nil
 }
+
 func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 	r.Body = http.MaxBytesReader(w, r.Body, 1_048_576)
 	dec := json.NewDecoder(r.Body)
