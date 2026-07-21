@@ -1,6 +1,9 @@
 package main
 
-import "sync"
+import (
+	"sort"
+	"sync"
+)
 
 type Book struct {
 	ID          int64  `json:"id"`
@@ -27,4 +30,28 @@ func newBookStore() *bookStore {
 		books:  map[int64]Book{seed.ID: seed},
 		nextID: 2,
 	}
+}
+
+func (s *bookStore) get(id int64) (Book, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	book, ok := s.books[id]
+	return book, ok
+}
+
+func (s *bookStore) list() []Book {
+	s.mu.RLock()
+
+	books := make([]Book, 0, len(s.books))
+	for _, book := range s.books {
+		books = append(books, book)
+	}
+	s.mu.RUnlock()
+
+	sort.Slice(books, func(i, j int) bool {
+		return books[i].ID < books[j].ID
+	})
+
+	return books
 }

@@ -10,8 +10,8 @@ The lab is intentionally independent from `book-social`. It uses an in-memory
 store, has no users or database, and does not share domain code with the
 applied project.
 
-Current status: **Steps 0–1 complete.** The v1 contract is fixed, and the
-minimal API skeleton and healthcheck are implemented.
+Current status: **Steps 0–2 complete.** The API skeleton, healthcheck, and v1
+read routes are implemented and verified.
 
 ## Planned v1 project structure
 
@@ -29,7 +29,7 @@ labs/rest-api/
     ├── health.go           # Step 1: GET /health
     ├── store.go            # Step 1: Book and concurrency-safe memory store
     ├── books.go            # Steps 2–3: read and write handlers and DTOs
-    ├── errors.go           # Step 4: common API error responses
+    ├── errors.go           # Steps 2 and 4: minimal, then complete API errors
     ├── middleware.go       # Step 4: recovery and/or request logging
     └── handlers_test.go    # Step 5: focused HTTP handler tests
 ```
@@ -116,6 +116,92 @@ standard HTTP headers are not part of the contract.
 - [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed in the lab module.
 - [x] The README contains commands that have been verified against the
   implemented skeleton.
+
+## Step 2 implementation plan
+
+### Store reads
+
+- Add `list()` and `get(id)` methods directly to the concrete `bookStore`; do
+  not introduce a repository interface.
+- Protect both operations with `RLock`/`RUnlock`.
+- Return `Book` values rather than pointers into the store, so handlers cannot
+  mutate stored records accidentally.
+- Make `list()` return a non-nil empty slice when there are no books and sort
+  the copied values by ascending `id`. Map iteration order must not leak into
+  the API response.
+- Make `get(id)` return `(Book, bool)`, where the boolean reports whether the
+  record exists. The in-memory store has no internal failure to expose yet.
+
+### Routes and handlers
+
+- Add `GET /books` and `GET /books/{id}` directly to the existing Chi router.
+  Do not register trailing-slash variants or add redirect middleware.
+- Create `books.go` with `listBooksHandler` and `showBookHandler`.
+- Add a reusable positive `int64` route-ID parser to `helpers.go`, using
+  `chi.URLParam(r, "id")` and base-10 parsing.
+- Return list and single-book responses through the existing `data` envelope
+  and `writeJSON()` helper.
+- Keep the handlers thin: parse HTTP input, call the concrete store, map the
+  result to HTTP, and write JSON.
+
+### Minimal read errors
+
+- Create `errors.go` now with the common error shape and one small JSON error
+  writer. Step 4 will extend the same file instead of replacing the contract.
+- Return `400 invalid_id` when `{id}` is non-numeric, zero, negative, or outside
+  the `int64` range.
+- Return `404 book_not_found` when a valid positive ID is absent.
+- Use the fixed messages `Book ID must be a positive integer` and
+  `Book not found`. Error codes are the client-facing stable part.
+- Log response encoding or write failures with request method and URI. Do not
+  attempt to write a second response after the output may already have started.
+- Leave custom router-level `404`/`405`, `internal_error`, recovery, and request
+  logging for Step 4.
+
+### Verification in Pair Programmer Mode
+
+Run from `labs/rest-api`:
+
+```sh
+gofmt -w ./cmd/api/*.go
+go test ./...
+go vet ./...
+go run ./cmd/api
+```
+
+While the server is running, verify:
+
+```sh
+curl -i http://localhost:4000/books
+curl -i http://localhost:4000/books/1
+curl -i http://localhost:4000/books/999
+curl -i http://localhost:4000/books/0
+curl -i http://localhost:4000/books/not-a-number
+```
+
+Expected outcomes:
+
+| Request                   | Status | Response requirement                          |
+|---------------------------|-------:|-----------------------------------------------|
+| `GET /books`              |  `200` | `data` is an array ordered by ascending `id`. |
+| `GET /books/1`            |  `200` | `data` is the deterministic seed book.        |
+| `GET /books/999`          |  `404` | `error.code` is `book_not_found`.             |
+| `GET /books/0`            |  `400` | `error.code` is `invalid_id`.                 |
+| `GET /books/not-a-number` |  `400` | `error.code` is `invalid_id`.                 |
+
+Every response in this table must use `Content-Type: application/json`.
+
+### Step 2 Definition of Done
+
+- [x] Both read routes are registered with Chi and no write route is added.
+- [x] Store reads are concurrency-safe and do not expose the internal map.
+- [x] List output is a non-nil array in deterministic ascending-ID order.
+- [x] Existing, missing, malformed, and non-positive IDs follow the documented
+  response envelopes and statuses.
+- [x] No request-body decoder, validation DTO, middleware, SQL, or speculative
+  layer is introduced.
+- [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed.
+- [x] All five documented `curl` checks match the contract.
 
 ## v1 API contract
 
