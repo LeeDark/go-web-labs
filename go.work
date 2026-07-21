@@ -5,4 +5,5 @@ use (
 	./books/lets-go-further
 	./frameworks/echo-lab
 	./frameworks/templ
+	./labs/rest-api
 )

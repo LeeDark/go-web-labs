@@ -10,9 +10,112 @@ The lab is intentionally independent from `book-social`. It uses an in-memory
 store, has no users or database, and does not share domain code with the
 applied project.
 
-Current status: **Step 0 complete — the v1 API contract is fixed; no server has
-been implemented yet.** Run and test commands will be added with the skeleton
-and tests in later steps.
+Current status: **Steps 0–1 complete.** The v1 contract is fixed, and the
+minimal API skeleton and healthcheck are implemented.
+
+## Planned v1 project structure
+
+The lab will stay in one small `main` package until a later stage has evidence
+that another package is useful.
+
+```text
+labs/rest-api/
+├── README.md
+├── go.mod                  # Step 1: standalone module
+└── cmd/api/
+    ├── main.go             # Step 1: config, dependencies, and HTTP server
+    ├── routes.go           # Step 1: Chi router; later book routes
+    ├── helpers.go          # Step 1: JSON response envelope helper
+    ├── health.go           # Step 1: GET /health
+    ├── store.go            # Step 1: Book and concurrency-safe memory store
+    ├── books.go            # Steps 2–3: read and write handlers and DTOs
+    ├── errors.go           # Step 4: common API error responses
+    ├── middleware.go       # Step 4: recovery and/or request logging
+    └── handlers_test.go    # Step 5: focused HTTP handler tests
+```
+
+Files marked for later steps will not be created as empty placeholders during
+Step 1.
+
+## Step 1 implementation
+
+### Module and workspace
+
+- Initialize module `github.com/LeeDark/go-web-labs/labs/rest-api` with the Go
+  version already used by the repository workspace.
+- Add only `github.com/go-chi/chi/v5` as a direct dependency.
+- Add `./labs/rest-api` to the root `go.work` file.
+- Do not introduce a Makefile, configuration library, environment loader, or
+  another framework.
+
+### Application wiring
+
+- Accept an optional `-addr` flag with `:4000` as the local default.
+- Use the standard `log/slog` package for startup and server errors.
+- Keep shared dependencies in a small `application` value containing the
+  logger and concrete `*bookStore`.
+- Initialize one deterministic seed book in `newBookStore()`: ID `1`, using the
+  title, author, and description from the contract example; the next ID is `2`.
+- Protect the store with `sync.RWMutex`; the HTTP server may call it from
+  multiple goroutines.
+- Keep the concrete store local to the lab. Do not add an interface or a
+  service/repository layer before Stage 4.
+
+### HTTP skeleton
+
+- Build the router in `routes.go` with Chi and register only `GET /health` in
+  this step.
+- Return the contract response `{"data":{"status":"available"}}` through a
+  little JSON writer shared by later handlers.
+- Configure an explicit `http.Server` with address, handler, standard-library
+  error logging, `5s` read-header, `10s` read, `10s` write, and `60s` idle
+  timeouts.
+- Keep graceful shutdown, recovery, request logging, custom `404`/`405`
+  responses, and the `/books` routes out of this step.
+
+### Run and verification
+
+From `labs/rest-api`:
+
+```sh
+go run ./cmd/api
+go test ./...
+go vet ./...
+```
+
+Manual health check while the server is running:
+
+```sh
+curl -i http://localhost:4000/health
+```
+
+Expected response:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"data":{"status":"available"}}
+```
+
+The JSON writer may append a final newline. Header ordering and additional
+standard HTTP headers are not part of the contract.
+
+### Step 1 Definition of Done
+
+- [x] The new module is present in `go.work` and has no dependencies other than
+  Chi plus the standard library.
+- [x] `go run ./cmd/api` starts the server with no database or environment
+  setup.
+- [x] `GET /health` returns `200`, the JSON content type, and the documented data
+  envelope.
+- [x] The application owns an initialized, concurrency-safe in-memory book
+  store.
+- [x] No `/books` handler, speculative layering, middleware, or later-stage
+  feature is implemented.
+- [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed in the lab module.
+- [x] The README contains commands that have been verified against the
+  implemented skeleton.
 
 ## v1 API contract
 
