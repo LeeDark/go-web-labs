@@ -55,3 +55,41 @@ func (s *bookStore) list() []Book {
 
 	return books
 }
+
+func (s *bookStore) create(book Book) Book {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	book.ID = s.nextID
+	s.nextID++
+	s.books[book.ID] = book
+
+	return book
+}
+
+func (s *bookStore) update(id int64, book Book) (Book, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, ok := s.books[id]
+	if !ok {
+		return Book{}, false
+	}
+
+	book.ID = id
+	s.books[id] = book
+	return book, true
+}
+
+func (s *bookStore) delete(id int64) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, ok := s.books[id]
+	if !ok {
+		return false
+	}
+
+	delete(s.books, id)
+	return true
+}

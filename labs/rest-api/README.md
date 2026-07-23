@@ -10,8 +10,8 @@ The lab is intentionally independent from `book-social`. It uses an in-memory
 store, has no users or database, and does not share domain code with the
 applied project.
 
-Current status: **Steps 0–2 complete.** The API skeleton, healthcheck, and v1
-read routes are implemented and verified.
+Current status: **Steps 0–3 complete.** The API now has verified in-memory CRUD
+behavior; Step 4 HTTP boundary hardening is next.
 
 ## Planned v1 project structure
 
@@ -25,11 +25,11 @@ labs/rest-api/
 └── cmd/api/
     ├── main.go             # Step 1: config, dependencies, and HTTP server
     ├── routes.go           # Step 1: Chi router; later book routes
-    ├── helpers.go          # Step 1: JSON response envelope helper
+    ├── helpers.go          # Steps 1–4: JSON I/O and route parsing helpers
     ├── health.go           # Step 1: GET /health
     ├── store.go            # Step 1: Book and concurrency-safe memory store
     ├── books.go            # Steps 2–3: read and write handlers and DTOs
-    ├── errors.go           # Steps 2 and 4: minimal, then complete API errors
+    ├── errors.go           # Steps 2–4: incrementally completed API errors
     ├── middleware.go       # Step 4: recovery and/or request logging
     └── handlers_test.go    # Step 5: focused HTTP handler tests
 ```
@@ -202,6 +202,143 @@ Every response in this table must use `Content-Type: application/json`.
   layer is introduced.
 - [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed.
 - [x] All five documented `curl` checks match the contract.
+
+## Step 3 implementation plan
+
+Step 3 completes the in-memory CRUD behavior for valid requests. Step 4 will
+harden the HTTP boundary; the temporary limitations are explicit below.
+
+### Store mutations
+
+- Add `create(book)`, `update(book)`, and `delete(id)` methods directly to
+  `bookStore`; do not add an interface or another package.
+- Protect every mutation with `Lock`/`Unlock`.
+- `create()` ignores any caller-supplied ID, assigns `nextID`, increments it,
+  stores a value copy, and returns the created value.
+- `update()` preserves the supplied book ID, replaces the stored value only if
+  that ID still exists, and returns `(Book, bool)`.
+- `delete()` removes an existing ID and returns whether a record was deleted.
+- Keep last-write-wins behavior for this lab. Versioning and optimistic
+  concurrency are outside Stage 3.
+
+### Input DTOs and minimal validation
+
+- Add a create DTO with string fields `title`, `author`, and `description`.
+- Add a PATCH DTO with pointer string fields so omitted values can preserve the
+  stored book.
+- Trim leading and trailing whitespace before validation and storage.
+- For create, require non-blank `title` and `author`; omitted `description`
+  becomes `""`.
+- For PATCH, require at least one supplied field. A supplied `title` or
+  `author` must remain non-blank after trimming; `description: ""` explicitly
+  clears the description.
+- Return `422 validation_failed` for these minimal semantic failures. Field
+  details and the complete Unicode length rules are added in Step 4.
+
+### Minimal JSON decoding boundary
+
+- Add a small request JSON decoder to `helpers.go` and decode one request DTO
+  in each POST/PATCH handler.
+- Return `400 invalid_json` when the initial decode fails, including an empty
+  or malformed body.
+- Do not yet add body-size limiting, media-type enforcement, unknown-field
+  rejection, trailing-value checks, or exact `null` detection. Step 4 extends
+  this helper without changing handler/store responsibilities.
+- Until Step 4, a JSON `null` decoded through a pointer field can be treated as
+  omitted; it is not final v1 contract behavior.
+
+### Routes and handlers
+
+- Register `POST /books`, `PATCH /books/{id}`, and `DELETE /books/{id}` with
+  Chi. Do not add `PUT`.
+- `POST` constructs a book without trusting a client ID, stores it, and returns
+  `201 Created`, `Location: /books/{id}`, and the created book in `data`.
+- `PATCH` reads the current value, applies only supplied fields, validates the
+  result, stores it, and returns `200 OK` with `data`.
+- If a book disappears between the PATCH read and update, map the failed
+  update to the same `404 book_not_found` response.
+- `DELETE` returns `204 No Content` with no body or JSON content type.
+- Missing valid IDs return `404 book_not_found`; malformed and non-positive IDs
+  continue to return `400 invalid_id`.
+- Extend the existing error helpers only with `invalid_json` and
+  `validation_failed`. Leave `internal_error`, custom router `404`/`405`,
+  recovery, and request logging for Step 4.
+
+### Verification in Pair Programmer Mode
+
+Run from `labs/rest-api`:
+
+```sh
+gofmt -w ./cmd/api/*.go
+go test ./...
+go vet ./...
+go run ./cmd/api
+```
+
+Start from a fresh server process so the next generated ID is `2`, then verify:
+
+```sh
+curl -i -X POST http://localhost:4000/books \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Dune","author":"Frank Herbert","description":"A science fiction novel."}'
+
+curl -i http://localhost:4000/books/2
+
+curl -i -X PATCH http://localhost:4000/books/2 \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Dune: Revised"}'
+
+curl -i -X PATCH http://localhost:4000/books/2 \
+  -H 'Content-Type: application/json' \
+  -d '{"description":""}'
+
+curl -i -X PATCH http://localhost:4000/books/2 \
+  -H 'Content-Type: application/json' \
+  -d '{}'
+
+curl -i -X POST http://localhost:4000/books \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"","author":"Frank Herbert"}'
+
+curl -i -X POST http://localhost:4000/books \
+  -H 'Content-Type: application/json' \
+  -d '{'
+
+curl -i -X POST http://localhost:4000/books \
+  -H 'Content-Type: application/json'
+
+curl -i -X DELETE http://localhost:4000/books/2
+curl -i http://localhost:4000/books/2
+```
+
+Expected outcomes:
+
+| Scenario                    | Status | Response requirement                    |
+|-----------------------------|-------:|-----------------------------------------|
+| Valid create                |  `201` | `Location: /books/2`; `data.id` is `2`. |
+| Read created book           |  `200` | `data` is the stored Dune record.       |
+| Title-only PATCH            |  `200` | Author and description are preserved.   |
+| Clear description           |  `200` | `data.description` is `""`.             |
+| Empty PATCH object          |  `422` | `error.code` is `validation_failed`.    |
+| Blank required create field |  `422` | `error.code` is `validation_failed`.    |
+| Malformed JSON              |  `400` | `error.code` is `invalid_json`.         |
+| Empty request body          |  `400` | `error.code` is `invalid_json`.         |
+| Delete existing book        |  `204` | Empty body and no JSON content type.    |
+| Read deleted book           |  `404` | `error.code` is `book_not_found`.       |
+
+### Step 3 Definition of Done
+
+- [x] All three write routes are registered with Chi; no `PUT` route is added.
+- [x] Store mutations are concurrency-safe and preserve server-owned IDs.
+- [x] Create returns `201`, `Location`, and the stored book in `data`.
+- [x] PATCH updates only supplied fields, supports clearing description, and
+  rejects an empty update.
+- [x] DELETE returns an empty `204`; later reads return `404`.
+- [x] Minimal invalid JSON and semantic validation errors use the common error
+  envelope.
+- [x] Step 4 hardening concerns remain explicitly unimplemented.
+- [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed.
+- [x] All documented Step 3 `curl` scenarios match the expected behavior.
 
 ## v1 API contract
 

@@ -32,3 +32,11 @@ func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request,
 func (app *application) badRequestResponse(w http.ResponseWriter, r *http.Request, code, message string) {
 	app.errorResponse(w, r, http.StatusBadRequest, code, message)
 }
+
+func (app *application) invalidJSONResponse(w http.ResponseWriter, r *http.Request) {
+	app.badRequestResponse(w, r, "invalid_json", "Request body must contain valid JSON")
+}
+
+func (app *application) validationFailedResponse(w http.ResponseWriter, r *http.Request) {
+	app.errorResponse(w, r, http.StatusUnprocessableEntity, "validation_failed", "Request validation failed")
+}
