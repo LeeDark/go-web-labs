@@ -3,8 +3,9 @@ package main
 import "net/http"
 
 type apiError struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
+	Code    string            `json:"code"`
+	Message string            `json:"message"`
+	Fields  map[string]string `json:"fields,omitempty"`
 }
 
 func (app *application) logError(r *http.Request, err error) {
@@ -17,7 +18,7 @@ func (app *application) logError(r *http.Request, err error) {
 }
 
 func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, status int, code, message string) {
-	env := envelope{"error": apiError{code, message}}
+	env := envelope{"error": apiError{Code: code, Message: message}}
 
 	err := app.writeJSON(w, status, env, nil)
 	if err != nil {
@@ -38,5 +39,46 @@ func (app *application) invalidJSONResponse(w http.ResponseWriter, r *http.Reque
 }
 
 func (app *application) validationFailedResponse(w http.ResponseWriter, r *http.Request) {
-	app.errorResponse(w, r, http.StatusUnprocessableEntity, "validation_failed", "Request validation failed")
+	app.validationFailedWithFieldsResponse(w, r, nil)
+}
+
+func (app *application) validationFailedWithFieldsResponse(w http.ResponseWriter, r *http.Request, fields map[string]string) {
+	env := envelope{"error": apiError{
+		Code:    "validation_failed",
+		Message: "Request validation failed",
+		Fields:  fields,
+	}}
+
+	if err := app.writeJSON(w, http.StatusUnprocessableEntity, env, nil); err != nil {
+		app.logError(r, err)
+	}
+}
+
+func (app *application) requestTooLargeResponse(w http.ResponseWriter, r *http.Request) {
+	app.errorResponse(w, r, http.StatusRequestEntityTooLarge, "request_too_large", "Request body must not exceed 1 MiB")
+}
+
+func (app *application) unsupportedMediaTypeResponse(w http.ResponseWriter, r *http.Request) {
+	app.errorResponse(w, r, http.StatusUnsupportedMediaType, "unsupported_media_type", "Content-Type must be application/json")
+}
+
+func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/health":
+		w.Header().Set("Allow", http.MethodGet)
+	case "/books":
+		w.Header().Set("Allow", "GET, POST")
+	default:
+		w.Header().Set("Allow", "GET, PATCH, DELETE")
+	}
+
+	app.errorResponse(w, r, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
+}
+
+func (app *application) routeNotFoundResponse(w http.ResponseWriter, r *http.Request) {
+	app.errorResponse(w, r, http.StatusNotFound, "route_not_found", "Route not found")
+}
+
+func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Request) {
+	app.errorResponse(w, r, http.StatusInternalServerError, "internal_error", "An unexpected error occurred")
 }

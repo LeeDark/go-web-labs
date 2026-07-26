@@ -10,8 +10,12 @@ The lab is intentionally independent from `book-social`. It uses an in-memory
 store, has no users or database, and does not share domain code with the
 applied project.
 
-Current status: **Steps 0–3 complete.** The API now has verified in-memory CRUD
-behavior; Step 4 HTTP boundary hardening is next.
+The in-memory store is intentionally non-persistent: all changes are lost when
+the server process restarts. It is suitable only for this local learning lab.
+
+Current status: **v1 complete (Steps 0–5).** The lab has verified in-memory
+CRUD behavior, a strict JSON HTTP boundary, focused handler tests, and runnable
+local documentation.
 
 ## Planned v1 project structure
 
@@ -336,9 +340,55 @@ Expected outcomes:
 - [x] DELETE returns an empty `204`; later reads return `404`.
 - [x] Minimal invalid JSON and semantic validation errors use the common error
   envelope.
-- [x] Step 4 hardening concerns remain explicitly unimplemented.
+- [x] Step 4 hardening is documented and verified separately below.
 - [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed.
 - [x] All documented Step 3 `curl` scenarios match the expected behavior.
+
+## Step 4 implementation
+
+Step 4 hardens only the HTTP boundary; the store and CRUD route set are
+unchanged.
+
+- `POST` and `PATCH` require `Content-Type: application/json` (an optional
+  charset is accepted), limit a body to 1 MiB, accept exactly one JSON object,
+  and reject malformed, unknown, trailing, wrong-type, and `null` values.
+- Validation returns `422 validation_failed` with field details. The trimmed
+  limits are title 1–200, author 1–120, and description 0–1000 Unicode
+  characters.
+- Router-level `404` and `405`, request-size `413`, media-type `415`, and safe
+  `500 internal_error` responses use the documented error envelope. `405`
+  responses include `Allow` for the matching lab route.
+- Recovery middleware logs a recovered panic and returns only the safe
+  `internal_error` response.
+
+### Step 4 Definition of Done
+
+- [x] JSON input is strict, size-limited, and has a documented media-type
+  boundary.
+- [x] Validation, invalid JSON, missing resources, routing errors, and internal
+  errors use one documented envelope.
+- [x] Recovery middleware prevents a panic from exposing internal error data.
+- [x] Focused `httptest` checks cover `400`, `404`, `405` plus `Allow`, `413`,
+  `415`, and recovered `500` responses.
+- [x] `gofmt`, `go test ./...`, and `go vet ./...` pass with a temporary Go
+  build cache in this sandbox. A live local `curl` check cannot run here because
+  the sandbox forbids opening a listening socket.
+
+## Step 5 implementation
+
+The v1 test suite contains seven focused `httptest` handler tests. Together,
+they cover listing, an existing and missing book, valid and invalid create,
+partial update, deletion, and HTTP boundary failures.
+
+### Step 5 Definition of Done
+
+- [x] The focused handler suite covers the planned CRUD scenarios through
+  `httptest` without a network listener.
+- [x] The README documents the lab purpose, architecture boundary, run/test
+  commands, `curl` scenarios, and non-persistent in-memory storage.
+- [x] Final `gofmt`, `go test ./...`, `go vet ./...`, and `git diff --check`
+  pass for the lab. The repository root has no `Makefile`; its unrelated
+  Snippetbox Makefile was not used for this Stage 3 checkpoint.
 
 ## v1 API contract
 

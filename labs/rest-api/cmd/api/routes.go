@@ -8,6 +8,9 @@ import (
 
 func (app *application) routes() http.Handler {
 	router := chi.NewRouter()
+	router.Use(app.recoverPanic)
+	router.NotFound(app.routeNotFoundResponse)
+	router.MethodNotAllowed(app.methodNotAllowedResponse)
 
 	router.Get("/health", app.healthHandler)
 	router.Get("/books", app.listBooksHandler)

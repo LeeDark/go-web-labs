@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -18,8 +19,11 @@ func (in *createBookInput) normalize() {
 	in.Description = strings.TrimSpace(in.Description)
 }
 
-func (in *createBookInput) valid() bool {
-	return in.Title != "" && in.Author != ""
+func (in *createBookInput) validate() map[string]string {
+	fields := make(map[string]string)
+
+	validateBookFields(fields, in.Title, in.Author, in.Description, true, true, true)
+	return fields
 }
 
 type patchBookInput struct {
@@ -40,17 +44,44 @@ func (in *patchBookInput) normalize() {
 	}
 }
 
-func (in *patchBookInput) valid() bool {
+func (in *patchBookInput) validate() map[string]string {
+	fields := make(map[string]string)
 	if in.Title == nil && in.Author == nil && in.Description == nil {
-		return false
+		fields["body"] = "must include at least one supported field"
+		return fields
 	}
-	if in.Title != nil && *in.Title == "" {
-		return false
+	if in.Title != nil {
+		validateBookFields(fields, *in.Title, "", "", true, false, false)
 	}
-	if in.Author != nil && *in.Author == "" {
-		return false
+	if in.Author != nil {
+		validateBookFields(fields, "", *in.Author, "", false, true, false)
 	}
-	return true
+	if in.Description != nil {
+		validateBookFields(fields, "", "", *in.Description, false, false, true)
+	}
+	return fields
+}
+
+func validateBookFields(fields map[string]string, title, author, description string, checkTitle, checkAuthor, checkDescription bool) {
+	if checkTitle {
+		switch {
+		case title == "":
+			fields["title"] = "must be provided"
+		case len([]rune(title)) > 200:
+			fields["title"] = "must not exceed 200 characters"
+		}
+	}
+	if checkAuthor {
+		switch {
+		case author == "":
+			fields["author"] = "must be provided"
+		case len([]rune(author)) > 120:
+			fields["author"] = "must not exceed 120 characters"
+		}
+	}
+	if checkDescription && len([]rune(description)) > 1000 {
+		fields["description"] = "must not exceed 1000 characters"
+	}
 }
 
 func (in *patchBookInput) applyTo(book *Book) {
@@ -96,14 +127,14 @@ func (app *application) showBookHandler(w http.ResponseWriter, r *http.Request) 
 func (app *application) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	var input createBookInput
 
-	if err := app.readJSON(r, &input); err != nil {
-		app.invalidJSONResponse(w, r)
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.handleJSONError(w, r, err)
 		return
 	}
 
 	input.normalize()
-	if !input.valid() {
-		app.validationFailedResponse(w, r)
+	if fields := input.validate(); len(fields) > 0 {
+		app.validationFailedWithFieldsResponse(w, r, fields)
 		return
 	}
 
@@ -135,14 +166,14 @@ func (app *application) patchBookHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	var input patchBookInput
-	if err := app.readJSON(r, &input); err != nil {
-		app.invalidJSONResponse(w, r)
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.handleJSONError(w, r, err)
 		return
 	}
 
 	input.normalize()
-	if !input.valid() {
-		app.validationFailedResponse(w, r)
+	if fields := input.validate(); len(fields) > 0 {
+		app.validationFailedWithFieldsResponse(w, r, fields)
 		return
 	}
 
@@ -156,6 +187,17 @@ func (app *application) patchBookHandler(w http.ResponseWriter, r *http.Request)
 
 	if err := app.writeJSON(w, http.StatusOK, envelope{"data": book}, nil); err != nil {
 		app.logError(r, err)
+	}
+}
+
+func (app *application) handleJSONError(w http.ResponseWriter, r *http.Request, err error) {
+	switch {
+	case errors.Is(err, errRequestTooLarge):
+		app.requestTooLargeResponse(w, r)
+	case errors.Is(err, errUnsupportedMediaType):
+		app.unsupportedMediaTypeResponse(w, r)
+	default:
+		app.invalidJSONResponse(w, r)
 	}
 }
 

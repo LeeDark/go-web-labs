@@ -48,3 +48,25 @@ Remaining work:
 - Chapters 7-9: movie persistence, CRUD, filtering, sorting, and pagination;
 - verify the Chapter 6 migrations against a local PostgreSQL instance;
 - add tests when the relevant chapters introduce them.
+
+## Stage 3 - REST API Basics Lab
+
+Status: completed (Steps 0-5)
+
+Completed work (2026-07-21 to 2026-07-26):
+
+- created the isolated `labs/rest-api` Go module with a Chi-based JSON API and
+  a concurrency-safe in-memory `books` store;
+- implemented documented CRUD routes, strict JSON input, validation details,
+  stable error envelopes, router errors, and recovery middleware;
+- added seven focused `httptest` handler tests and complete run/test/curl
+  documentation, including in-memory storage limitations;
+- verified the lab with `gofmt`, `go test ./...`, `go vet ./...`, and
+  `git diff --check` using a temporary Go build cache in the sandbox.
+
+Notes:
+
+- The sandbox does not permit opening a local listening socket, so live curl
+  checks were represented by `httptest` coverage here.
+- The repository root has no `Makefile`; the unrelated Snippetbox Makefile was
+  not run for this Stage 3 checkpoint.
