@@ -484,9 +484,10 @@ SQL for inserting, fetching, replacing, and deleting movie rows.
 
 The useful boundary is deliberately small: handlers translate HTTP concerns,
 the model translates database results, and `data.ErrRecordNotFound` prevents
-`sql.ErrNoRows` from leaking out of the data package. The update endpoint uses
-`PUT` as a full replacement in this chapter. Partial updates, optimistic
-locking, and query timeouts belong to Chapter 8.
+`sql.ErrNoRows` from leaking out of the data package. The initial update
+endpoint uses `PUT` as a full replacement in this chapter. Chapter 8 then
+replaces it with `PATCH`, partial-update semantics, optimistic locking, and
+query timeouts.
 
 ### Topics
 
@@ -512,7 +513,8 @@ locking, and query timeouts belong to Chapter 8.
 
 - `POST /v1/movies` — create and return a movie with `201 Created`.
 - `GET /v1/movies/{id}` — fetch one movie or return `404 Not Found`.
-- `PUT /v1/movies/{id}` — fully replace the editable movie fields.
+- `PUT /v1/movies/{id}` — initial full replacement route; replaced by
+  `PATCH` in Chapter 8.
 - `DELETE /v1/movies/{id}` — delete one movie or return `404 Not Found`.
 
 ### Checklist
@@ -524,7 +526,8 @@ locking, and query timeouts belong to Chapter 8.
 - [x] Add fetch movie by ID logic.
 - [x] Connect `GET /v1/movies/{id}` to database reads.
 - [x] Add update movie logic.
-- [x] Connect the `PUT` movie replacement route to the model layer.
+- [x] Connect the initial `PUT` movie replacement route to the model layer
+  (reworked as `PATCH` in Chapter 8).
 - [x] Add delete movie logic.
 - [x] Connect the movie delete route to the model layer.
 - [x] Map not-found database cases to API responses.
@@ -560,6 +563,19 @@ locking, and query timeouts belong to Chapter 8.
 
 ## Chapter 8: Advanced CRUD Operations
 
+### Summary
+
+Chapter 8 changes movie updates from full replacement to partial updates and
+makes concurrent edits explicit. The handler first loads the current record,
+applies only JSON fields that were supplied, validates the resulting complete
+movie, and then writes it back with its current version.
+
+The database update includes both `id` and `version` in its `WHERE` clause and
+increments the version atomically. If another client has changed the record in
+the meantime, no row is updated and the API returns `409 Conflict`. Each
+database operation also receives a short context timeout, so a stalled query
+does not wait indefinitely.
+
 ### Topics
 
 - Partial updates.
@@ -568,24 +584,53 @@ locking, and query timeouts belong to Chapter 8.
 
 ### Checklist
 
-- [ ] Implement partial update behavior with `PATCH`.
-- [ ] Preserve existing values when request fields are omitted.
-- [ ] Validate partial update inputs.
-- [ ] Add version-based optimistic concurrency control.
-- [ ] Return a clear conflict response when concurrent updates collide.
-- [ ] Add query context timeouts for database operations.
-- [ ] Make timeout behavior visible in code without overcomplicating handlers.
-- [ ] Verify partial updates with `curl`.
-- [ ] Verify stale update behavior if practical.
-- [ ] Record where this pattern may help future client API work.
+- [x] Implement partial update behavior with `PATCH`.
+- [x] Preserve existing values when request fields are omitted.
+- [x] Validate partial update inputs.
+- [x] Add version-based optimistic concurrency control.
+- [x] Return a clear conflict response when concurrent updates collide.
+- [x] Add query context timeouts for database operations.
+- [x] Make timeout behavior visible in code without overcomplicating handlers.
+- [x] Verify partial updates with `curl`.
+- [x] Verify stale update behavior if practical.
+- [x] Record where this pattern may help future client API work.
 
 ### Classification
 
-- [ ] Apply now: PATCH semantics and partial updates.
-- [ ] Apply now: optimistic concurrency control.
-- [ ] Apply now: SQL query timeouts.
-- [ ] Postpone: broad transaction patterns until needed.
-- [ ] Ignore for now: over-engineered generic update systems.
+- [x] Apply now: PATCH semantics and partial updates.
+- [x] Apply now: optimistic concurrency control.
+- [x] Apply now: SQL query timeouts.
+- [x] Postpone: broad transaction patterns until needed.
+- [x] Ignore for now: over-engineered generic update systems.
+
+### Review — 2026-07-26
+
+- `PATCH /v1/movies/:id` uses pointer fields for scalar input values, which
+  distinguishes an omitted field from an explicit zero value. Supplied fields
+  are merged into the loaded movie before full validation.
+- `MovieModel.Update()` performs `WHERE id = $5 AND version = $6` and returns
+  the incremented version. This is the core optimistic-locking check; handlers
+  map `data.ErrEditConflict` to `409 Conflict`.
+- The optional `X-Expected-Version` request header adds round-trip protection:
+  a client can reject an update before writing when it knows it has a stale
+  representation. The SQL version check remains necessary because the header
+  check alone cannot prevent a race.
+- `Insert`, `Get`, `Update`, and `Delete` each use a three-second database
+  context timeout. The timeout stays in the data layer, keeping HTTP handlers
+  focused on request/response work.
+- `go test ./...` and `go vet ./...` pass; there are currently no automated
+  tests. PostgreSQL-backed PATCH and stale-write checks remain manual `curl`
+  exercises because they require a configured local database.
+- Review note: an update that loses a race to deletion also matches no
+  `id`/`version` row and is reported as `409 Conflict`, not `404 Not Found`.
+  That is a safe, acceptable trade-off for this book implementation; separating
+  the cases would require an extra read and is not needed for this study step.
+
+### Personal Takeaway
+
+For editable API resources, partial-update merging plus optimistic locking is a
+small, practical baseline. It prevents a stale client from silently overwriting
+newer data without introducing a transaction or a generic update abstraction.
 
 ## Chapter 9: Filtering, Sorting, and Pagination
 
@@ -650,8 +695,8 @@ locking, and query timeouts belong to Chapter 8.
 - [x] Session 9: Chapter 6 migrations.
 - [x] Session 10: Chapter 7 create and fetch movie.
 - [x] Session 11: Chapter 7 update and delete movie.
-- [ ] Session 12: Chapter 8 partial updates.
-- [ ] Session 13: Chapter 8 concurrency control and timeouts.
+- [x] Session 12: Chapter 8 partial updates.
+- [x] Session 13: Chapter 8 concurrency control and timeouts.
 - [ ] Session 14: Chapter 9 list endpoint and filters.
 - [ ] Session 15: Chapter 9 sorting, pagination, and metadata.
 - [ ] Session 16: README cleanup and stage review.

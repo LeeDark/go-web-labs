@@ -7,7 +7,7 @@ Study project based on *Let's Go Further* by Alex Edwards.
 This folder is for practicing production-style Go API patterns through the
 Greenlight project.
 
-Current focus: API Core. Chapters 1–7 are complete; Chapter 8 is next.
+Current focus: API Core. Chapters 1–8 are complete; Chapter 9 is next.
 
 ## Current Scope
 
@@ -157,7 +157,8 @@ Implemented pieces:
 - `sql.ErrNoRows` mapping to `data.ErrRecordNotFound`
 - `POST /v1/movies` with validation, `201 Created`, and a `Location` header
 - `GET /v1/movies/:id` backed by the database
-- `PUT /v1/movies/:id` as a validated full replacement
+- initial `PUT /v1/movies/:id` full replacement, reworked as `PATCH` in
+  Chapter 8
 - version increment on update
 - `DELETE /v1/movies/:id` with affected-row not-found detection
 - safe `404` and `500` handler mappings for model errors
@@ -176,8 +177,36 @@ Review follow-ups:
   5 even though its message says “more than 1 genres”.
 - Return the error from `ResponseWriter.Write()` in `writeJSON()` so handler
   logging can observe failed response writes.
-- Leave partial updates, query timeouts, and optimistic concurrency control for
-  Chapter 8.
+
+### Chapter 8: Advanced CRUD Operations
+
+Chapter 8 replaces full movie updates with partial updates and protects records
+from stale concurrent writes.
+
+Implemented pieces:
+
+- `PATCH /v1/movies/:id` for partial updates
+- pointer-based input fields, preserving stored values when fields are omitted
+- validation after merging the partial input into the stored movie
+- three-second context timeouts for every database operation
+- atomic version increment during updates
+- SQL optimistic locking using both movie ID and version
+- `409 Conflict` response for a stale or conflicting update
+- optional `X-Expected-Version` round-trip version check before the update
+
+Useful pattern:
+
+Use a pointer-based PATCH input type to distinguish omitted scalar fields from
+zero values. For data integrity, perform the final version comparison in the
+same SQL `UPDATE`; a preliminary request-header comparison is helpful to the
+client but cannot replace the atomic database check.
+
+Review note:
+
+If a movie is deleted after the handler reads it but before the update query,
+the update affects no row and returns `409 Conflict`. This is a safe and
+intentional simplification for the study project; distinguishing it from a
+stale version would need another database read.
 
 ## Local PostgreSQL and Migrations
 
@@ -236,9 +265,14 @@ curl -i -X POST localhost:4000/v1/movies \
 
 curl -i localhost:4000/v1/movies/1
 
-curl -i -X PUT localhost:4000/v1/movies/1 \
+curl -i -X PATCH localhost:4000/v1/movies/1 \
   -H 'Content-Type: application/json' \
-  -d '{"title":"Casablanca","year":1942,"runtime":"102 mins","genres":["drama","romance"]}'
+  -d '{"genres":["drama","romance"]}'
+
+curl -i -X PATCH localhost:4000/v1/movies/1 \
+  -H 'Content-Type: application/json' \
+  -H 'X-Expected-Version: 1' \
+  -d '{"title":"Casablanca (restored)"}'
 
 curl -i -X DELETE localhost:4000/v1/movies/1
 ```
@@ -259,7 +293,5 @@ or handler tests have not been added yet.
 
 - Align the Chapter 7 year and genre validation messages with their rules.
 - Propagate response write errors from `writeJSON()`.
-- Continue with Chapter 8 partial updates, query timeouts, and optimistic
-  concurrency control.
 - Add focused model or handler tests when an appropriate test boundary is in
   place.
