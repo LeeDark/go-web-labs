@@ -517,7 +517,7 @@ Every response with a JSON body uses `Content-Type: application/json`.
 | `DELETE /books/{id}` |   `204` | `400`, `404`, `500`                      | Successful response has no body.                      |
 
 Unsupported methods return `405 Method Not Allowed` in the error envelope and
-include the router-generated `Allow` header where applicable.
+include an explicit `Allow` header for the matching lab route.
 
 Error codes are fixed as follows:
 
@@ -526,6 +526,7 @@ Error codes are fixed as follows:
 |  `400` | `invalid_id`             | A route `id` is not a positive base-10 integer.                                                                            |
 |  `400` | `invalid_json`           | The body is empty, malformed, not an object, has unknown fields or trailing JSON, or contains a wrong JSON type or `null`. |
 |  `404` | `book_not_found`         | No book exists for the supplied valid `id`.                                                                                |
+|  `404` | `route_not_found`        | No route exists for the requested path.                                                                                    |
 |  `405` | `method_not_allowed`     | The route exists but does not accept the HTTP method.                                                                      |
 |  `413` | `request_too_large`      | A JSON request body exceeds 1 MiB.                                                                                         |
 |  `415` | `unsupported_media_type` | A JSON request has an unsupported or missing `Content-Type`.                                                               |

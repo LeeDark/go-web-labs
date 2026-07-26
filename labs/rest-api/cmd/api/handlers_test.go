@@ -107,22 +107,64 @@ func TestCreateBookHandler(t *testing.T) {
 }
 
 func TestCreateBookValidation(t *testing.T) {
-	app := newTestApplication()
-	recorder := httptest.NewRecorder()
-
-	app.routes().ServeHTTP(recorder, newJSONRequest(t, http.MethodPost, "/books", `{"title":" ","author":""}`))
-
-	if recorder.Code != http.StatusUnprocessableEntity {
-		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusUnprocessableEntity)
+	tests := []struct {
+		name   string
+		body   string
+		fields map[string]string
+	}{
+		{
+			name: "blank required fields",
+			body: `{"title":" ","author":""}`,
+			fields: map[string]string{
+				"title":  "must be provided",
+				"author": "must be provided",
+			},
+		},
+		{
+			name: "title too long",
+			body: `{"title":"` + strings.Repeat("界", 201) + `","author":"Frank Herbert"}`,
+			fields: map[string]string{
+				"title": "must not exceed 200 characters",
+			},
+		},
+		{
+			name: "author too long",
+			body: `{"title":"Dune","author":"` + strings.Repeat("界", 121) + `"}`,
+			fields: map[string]string{
+				"author": "must not exceed 120 characters",
+			},
+		},
+		{
+			name: "description too long",
+			body: `{"title":"Dune","author":"Frank Herbert","description":"` + strings.Repeat("界", 1001) + `"}`,
+			fields: map[string]string{
+				"description": "must not exceed 1000 characters",
+			},
+		},
 	}
-	response := decodeResponse(t, recorder)
-	err := response["error"].(map[string]any)
-	if err["code"] != "validation_failed" {
-		t.Fatalf("error.code = %#v, want validation_failed", err["code"])
-	}
-	fields := err["fields"].(map[string]any)
-	if fields["title"] != "must be provided" || fields["author"] != "must be provided" {
-		t.Fatalf("fields = %#v, want required title and author errors", fields)
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			app := newTestApplication()
+			recorder := httptest.NewRecorder()
+
+			app.routes().ServeHTTP(recorder, newJSONRequest(t, http.MethodPost, "/books", test.body))
+
+			if recorder.Code != http.StatusUnprocessableEntity {
+				t.Fatalf("status = %d, want %d", recorder.Code, http.StatusUnprocessableEntity)
+			}
+			response := decodeResponse(t, recorder)
+			apiErr := response["error"].(map[string]any)
+			if apiErr["code"] != "validation_failed" {
+				t.Fatalf("error.code = %#v, want validation_failed", apiErr["code"])
+			}
+			fields := apiErr["fields"].(map[string]any)
+			for field, message := range test.fields {
+				if fields[field] != message {
+					t.Fatalf("fields[%q] = %#v, want %q", field, fields[field], message)
+				}
+			}
+		})
 	}
 }
 
@@ -170,6 +212,7 @@ func TestHTTPBoundaryErrors(t *testing.T) {
 		request *http.Request
 		status  int
 		code    string
+		allow   string
 	}{
 		{
 			name:    "missing content type",
@@ -190,6 +233,30 @@ func TestHTTPBoundaryErrors(t *testing.T) {
 			code:    "invalid_json",
 		},
 		{
+			name:    "top-level null",
+			request: newJSONRequest(t, http.MethodPost, "/books", `null`),
+			status:  http.StatusBadRequest,
+			code:    "invalid_json",
+		},
+		{
+			name:    "trailing JSON value",
+			request: newJSONRequest(t, http.MethodPost, "/books", `{"title":"Dune","author":"Frank Herbert"} {}`),
+			status:  http.StatusBadRequest,
+			code:    "invalid_json",
+		},
+		{
+			name:    "wrong top-level type",
+			request: newJSONRequest(t, http.MethodPost, "/books", `[]`),
+			status:  http.StatusBadRequest,
+			code:    "invalid_json",
+		},
+		{
+			name:    "empty body",
+			request: newJSONRequest(t, http.MethodPost, "/books", ``),
+			status:  http.StatusBadRequest,
+			code:    "invalid_json",
+		},
+		{
 			name:    "too large",
 			request: newJSONRequest(t, http.MethodPost, "/books", `{"title":"`+strings.Repeat("x", maxRequestBodyBytes)+`","author":"Frank Herbert"}`),
 			status:  http.StatusRequestEntityTooLarge,
@@ -200,6 +267,21 @@ func TestHTTPBoundaryErrors(t *testing.T) {
 			request: httptest.NewRequest(http.MethodPut, "/books", nil),
 			status:  http.StatusMethodNotAllowed,
 			code:    "method_not_allowed",
+			allow:   "GET, POST",
+		},
+		{
+			name:    "method not allowed for health",
+			request: httptest.NewRequest(http.MethodPost, "/health", nil),
+			status:  http.StatusMethodNotAllowed,
+			code:    "method_not_allowed",
+			allow:   "GET",
+		},
+		{
+			name:    "method not allowed for book item",
+			request: httptest.NewRequest(http.MethodPost, "/books/1", nil),
+			status:  http.StatusMethodNotAllowed,
+			code:    "method_not_allowed",
+			allow:   "GET, PATCH, DELETE",
 		},
 		{
 			name:    "route not found",
@@ -222,8 +304,8 @@ func TestHTTPBoundaryErrors(t *testing.T) {
 			if err["code"] != test.code {
 				t.Fatalf("error.code = %#v, want %s", err["code"], test.code)
 			}
-			if test.status == http.StatusMethodNotAllowed && recorder.Header().Get("Allow") != "GET, POST" {
-				t.Fatalf("Allow = %q, want GET, POST", recorder.Header().Get("Allow"))
+			if test.allow != "" && recorder.Header().Get("Allow") != test.allow {
+				t.Fatalf("Allow = %q, want %q", recorder.Header().Get("Allow"), test.allow)
 			}
 		})
 	}

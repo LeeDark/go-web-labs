@@ -57,6 +57,9 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 	if err := json.Unmarshal(body, &fields); err != nil {
 		return errInvalidJSON
 	}
+	if fields == nil {
+		return errInvalidJSON
+	}
 	for _, value := range fields {
 		if bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
 			return errInvalidJSON

@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 type apiError struct {
 	Code    string            `json:"code"`
@@ -63,12 +66,12 @@ func (app *application) unsupportedMediaTypeResponse(w http.ResponseWriter, r *h
 }
 
 func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/health":
+	switch {
+	case r.URL.Path == "/health":
 		w.Header().Set("Allow", http.MethodGet)
-	case "/books":
+	case r.URL.Path == "/books":
 		w.Header().Set("Allow", "GET, POST")
-	default:
+	case strings.HasPrefix(r.URL.Path, "/books/"):
 		w.Header().Set("Allow", "GET, PATCH, DELETE")
 	}
 
