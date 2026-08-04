@@ -18,6 +18,8 @@ type Service interface {
 	List(ctx context.Context) ([]Book, error)
 	Get(ctx context.Context, id int64) (Book, error)
 	Create(ctx context.Context, input CreateBookInput) (Book, error)
+	Update(ctx context.Context, id int64, input UpdateBookInput) (Book, error)
+	Delete(ctx context.Context, id int64) error
 }
 
 type bookService struct {
@@ -63,4 +65,49 @@ func (s *bookService) Create(ctx context.Context, input CreateBookInput) (Book, 
 	}
 
 	return s.repository.Create(ctx, input)
+}
+
+func (s *bookService) Update(ctx context.Context, id int64, input UpdateBookInput) (Book, error) {
+	s.createMu.Lock()
+	defer s.createMu.Unlock()
+
+	book, err := s.repository.GetByID(ctx, id)
+	if errors.Is(err, ErrBookNotFound) {
+		return Book{}, ErrBookNotFound
+	}
+	if err != nil {
+		return Book{}, err
+	}
+	if input.Title != nil {
+		book.Title = *input.Title
+	}
+	if input.Author != nil {
+		book.Author = *input.Author
+	}
+
+	book.Title = strings.TrimSpace(book.Title)
+	book.Author = strings.TrimSpace(book.Author)
+	if book.Title == "" || book.Author == "" {
+		return Book{}, ErrValidation
+	}
+
+	books, err := s.repository.List(ctx)
+	if err != nil {
+		return Book{}, err
+	}
+	for _, existing := range books {
+		if existing.ID != book.ID && strings.EqualFold(existing.Title, book.Title) && strings.EqualFold(existing.Author, book.Author) {
+			return Book{}, ErrDuplicateBook
+		}
+	}
+
+	return s.repository.Update(ctx, book)
+}
+
+func (s *bookService) Delete(ctx context.Context, id int64) error {
+	err := s.repository.Delete(ctx, id)
+	if errors.Is(err, ErrBookNotFound) {
+		return ErrBookNotFound
+	}
+	return err
 }

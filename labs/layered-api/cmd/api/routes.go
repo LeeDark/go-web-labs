@@ -20,6 +20,8 @@ func routes(booksHandler *handlers.BooksHandler, logger *slog.Logger) http.Handl
 	router.Get("/books", booksHandler.List)
 	router.Get("/books/{id}", booksHandler.Get)
 	router.Post("/books", booksHandler.Create)
+	router.Patch("/books/{id}", booksHandler.Update)
+	router.Delete("/books/{id}", booksHandler.Delete)
 
 	return router
 }

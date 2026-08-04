@@ -59,3 +59,25 @@ func (r *MemoryRepository) Create(_ context.Context, input CreateBookInput) (Boo
 	r.nextID++
 	return book, nil
 }
+
+func (r *MemoryRepository) Update(_ context.Context, book Book) (Book, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, exists := r.books[book.ID]; !exists {
+		return Book{}, ErrBookNotFound
+	}
+	r.books[book.ID] = book
+	return book, nil
+}
+
+func (r *MemoryRepository) Delete(_ context.Context, id int64) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, exists := r.books[id]; !exists {
+		return ErrBookNotFound
+	}
+	delete(r.books, id)
+	return nil
+}

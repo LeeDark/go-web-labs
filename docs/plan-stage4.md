@@ -133,7 +133,7 @@ POST  /books
 
 - [ ] Do not add SQL, migrations, Docker, caching, queues, or external services.
 - [ ] Do not add users, authentication, roles, or extra resources.
-- [ ] Do not add PATCH, DELETE, pagination, filtering, or OpenAPI.
+- [ ] Do not add pagination, filtering, or OpenAPI.
 - [ ] Do not introduce a generic repository, DI container, service locator, event bus, CQRS, or
   interfaces without a direct consumer.
 - [ ] Do not copy this structure into an applied project without reviewing its actual use cases.
@@ -145,6 +145,20 @@ POST  /books
 - [x] One create flow can be traced cleanly from HTTP handler to service to repository and back.
 - [x] The duplicate rule is covered by a service test and is absent from the handler and repository.
 - [x] The README makes the responsibility boundary understandable to a reviewer.
+
+## Optional CRUD extension: completed
+
+The lab now also demonstrates partial update and delete while preserving the same handler → service
+→ repository direction.
+
+- [x] Add `PATCH /books/{id}` and `DELETE /books/{id}`.
+- [x] Use an HTTP-only PATCH DTO that distinguishes omitted fields from empty strings.
+- [x] Treat an empty PATCH object, top-level or field `null`, unknown fields, malformed JSON, and
+  trailing values as `400 invalid_request`.
+- [x] Merge a valid patch in the service, then repeat required-field and case-insensitive duplicate
+  validation before repository update.
+- [x] Return `204 No Content` for successful delete and `404 book_not_found` when absent.
+- [x] Cover partial update, validation, duplicate, missing update/delete, and `DELETE → GET 404`.
 
 ## Handoff to later work
 

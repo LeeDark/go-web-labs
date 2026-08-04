@@ -12,3 +12,9 @@ type CreateBookInput struct {
 	Title  string
 	Author string
 }
+
+// UpdateBookInput contains only fields explicitly supplied for a partial update.
+type UpdateBookInput struct {
+	Title  *string
+	Author *string
+}

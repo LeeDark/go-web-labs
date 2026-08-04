@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,6 +27,26 @@ func NewBooksHandler(service books.Service, logger *slog.Logger) *BooksHandler {
 type createBookRequest struct {
 	Title  string `json:"title"`
 	Author string `json:"author"`
+}
+
+type updateBookRequest struct {
+	Title  optionalString `json:"title"`
+	Author optionalString `json:"author"`
+}
+
+type optionalString struct {
+	set   bool
+	null  bool
+	value string
+}
+
+func (field *optionalString) UnmarshalJSON(data []byte) error {
+	field.set = true
+	if bytes.Equal(data, []byte("null")) {
+		field.null = true
+		return nil
+	}
+	return json.Unmarshal(data, &field.value)
 }
 
 type bookResponse struct {
@@ -106,6 +127,68 @@ func (h *BooksHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Location", fmt.Sprintf("/books/%d", book.ID))
 	writeJSON(w, http.StatusCreated, map[string]any{"data": mapBook(book)})
+}
+
+func (h *BooksHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id, ok := parseID(w, chi.URLParam(r, "id"))
+	if !ok {
+		return
+	}
+	if !hasJSONContentType(r) {
+		writeError(w, http.StatusUnsupportedMediaType, "unsupported_media_type", "Content-Type must be application/json")
+		return
+	}
+
+	var request *updateBookRequest
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&request); err != nil || request == nil {
+		writeError(w, http.StatusBadRequest, "invalid_request", "Request body must be a valid JSON object")
+		return
+	}
+	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
+		writeError(w, http.StatusBadRequest, "invalid_request", "Request body must contain one JSON object")
+		return
+	}
+	if (!request.Title.set && !request.Author.set) || request.Title.null || request.Author.null {
+		writeError(w, http.StatusBadRequest, "invalid_request", "Update fields must be non-null strings")
+		return
+	}
+
+	input := books.UpdateBookInput{}
+	if request.Title.set {
+		input.Title = &request.Title.value
+	}
+	if request.Author.set {
+		input.Author = &request.Author.value
+	}
+	book, err := h.service.Update(r.Context(), id, input)
+	switch {
+	case errors.Is(err, books.ErrValidation):
+		writeError(w, http.StatusUnprocessableEntity, "validation_failed", "Title and author are required")
+	case errors.Is(err, books.ErrDuplicateBook):
+		writeError(w, http.StatusConflict, "duplicate_book", "A book with this title and author already exists")
+	case errors.Is(err, books.ErrBookNotFound):
+		writeError(w, http.StatusNotFound, "book_not_found", "Book not found")
+	case err != nil:
+		h.internalError(w, err)
+	default:
+		writeJSON(w, http.StatusOK, map[string]any{"data": mapBook(book)})
+	}
+}
+
+func (h *BooksHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id, ok := parseID(w, chi.URLParam(r, "id"))
+	if !ok {
+		return
+	}
+	if err := h.service.Delete(r.Context(), id); errors.Is(err, books.ErrBookNotFound) {
+		writeError(w, http.StatusNotFound, "book_not_found", "Book not found")
+	} else if err != nil {
+		h.internalError(w, err)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
 }
 
 func hasJSONContentType(r *http.Request) bool {

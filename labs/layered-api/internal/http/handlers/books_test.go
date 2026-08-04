@@ -19,6 +19,8 @@ type fakeService struct {
 	book        books.Book
 	err         error
 	createInput books.CreateBookInput
+	updateInput books.UpdateBookInput
+	deleteID    int64
 }
 
 func (s *fakeService) List(context.Context) ([]books.Book, error)     { return s.items, s.err }
@@ -26,6 +28,14 @@ func (s *fakeService) Get(context.Context, int64) (books.Book, error) { return s
 func (s *fakeService) Create(_ context.Context, input books.CreateBookInput) (books.Book, error) {
 	s.createInput = input
 	return s.book, s.err
+}
+func (s *fakeService) Update(_ context.Context, id int64, input books.UpdateBookInput) (books.Book, error) {
+	s.updateInput = input
+	return s.book, s.err
+}
+func (s *fakeService) Delete(_ context.Context, id int64) error {
+	s.deleteID = id
+	return s.err
 }
 
 func newTestHandler(service books.Service) *BooksHandler {
@@ -142,6 +152,113 @@ func TestBooksHandlerReturnsSafeInternalError(t *testing.T) {
 	handler := newTestHandler(&fakeService{err: errors.New("database password leaked")})
 	recorder := httptest.NewRecorder()
 	handler.List(recorder, httptest.NewRequest(http.MethodGet, "/books", nil))
+	if recorder.Code != http.StatusInternalServerError || strings.Contains(recorder.Body.String(), "password") || !strings.Contains(recorder.Body.String(), `"code":"internal_error"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestBooksHandlerUpdate(t *testing.T) {
+	service := &fakeService{book: books.Book{ID: 1, Title: "Updated", Author: "Author"}}
+	handler := newTestHandler(service)
+	recorder := httptest.NewRecorder()
+	request := jsonRequest(`{"title":"Updated"}`)
+	request = withRouteID(request, "1")
+	handler.Update(recorder, request)
+
+	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `"title":"Updated"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+	if service.updateInput.Title == nil || *service.updateInput.Title != "Updated" || service.updateInput.Author != nil {
+		t.Fatalf("service update input = %+v", service.updateInput)
+	}
+}
+
+func TestBooksHandlerUpdateRejectsInvalidInput(t *testing.T) {
+	handler := newTestHandler(&fakeService{})
+	for _, body := range []string{"", `{}`, `null`, `{"title":null}`, `{"unknown":"field"}`, `{"title":"Go"}{}`} {
+		recorder := httptest.NewRecorder()
+		request := withRouteID(jsonRequest(body), "1")
+		handler.Update(recorder, request)
+		if recorder.Code != http.StatusBadRequest || !strings.Contains(recorder.Body.String(), `"code":"invalid_request"`) {
+			t.Fatalf("body %q response = %d %s", body, recorder.Code, recorder.Body.String())
+		}
+	}
+}
+
+func TestBooksHandlerUpdateRejectsUnsupportedMediaType(t *testing.T) {
+	handler := newTestHandler(&fakeService{})
+	recorder := httptest.NewRecorder()
+	request := withRouteID(httptest.NewRequest(http.MethodPatch, "/books/1", strings.NewReader(`{"title":"Updated"}`)), "1")
+	request.Header.Set("Content-Type", "text/plain")
+	handler.Update(recorder, request)
+
+	if recorder.Code != http.StatusUnsupportedMediaType || !strings.Contains(recorder.Body.String(), `"code":"unsupported_media_type"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestBooksHandlerUpdateMapsApplicationErrors(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		err  error
+		want int
+		code string
+	}{
+		{name: "validation", err: books.ErrValidation, want: http.StatusUnprocessableEntity, code: "validation_failed"},
+		{name: "duplicate", err: books.ErrDuplicateBook, want: http.StatusConflict, code: "duplicate_book"},
+		{name: "missing", err: books.ErrBookNotFound, want: http.StatusNotFound, code: "book_not_found"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			handler := newTestHandler(&fakeService{err: test.err})
+			recorder := httptest.NewRecorder()
+			request := withRouteID(jsonRequest(`{"title":"Updated"}`), "1")
+			handler.Update(recorder, request)
+			if recorder.Code != test.want || !strings.Contains(recorder.Body.String(), `"code":"`+test.code+`"`) {
+				t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+			}
+		})
+	}
+}
+
+func TestBooksHandlerUpdateReturnsSafeInternalError(t *testing.T) {
+	handler := newTestHandler(&fakeService{err: errors.New("database password leaked")})
+	recorder := httptest.NewRecorder()
+	request := withRouteID(jsonRequest(`{"title":"Updated"}`), "1")
+	handler.Update(recorder, request)
+
+	if recorder.Code != http.StatusInternalServerError || strings.Contains(recorder.Body.String(), "password") || !strings.Contains(recorder.Body.String(), `"code":"internal_error"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestBooksHandlerDelete(t *testing.T) {
+	handler := newTestHandler(&fakeService{})
+	recorder := httptest.NewRecorder()
+	request := withRouteID(httptest.NewRequest(http.MethodDelete, "/books/1", nil), "1")
+	handler.Delete(recorder, request)
+
+	if recorder.Code != http.StatusNoContent || recorder.Body.Len() != 0 {
+		t.Fatalf("response = %d %q", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestBooksHandlerDeleteMapsMissingBook(t *testing.T) {
+	handler := newTestHandler(&fakeService{err: books.ErrBookNotFound})
+	recorder := httptest.NewRecorder()
+	request := withRouteID(httptest.NewRequest(http.MethodDelete, "/books/99", nil), "99")
+	handler.Delete(recorder, request)
+
+	if recorder.Code != http.StatusNotFound || !strings.Contains(recorder.Body.String(), `"code":"book_not_found"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestBooksHandlerDeleteReturnsSafeInternalError(t *testing.T) {
+	handler := newTestHandler(&fakeService{err: errors.New("database password leaked")})
+	recorder := httptest.NewRecorder()
+	request := withRouteID(httptest.NewRequest(http.MethodDelete, "/books/1", nil), "1")
+	handler.Delete(recorder, request)
+
 	if recorder.Code != http.StatusInternalServerError || strings.Contains(recorder.Body.String(), "password") || !strings.Contains(recorder.Body.String(), `"code":"internal_error"`) {
 		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
 	}
