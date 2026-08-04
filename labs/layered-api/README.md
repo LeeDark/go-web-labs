@@ -29,16 +29,16 @@ HTTP handler -> books.Service -> books.BookRepository -> MemoryRepository
 
 ## Routes and responses
 
-| Route | Success | Important failures |
-| --- | --- | --- |
-| `GET /health` | `200` | — |
-| `GET /books` | `200` | `500 internal_error` |
-| `GET /books/{id}` | `200` | `400 invalid_id`, `404 book_not_found` |
-| `POST /books` | `201` + `Location` | `400 invalid_request`, `415 unsupported_media_type`, `422 validation_failed`, `409 duplicate_book` |
+| Route             | Success            | Important failures                                                                                 |
+|-------------------|--------------------|----------------------------------------------------------------------------------------------------|
+| `GET /health`     | `200`              | —                                                                                                  |
+| `GET /books`      | `200`              | `500 internal_error`                                                                               |
+| `GET /books/{id}` | `200`              | `400 invalid_id`, `404 book_not_found`                                                             |
+| `POST /books`     | `201` + `Location` | `400 invalid_request`, `415 unsupported_media_type`, `422 validation_failed`, `409 duplicate_book` |
 
 Successful book responses use `{"data": ...}`. Failures use
-`{"error":{"code":"...","message":"..."}}`. Details of unexpected repository errors are
-logged and never returned to the client.
+`{"error":{"code":"...","message":"..."}}`. Details of unexpected repository errors are logged and
+never returned to the client.
 
 `POST /books` requires `Content-Type: application/json` (parameters such as `charset=utf-8` are
 accepted). Missing, malformed, or other media types return `415 unsupported_media_type`.
@@ -65,7 +65,7 @@ curl -i -X POST http://localhost:4001/books \
 
 ## Limitations and learned patterns
 
-This lab deliberately excludes PATCH/DELETE, SQL, migrations, auth, pagination, filtering,
-OpenAPI, generic repositories, and DI containers. `MemoryRepository` is safe for concurrent access
-but is only a learning adapter. The reusable lesson is to introduce a service when a concrete use
-case needs business behavior, not merely to add another package.
+This lab deliberately excludes PATCH/DELETE, SQL, migrations, auth, pagination, filtering, OpenAPI,
+generic repositories, and DI containers. `MemoryRepository` is safe for concurrent access but is
+only a learning adapter. The reusable lesson is to introduce a service when a concrete use case
+needs business behavior, not merely to add another package.

@@ -2,8 +2,9 @@
 
 ## Status
 
-**v1 complete.** Step 0 confirmed that the full lab remains useful because `book-social` demonstrates
-layering for MPA catalog reads but not this JSON create flow, in-memory adapter, or duplicate rule.
+**v1 complete.** Step 0 confirmed that the full lab remains useful because `book-social`
+demonstrates layering for MPA catalog reads but not this JSON create flow, in-memory adapter, or
+duplicate rule.
 
 Stage 4 will create a small standalone lab in `labs/layered-api`. Its purpose is to practice clear
 backend boundaries without turning a learning project into an over-engineered architecture exercise.
