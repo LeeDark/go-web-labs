@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func routes(booksHandler *handlers.BooksHandler, logger *slog.Logger) http.Handler {
+func New(booksHandler *handlers.BooksHandler, logger *slog.Logger) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer(logger))
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {

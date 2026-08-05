@@ -19,13 +19,14 @@ rejects a case-insensitive duplicate title/author pair.
 HTTP handler -> books.Service -> books.BookRepository -> MemoryRepository
                     ^
                     |
-                 main wires dependencies
+             composition root wires dependencies
 ```
 
 - The handler parses HTTP input and maps application errors to JSON and status codes.
 - The service owns validation and the duplicate rule; it knows neither JSON nor `http.Request`.
 - The repository stores and loads domain values; it has no HTTP behavior.
-- `main` is the explicit composition root.
+- `cmd/api` is the default explicit composition root. The optional Wire and Fx commands construct
+  this same graph without changing these package boundaries.
 
 ## Routes and responses
 
@@ -56,10 +57,39 @@ case-insensitively for duplicates.
 Run these commands from this folder:
 
 ```sh
+# Manual DI (default)
 go run ./cmd/api
+
+# goforj/wire: regenerate after changing cmd/api-wire/wire.go.
+go run github.com/goforj/wire/cmd/wire gen ./cmd/api-wire
+go run ./cmd/api-wire
+
+# Uber Fx: lifecycle-managed HTTP server.
+go run ./cmd/api-fx
+
+# Common checks for all three commands and the shared application packages.
 go test ./...
 go vet ./...
 ```
+
+## Optional DI comparison
+
+All three commands use the same `books` service, memory repository, handlers, router, HTTP timeouts,
+and route-level tests. Only the composition root changes.
+
+| Variant        | Composition feedback                                                            | Lifecycle                                        | Cost and default                                                                                |
+|----------------|---------------------------------------------------------------------------------|--------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| `cmd/api`      | Dependencies are visible in ordinary Go code.                                   | `main` owns `ListenAndServe`.                    | Default for a small service.                                                                    |
+| `cmd/api-wire` | goforj/wire finds missing providers during generation and writes `wire_gen.go`. | Same direct server start as manual DI.           | Adds a generation step; generated file is checked in and must not be edited.                    |
+| `cmd/api-fx`   | Fx validates the dependency graph when the app is constructed.                  | `fx.Lifecycle` starts and shuts down the server. | Adds runtime/container conventions; use when lifecycle and composition complexity justify them. |
+
+The maintained `goforj/wire` fork is used only to generate `cmd/api-wire/wire_gen.go`; regenerate it
+with `go run github.com/goforj/wire/cmd/wire gen ./cmd/api-wire` whenever `wire.go` changes. The
+generated file is checked in and must not be edited. Its generated `go:generate` directive contains
+`-mod=mod`, which Go workspaces reject, so invoke the command above rather than `go generate` from
+this repository. Fx is imported only by `cmd/api-fx`. Neither dependency is needed to run the
+default
+`cmd/api` command or the shared unit/handler tests.
 
 Examples, with the server running on its default `:4001`:
 
@@ -78,6 +108,6 @@ curl -i -X DELETE http://localhost:4001/books/1
 ## Limitations and learned patterns
 
 This lab deliberately excludes SQL, migrations, auth, pagination, filtering, OpenAPI, generic
-repositories, and DI containers. `MemoryRepository` is safe for concurrent access but is only a
-learning adapter. The reusable lesson is to introduce a service when a concrete use case needs
-business behavior, not merely to add another package.
+repositories, service locators, event buses, and CQRS. `MemoryRepository` is safe for concurrent
+access but is only a learning adapter. The reusable lesson is to introduce a service when a concrete
+use case needs business behavior, not merely to add another package.

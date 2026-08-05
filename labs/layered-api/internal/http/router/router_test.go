@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"encoding/json"
@@ -13,12 +13,16 @@ import (
 	"github.com/LeeDark/go-web-labs/labs/layered-api/internal/http/handlers"
 )
 
-func TestRoutesHealthReturnsJSON(t *testing.T) {
+func newTestRouter() http.Handler {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	handler := handlers.NewBooksHandler(books.NewService(books.NewMemoryRepository()), logger)
+	return New(handler, logger)
+}
+
+func TestHealthReturnsJSON(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
-	routes(handler, logger).ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/health", nil))
+	newTestRouter().ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/health", nil))
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
@@ -35,10 +39,8 @@ func TestRoutesHealthReturnsJSON(t *testing.T) {
 	}
 }
 
-func TestRoutesDeleteThenGetReturnsNotFound(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	handler := handlers.NewBooksHandler(books.NewService(books.NewMemoryRepository()), logger)
-	router := routes(handler, logger)
+func TestDeleteThenGetReturnsNotFound(t *testing.T) {
+	router := newTestRouter()
 
 	deleteRecorder := httptest.NewRecorder()
 	router.ServeHTTP(deleteRecorder, httptest.NewRequest(http.MethodDelete, "/books/1", nil))
@@ -53,10 +55,8 @@ func TestRoutesDeleteThenGetReturnsNotFound(t *testing.T) {
 	}
 }
 
-func TestRoutesPatchThenGetReturnsUpdatedBook(t *testing.T) {
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	handler := handlers.NewBooksHandler(books.NewService(books.NewMemoryRepository()), logger)
-	router := routes(handler, logger)
+func TestPatchThenGetReturnsUpdatedBook(t *testing.T) {
+	router := newTestRouter()
 
 	patchRecorder := httptest.NewRecorder()
 	patchRequest := httptest.NewRequest(http.MethodPatch, "/books/1", strings.NewReader(`{"title":"Updated Go"}`))

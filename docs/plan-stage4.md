@@ -134,7 +134,7 @@ POST  /books
 - [ ] Do not add SQL, migrations, Docker, caching, queues, or external services.
 - [ ] Do not add users, authentication, roles, or extra resources.
 - [ ] Do not add pagination, filtering, or OpenAPI.
-- [ ] Do not introduce a generic repository, DI container, service locator, event bus, CQRS, or
+- [ ] Do not introduce a generic repository, service locator, event bus, CQRS, or
   interfaces without a direct consumer.
 - [ ] Do not copy this structure into an applied project without reviewing its actual use cases.
 
@@ -159,6 +159,20 @@ The lab now also demonstrates partial update and delete while preserving the sam
   validation before repository update.
 - [x] Return `204 No Content` for successful delete and `404 book_not_found` when absent.
 - [x] Cover partial update, validation, duplicate, missing update/delete, and `DELETE → GET 404`.
+
+## Optional DI comparison: completed
+
+The default `cmd/api` remains the explicit manual-DI composition root. `cmd/api-wire` and
+`cmd/api-fx` assemble the same repository, service, handlers, router, and HTTP server without
+duplicating application behavior.
+
+- [x] Keep the manual composition root as the default command.
+- [x] Add maintained `goforj/wire` generation in `cmd/api-wire`; `wire_gen.go` is generated and
+  checked in.
+- [x] Add Uber Fx in `cmd/api-fx`, including an HTTP server lifecycle hook.
+- [x] Keep domain, repository, service, handler, router, and route-level tests shared.
+- [x] Document generation, runtime dependencies, trade-offs, and the manual-DI default in the lab
+  README.
 
 ## Handoff to later work
 
