@@ -2,11 +2,11 @@
 
 ## Status
 
-**v1 complete.** Step 0 confirmed that the full lab remains useful because `book-social`
+**Stage 4 complete.** Step 0 confirmed that the full lab remains useful because `book-social`
 demonstrates layering for MPA catalog reads but not this JSON create flow, in-memory adapter, or
 duplicate rule.
 
-Stage 4 will create a small standalone lab in `labs/layered-api`. Its purpose is to practice clear
+Stage 4 created a small standalone lab in `labs/layered-api`. Its purpose is to practice clear
 backend boundaries without turning a learning project into an over-engineered architecture exercise.
 
 It is not a rewrite of `labs/rest-api` and will not import its code. Stage 3 is the reference for
@@ -15,8 +15,8 @@ responsibilities belong.
 
 ## Goal and scope
 
-The lab will use one `books` resource and three use cases: list, get by ID, and create. It will
-demonstrate:
+The lab uses one `books` resource and started with three use cases: list, get by ID, and create. It
+demonstrates:
 
 - [x] Thin HTTP handlers that translate requests and responses.
 - [x] An application service that owns use cases and business rules.
@@ -26,38 +26,51 @@ demonstrate:
 - [x] Focused service unit tests and HTTP handler tests.
 - [x] A README that explains responsibility boundaries and runnable checks.
 
-The create use case will reject a duplicate normalized `title` + `author`
+The create use case rejects a duplicate normalized `title` + `author`
 combination. This gives the service layer one real business rule that does not belong in a handler
 or an in-memory map.
 
 ## Architecture boundary
 
-| Layer      | Responsibility                                                           | Must not do                                             |
-|------------|--------------------------------------------------------------------------|---------------------------------------------------------|
-| Handler    | Parse HTTP input, call a service, map results to JSON and status codes.  | Contain business rules or access a repository directly. |
-| Service    | Execute use cases, normalize business input, enforce the duplicate rule. | Depend on HTTP or JSON details.                         |
-| Repository | Read and store domain books.                                             | Decide HTTP behavior or validate request DTOs.          |
-| `main`     | Construct the repository, service, handlers, and router.                 | Hide dependencies in globals or a DI framework.         |
+| Layer      | Responsibility                                                           | Must not do                                                   |
+|------------|--------------------------------------------------------------------------|---------------------------------------------------------------|
+| Handler    | Parse HTTP input, call a service, map results to JSON and status codes.  | Contain business rules or access a repository directly.       |
+| Service    | Execute use cases, normalize business input, enforce the duplicate rule. | Depend on HTTP or JSON details.                               |
+| Repository | Read and store domain books.                                             | Decide HTTP behavior or validate request DTOs.                |
+| `main`     | Construct the default manual graph explicitly.                           | Hide dependencies in globals or make a DI framework required. |
 
-The planned structure stays deliberately small:
+The final structure stays deliberately small:
 
 ```text
 labs/layered-api/
-├── cmd/api/
-│   ├── main.go
-│   └── routes.go
+├── cmd/
+│   ├── api/main.go
+│   ├── api-wire/
+│   │   ├── main.go
+│   │   ├── wire.go
+│   │   └── wire_gen.go
+│   ├── api-fx/
+│   │   ├── main.go
+│   │   └── main_test.go
+│   └── api-do/
+│       ├── main.go
+│       └── main_test.go
 └── internal/
+    ├── app/app.go
     ├── books/
     │   ├── domain.go
     │   ├── service.go
     │   ├── repository.go
-    │   └── memory_repository.go
+    │   ├── memory_repository.go
+    │   ├── memory_repository_test.go
+    │   └── service_test.go
     └── http/
         ├── handlers/
-        └── middleware/
+        ├── middleware/
+        └── router/
 ```
 
-Files will be created only when they have a concrete purpose.
+Every file has a concrete purpose.
 
 ## API contract
 
@@ -131,12 +144,12 @@ POST  /books
 
 ## Out of scope
 
-- [ ] Do not add SQL, migrations, Docker, caching, queues, or external services.
-- [ ] Do not add users, authentication, roles, or extra resources.
-- [ ] Do not add pagination, filtering, or OpenAPI.
-- [ ] Do not introduce a generic repository, service locator, event bus, CQRS, or
-  interfaces without a direct consumer.
-- [ ] Do not copy this structure into an applied project without reviewing its actual use cases.
+- Do not add SQL, migrations, Docker, caching, queues, or external services.
+- Do not add users, authentication, roles, or extra resources.
+- Do not add pagination, filtering, or OpenAPI.
+- Do not introduce a generic repository, service locator, event bus, CQRS, or interfaces without
+  a direct consumer.
+- Do not copy this structure into an applied project without reviewing its actual use cases.
 
 ## Definition of done
 
@@ -148,8 +161,8 @@ POST  /books
 
 ## Optional CRUD extension: completed
 
-The lab now also demonstrates partial update and delete while preserving the same handler → service
-→ repository direction.
+The lab now also demonstrates partial update and delete while preserving the same handler →
+service → repository direction.
 
 - [x] Add `PATCH /books/{id}` and `DELETE /books/{id}`.
 - [x] Use an HTTP-only PATCH DTO that distinguishes omitted fields from empty strings.
