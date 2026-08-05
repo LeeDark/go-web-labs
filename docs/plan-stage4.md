@@ -162,14 +162,16 @@ The lab now also demonstrates partial update and delete while preserving the sam
 
 ## Optional DI comparison: completed
 
-The default `cmd/api` remains the explicit manual-DI composition root. `cmd/api-wire` and
-`cmd/api-fx` assemble the same repository, service, handlers, router, and HTTP server without
+The default `cmd/api` remains the explicit manual-DI composition root. `cmd/api-wire`, `cmd/api-fx`,
+and `cmd/api-do` assemble the same repository, service, handlers, router, and HTTP server without
 duplicating application behavior.
 
 - [x] Keep the manual composition root as the default command.
 - [x] Add maintained `goforj/wire` generation in `cmd/api-wire`; `wire_gen.go` is generated and
   checked in.
 - [x] Add Uber Fx in `cmd/api-fx`, including an HTTP server lifecycle hook.
+- [x] Add `samber/do/v2` in `cmd/api-do`, keeping the generic runtime container local to the
+  composition root and the server lifecycle explicit.
 - [x] Keep domain, repository, service, handler, router, and route-level tests shared.
 - [x] Document generation, runtime dependencies, trade-offs, and the manual-DI default in the lab
   README.
