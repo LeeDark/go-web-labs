@@ -37,8 +37,13 @@ to the selected boundary.
 
 - [ ] Record the exact database name, owner, purpose, and disposable status before running.
 - [ ] Require a dedicated test DSN and skip clearly when it is absent.
+- [ ] Require the configured database name explicitly, verify it after connecting, and enforce a
+  project test-name convention such as `_test`.
+- [ ] Keep any database-creation helper separate from test execution: require an admin DSN, prompt
+  only for non-secret metadata, refuse overwrite, and do not provide automatic deletion by default.
 - [ ] Never use production credentials or a shared database.
 - [ ] Make migration setup repeatable or document the required fresh-database lifecycle exactly.
+- [ ] Record applied migration names and checksums when the test owns migration setup.
 - [ ] Register cleanup immediately after creating data and target only known test-owned rows or
   objects.
 - [ ] Exercise behavior a fake cannot reproduce: SQL mapping, arrays, constraints, generated fields,

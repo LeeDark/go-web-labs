@@ -125,9 +125,10 @@ repository's test-count target without a separate task.
 
 - [x] Choose one database-backed API Core operation that cannot be reliably tested with a fake.
 - [x] Put the integration test next to that database code.
+- [x] Add an explicit test-DB identity guard and repeatable migration ledger to the integration test.
 - [x] Require a dedicated `GREENLIGHT_TEST_DB_DSN`; without it, the test must skip with a clear
   message.
-- [x] Document manual creation and migration of a disposable, non-production database.
+- [x] Document manual provisioning and migration of a disposable, non-production database.
 - [x] Isolate or clean test data predictably, with the exact cleanup target known before running
   tests.
 - [x] Ensure ordinary `go test ./...` does not require a database.
@@ -137,11 +138,10 @@ repository's test-count target without a separate task.
 These High findings may be completed after Step 5, but must remain visible before the final Stage 5
 handoff:
 
-- [ ] Make the migration setup repeatable for reruns against the same disposable database, or
-  document and verify an exact fresh-database lifecycle.
-- [ ] Confirm the concrete test database name, owner, purpose, and disposable non-production status;
-  then run the targeted PostgreSQL integration test and record runtime evidence separately from a
-  skipped result.
+- [x] Verify the repeatable migration setup by running the targeted integration test twice against the
+  same disposable database. On 2026-08-07 both runs passed with the test-only migration ledger.
+- [x] Confirm a disposable non-production test database and record two successful targeted PostgreSQL
+  test runs separately from a skip. Local database identifiers and credentials remain private.
 
 ### 5. Explore Testify with a real test case
 
@@ -176,11 +176,11 @@ handoff:
 
 ## Definition of done
 
-- [ ] The selected 5–10 new tests close documented behavior gaps; PostgreSQL checks remain
-  runtime-unverified until they run against a confirmed disposable database.
+- [x] The selected 5–10 new tests close documented behavior gaps, including PostgreSQL checks run
+  twice against a confirmed disposable database.
 - [x] Unit, HTTP-contract, and opt-in integration boundaries are clear in the testing README.
-- [ ] Commands are reproducible without hidden infrastructure; the opt-in migration setup still
-  needs a repeatable rerun strategy.
+- [x] Commands are reproducible with an explicitly provisioned disposable database; the migration
+  ledger supports repeat runs.
 - [x] The integration test is safe to skip without a dedicated test database.
 - [ ] No duplicate application, unsafe database cleanup, or unnecessary testing framework was
   introduced.

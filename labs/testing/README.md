@@ -60,21 +60,59 @@ test will instead require an explicit
 
 ### API Core PostgreSQL integration
 
-Create a dedicated empty disposable PostgreSQL database and export its DSN only for the opt-in test.
-The test applies the checked-in migrations from `books/lets-go-further/greenlight/migrations`:
+The API Core integration test is opt-in. Provision a dedicated disposable database through the
+developer's normal local PostgreSQL setup, then explicitly provide its name and DSN. The repository
+does not create roles or databases during ordinary test runs, and it never drops a database.
+
+Prerequisites:
+
+- PostgreSQL and its client utilities (`createdb`) are installed locally.
+- You have a local PostgreSQL role that can create a database, or a local administrator can do that
+  one-time setup for you.
+- The database is non-production, disposable, and its name ends in `_test`.
+
+For a typical local Linux installation using peer authentication, an administrator can provision a
+role matching the current OS user once:
 
 ```bash
-createdb greenlight_test
-export GREENLIGHT_TEST_DB_DSN='postgres://localhost/greenlight_test?sslmode=disable'
-cd books/lets-go-further
-GOCACHE=/tmp/go-web-labs-go-cache GREENLIGHT_TEST_DB_DSN="$GREENLIGHT_TEST_DB_DSN" go test ./greenlight/internal/data -run TestMovieModelInsertAndGetWithPostgres -count=1
+sudo -u postgres createuser --createdb "$USER"
 ```
 
-The test applies all checked-in migrations to that disposable database, verifies a database
-constraint, inserts one known fixture, checks generated fields, the PostgreSQL `text[]` round trip,
-and optimistic locking, then deletes that exact row by its generated ID. Never point the variable at
-a production or shared database. Without the variable, ordinary `go test ./...` remains
-database-free and the integration test is skipped.
+Other PostgreSQL installations may use a different administrator account, host, port, or credential
+method. That local setup is outside the repository; do not add credentials to the repository.
+
+Create the disposable database and run the test from the API Core module:
+
+```bash
+export GREENLIGHT_TEST_DB_NAME='greenlight_test'
+export GREENLIGHT_TEST_DB_ROLE="$USER"
+createdb --owner="$GREENLIGHT_TEST_DB_ROLE" "$GREENLIGHT_TEST_DB_NAME"
+export GREENLIGHT_TEST_DB_DSN="host=/var/run/postgresql dbname=$GREENLIGHT_TEST_DB_NAME user=$GREENLIGHT_TEST_DB_ROLE sslmode=disable"
+cd books/lets-go-further
+go test ./greenlight/internal/data \
+  -run '^TestMovieModelInsertAndGetWithPostgres$' -count=1 -v
+# Run the same command a second time to verify repeatable migrations.
+go test ./greenlight/internal/data \
+  -run '^TestMovieModelInsertAndGetWithPostgres$' -count=1 -v
+```
+
+The example uses a Linux local PostgreSQL socket and peer authentication. Set
+`GREENLIGHT_TEST_DB_ROLE` to the PostgreSQL role your environment provides, and adapt `host`, `port`,
+and SSL settings in the DSN when needed. If the database already exists, reuse it only after confirming
+that it is the same disposable test database; do not point the variables at a production or shared
+database.
+
+Before the test starts, it verifies that the DSN points to exactly
+`GREENLIGHT_TEST_DB_NAME`, requires the `_test` suffix, and logs database owner and connected user.
+It applies each checked-in migration once, recording the filename and SHA-256 checksum in the
+test-only `stage5_test_migrations` ledger. Later runs verify the checksum and skip completed
+migrations; a changed migration requires a fresh disposable database.
+
+The test verifies a database constraint, generated fields, the PostgreSQL `text[]` round trip, and
+optimistic locking, then deletes its exact fixture by generated ID. Never point either variable at a
+production or shared database. Without `GREENLIGHT_TEST_DB_DSN`, ordinary `go test ./...` remains
+database-free and the integration test is skipped. Use standard PostgreSQL credential handling
+(`.pgpass`, `PGPASSFILE`, local socket, or an environment variable); do not commit credentials.
 
 ## Practical choices
 

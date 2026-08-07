@@ -85,11 +85,11 @@ Current checkpoint (2026-08-07):
 - strengthened no-call HTTP assertions, validation boundaries, cleanup, constraints, and the
   optimistic-locking scenario after Review Mode;
 - ordinary module test suites pass without PostgreSQL; the integration slice skips clearly when
-  the DSN is absent.
+  the DSN is absent;
+- verified the test-only migration ledger and database contract with two successful targeted runs
+  against a local disposable database; its identifiers and credentials remain private.
 
 Remaining work:
 
 - Step 5: evaluate Testify in one focused test and record the decision;
-- make the opt-in migration setup repeatable and run it against a confirmed disposable PostgreSQL
-  database;
 - update the final Stage 5 status after the remaining step and its verification.

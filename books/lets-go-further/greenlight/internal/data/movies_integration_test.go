@@ -1,10 +1,14 @@
 package data
 
 import (
+	"context"
+	"crypto/sha256"
 	"database/sql"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -14,6 +18,10 @@ func TestMovieModelInsertAndGetWithPostgres(t *testing.T) {
 	dsn := os.Getenv("GREENLIGHT_TEST_DB_DSN")
 	if dsn == "" {
 		t.Skip("GREENLIGHT_TEST_DB_DSN is not set; skipping PostgreSQL integration test")
+	}
+	expectedDatabase := os.Getenv("GREENLIGHT_TEST_DB_NAME")
+	if expectedDatabase == "" {
+		t.Fatal("GREENLIGHT_TEST_DB_NAME is not set; refusing to use an unnamed test database")
 	}
 
 	db, err := sql.Open("postgres", dsn)
@@ -29,6 +37,7 @@ func TestMovieModelInsertAndGetWithPostgres(t *testing.T) {
 	if err := db.Ping(); err != nil {
 		t.Fatalf("ping test database: %v", err)
 	}
+	verifyTestDatabase(t, db, expectedDatabase)
 	applyMovieMigrations(t, db)
 
 	movie := &Movie{
@@ -88,8 +97,39 @@ func TestMovieModelInsertAndGetWithPostgres(t *testing.T) {
 	}
 }
 
+func verifyTestDatabase(t *testing.T, db *sql.DB, expectedDatabase string) {
+	t.Helper()
+
+	var databaseName, currentUser, owner string
+	err := db.QueryRow(`
+		SELECT current_database(), current_user, pg_get_userbyid(datdba)
+		FROM pg_database
+		WHERE datname = current_database()`).Scan(&databaseName, &currentUser, &owner)
+	if err != nil {
+		t.Fatalf("inspect test database identity: %v", err)
+	}
+	if databaseName != expectedDatabase {
+		t.Fatalf("connected database = %q, want GREENLIGHT_TEST_DB_NAME %q", databaseName, expectedDatabase)
+	}
+	if !strings.HasSuffix(databaseName, "_test") {
+		t.Fatalf("test database name %q must end with _test", databaseName)
+	}
+	t.Logf("using test database %q (owner=%q, connected user=%q)", databaseName, owner, currentUser)
+}
+
 func applyMovieMigrations(t *testing.T, db *sql.DB) {
 	t.Helper()
+
+	ctx := context.Background()
+	if _, err := db.ExecContext(ctx, `
+		CREATE TABLE IF NOT EXISTS stage5_test_migrations (
+			name text PRIMARY KEY,
+			checksum text NOT NULL,
+			applied_at timestamp(0) with time zone NOT NULL DEFAULT NOW()
+		)`); err != nil {
+		t.Fatalf("create test migration ledger: %v", err)
+	}
+
 	for _, name := range []string{
 		"000001_create_movie_table.up.sql",
 		"000002_add_movies_check_constraints.up.sql",
@@ -100,8 +140,41 @@ func applyMovieMigrations(t *testing.T, db *sql.DB) {
 		if err != nil {
 			t.Fatalf("read migration %s: %v", path, err)
 		}
-		if _, err := db.Exec(string(sqlBytes)); err != nil {
-			t.Fatalf("apply migration %s: %v", name, err)
+
+		checksum := fmt.Sprintf("%x", sha256.Sum256(sqlBytes))
+		var appliedChecksum string
+		err = db.QueryRowContext(ctx, `SELECT checksum FROM stage5_test_migrations WHERE name = $1`, name).Scan(&appliedChecksum)
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			applyMigration(t, db, name, checksum, string(sqlBytes))
+		case err != nil:
+			t.Fatalf("read migration ledger for %s: %v", name, err)
+		case appliedChecksum != checksum:
+			t.Fatalf("migration %s checksum changed after it was applied; use a fresh disposable database", name)
 		}
+	}
+}
+
+func applyMigration(t *testing.T, db *sql.DB, name, checksum, statement string) {
+	t.Helper()
+
+	tx, err := db.BeginTx(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("begin migration %s: %v", name, err)
+	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && !errors.Is(err, sql.ErrTxDone) {
+			t.Errorf("rollback migration %s: %v", name, err)
+		}
+	}()
+
+	if _, err := tx.Exec(statement); err != nil {
+		t.Fatalf("apply migration %s: %v", name, err)
+	}
+	if _, err := tx.Exec(`INSERT INTO stage5_test_migrations (name, checksum) VALUES ($1, $2)`, name, checksum); err != nil {
+		t.Fatalf("record migration %s: %v", name, err)
+	}
+	if err := tx.Commit(); err != nil {
+		t.Fatalf("commit migration %s: %v", name, err)
 	}
 }
