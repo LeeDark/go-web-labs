@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -59,6 +60,12 @@ func TestMovieModelInsertAndGetWithPostgres(t *testing.T) {
 	}
 	if len(got.Genres) != len(movie.Genres) || got.Genres[0] != movie.Genres[0] || got.Genres[1] != movie.Genres[1] {
 		t.Fatalf("genres = %#v, want %#v", got.Genres, movie.Genres)
+	}
+
+	stale := *got
+	stale.Version--
+	if err := model.Update(&stale); !errors.Is(err, ErrEditConflict) {
+		t.Fatalf("stale update error = %v, want %v", err, ErrEditConflict)
 	}
 }
 
