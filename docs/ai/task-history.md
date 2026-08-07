@@ -70,3 +70,21 @@ Notes:
   checks were represented by `httptest` coverage here.
 - The repository root has no `Makefile`; the unrelated Snippetbox Makefile was
   not run for this Stage 3 checkpoint.
+
+## Stage 5 - Testing lab
+
+Status: in progress (Steps 0-4 complete)
+
+Current checkpoint (2026-08-07):
+
+- audited existing test boundaries and selected focused gaps;
+- documented the testing strategy and reproducible commands;
+- added service, HTTP-contract, and opt-in PostgreSQL integration tests;
+- documented the disposable API Core test database and its `GREENLIGHT_TEST_DB_DSN` guard;
+- ordinary module test suites pass without PostgreSQL; the integration slice skips clearly when
+  the DSN is absent.
+
+Remaining work:
+
+- Step 5: evaluate Testify in one focused test and record the decision;
+- update the final Stage 5 status after the remaining step and its verification.

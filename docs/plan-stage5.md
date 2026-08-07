@@ -25,7 +25,7 @@ rather than duplicate happy paths to inflate a test count.
 - [ ] Use table-driven service tests for business rules and edge cases.
 - [ ] Use small fakes or in-memory adapters for observable service behavior.
 - [ ] Use `httptest` for handler and router HTTP contracts.
-- [ ] Add one opt-in integration slice for a real database/migration risk.
+- [x] Add one opt-in integration slice for a real database/migration risk.
 - [ ] Document commands, fixtures, test boundaries, and troubleshooting in
   `labs/testing/README.md`.
 - [ ] Add safe test-database bootstrap notes for the API Core study project.
@@ -86,11 +86,11 @@ when it is absent, and operate only on an explicitly disposable database.
 The following projects are read-only references for testing patterns. Their code, test suites, and
 test gaps are outside this stage's implementation scope and do not add to the selected nine checks.
 
-| Reference project | Reusable observation | Stage 5 use |
-|---|---|---|
-| `book-social` | Manual repository fakes support service tests; `httptest` covers handler rendering and application routes; SQLite integration tests use dedicated helpers. | Keep fakes small and use a real database only for persistence behavior that cannot be reproduced otherwise. |
-| `go-service-starter` | Table-driven handler tests assert status, JSON, and `Content-Type`; route registration and in-memory store behavior have distinct tests. | Keep HTTP-contract, router, and in-memory behavior tests at separate, narrow levels. |
-| `mslab-wire-nats` | Event-envelope JSON round trips are tested as contracts; health/readiness handlers are tested without starting services or infrastructure. | Treat message contracts as their own boundary in future event-driven work; this is not needed for the current API-focused Stage 5 implementation. |
+| Reference project    | Reusable observation                                                                                                                                       | Stage 5 use                                                                                                                                       |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `book-social`        | Manual repository fakes support service tests; `httptest` covers handler rendering and application routes; SQLite integration tests use dedicated helpers. | Keep fakes small and use a real database only for persistence behavior that cannot be reproduced otherwise.                                       |
+| `go-service-starter` | Table-driven handler tests assert status, JSON, and `Content-Type`; route registration and in-memory store behavior have distinct tests.                   | Keep HTTP-contract, router, and in-memory behavior tests at separate, narrow levels.                                                              |
+| `mslab-wire-nats`    | Event-envelope JSON round trips are tested as contracts; health/readiness handlers are tested without starting services or infrastructure.                 | Treat message contracts as their own boundary in future event-driven work; this is not needed for the current API-focused Stage 5 implementation. |
 
 Do not modify these projects, run their test suites, or include their uncovered behavior in this
 repository's test-count target without a separate task.
@@ -113,23 +113,23 @@ repository's test-count target without a separate task.
 
 ### 3. Close HTTP-contract gaps
 
-- [ ] Add `httptest` cases for route/method behavior, status, JSON envelope,
+- [x] Add `httptest` cases for route/method behavior, status, JSON envelope,
   `Content-Type`, `Location`, error codes, and empty `204` responses where needed.
-- [ ] Use a fake service when testing HTTP-to-application mapping.
-- [ ] Add one in-process route-level test only when it protects an untested
+- [x] Use a fake service when testing HTTP-to-application mapping.
+- [x] Add one in-process route-level test only when it protects an untested
   router/middleware/handler integration point.
-- [ ] Verify that safe `500` responses never expose internal details.
+- [x] Verify that safe `500` responses never expose internal details.
 
 ### 4. Add an opt-in database integration slice
 
-- [ ] Choose one database-backed API Core operation that cannot be reliably tested with a fake.
-- [ ] Put the integration test next to that database code.
-- [ ] Require a dedicated `GREENLIGHT_TEST_DB_DSN`; without it, the test must skip with a clear
+- [x] Choose one database-backed API Core operation that cannot be reliably tested with a fake.
+- [x] Put the integration test next to that database code.
+- [x] Require a dedicated `GREENLIGHT_TEST_DB_DSN`; without it, the test must skip with a clear
   message.
-- [ ] Document manual creation and migration of a disposable, non-production database.
-- [ ] Isolate or clean test data predictably, with the exact cleanup target known before running
+- [x] Document manual creation and migration of a disposable, non-production database.
+- [x] Isolate or clean test data predictably, with the exact cleanup target known before running
   tests.
-- [ ] Ensure ordinary `go test ./...` does not require a database.
+- [x] Ensure ordinary `go test ./...` does not require a database.
 
 ### 5. Explore Testify with a real test case
 
@@ -164,10 +164,10 @@ repository's test-count target without a separate task.
 
 ## Definition of done
 
-- [ ] The selected 5–10 new tests close documented behavior gaps.
-- [ ] Unit, HTTP-contract, and opt-in integration boundaries are clear in the testing README.
-- [ ] Commands are reproducible without hidden infrastructure.
-- [ ] The integration test is safe to skip without a dedicated test database.
+- [x] The selected 5–10 new tests close documented behavior gaps.
+- [x] Unit, HTTP-contract, and opt-in integration boundaries are clear in the testing README.
+- [x] Commands are reproducible without hidden infrastructure.
+- [x] The integration test is safe to skip without a dedicated test database.
 - [ ] No duplicate application, unsafe database cleanup, or unnecessary testing framework was
   introduced.
 
