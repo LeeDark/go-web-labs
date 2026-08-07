@@ -97,11 +97,11 @@ repository's test-count target without a separate task.
 
 ### 1. Document the testing strategy
 
-- [ ] Create `labs/testing/README.md`.
-- [ ] Describe unit/service, handler/router, and integration/database boundaries.
-- [ ] Document module-specific test commands and their working directories.
-- [ ] Define deterministic fixture and cleanup rules.
-- [ ] Explain when to use table-driven tests, fakes, `httptest.NewRecorder`, and
+- [x] Create `labs/testing/README.md`.
+- [x] Describe unit/service, handler/router, and integration/database boundaries.
+- [x] Document module-specific test commands and their working directories.
+- [x] Define deterministic fixture and cleanup rules.
+- [x] Explain when to use table-driven tests, fakes, `httptest.NewRecorder`, and
   `httptest.NewServer`.
 
 ### 2. Close unit-test gaps
