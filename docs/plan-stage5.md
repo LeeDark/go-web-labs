@@ -81,6 +81,20 @@ arrays, database-generated fields, check constraints, and optimistic-locking sem
 cannot reproduce. The initial implementation will use a dedicated `GREENLIGHT_TEST_DB_DSN`, skip
 when it is absent, and operate only on an explicitly disposable database.
 
+#### External reference audit — 2026-08-07
+
+The following projects are read-only references for testing patterns. Their code, test suites, and
+test gaps are outside this stage's implementation scope and do not add to the selected nine checks.
+
+| Reference project | Reusable observation | Stage 5 use |
+|---|---|---|
+| `book-social` | Manual repository fakes support service tests; `httptest` covers handler rendering and application routes; SQLite integration tests use dedicated helpers. | Keep fakes small and use a real database only for persistence behavior that cannot be reproduced otherwise. |
+| `go-service-starter` | Table-driven handler tests assert status, JSON, and `Content-Type`; route registration and in-memory store behavior have distinct tests. | Keep HTTP-contract, router, and in-memory behavior tests at separate, narrow levels. |
+| `mslab-wire-nats` | Event-envelope JSON round trips are tested as contracts; health/readiness handlers are tested without starting services or infrastructure. | Treat message contracts as their own boundary in future event-driven work; this is not needed for the current API-focused Stage 5 implementation. |
+
+Do not modify these projects, run their test suites, or include their uncovered behavior in this
+repository's test-count target without a separate task.
+
 ### 1. Document the testing strategy
 
 - [ ] Create `labs/testing/README.md`.
