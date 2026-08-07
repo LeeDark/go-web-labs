@@ -19,6 +19,7 @@ type fakeService struct {
 	book        books.Book
 	err         error
 	createInput books.CreateBookInput
+	updateID    int64
 	updateInput books.UpdateBookInput
 	deleteID    int64
 }
@@ -30,6 +31,7 @@ func (s *fakeService) Create(_ context.Context, input books.CreateBookInput) (bo
 	return s.book, s.err
 }
 func (s *fakeService) Update(_ context.Context, id int64, input books.UpdateBookInput) (books.Book, error) {
+	s.updateID = id
 	s.updateInput = input
 	return s.book, s.err
 }
@@ -66,6 +68,7 @@ func TestBooksHandlerGet(t *testing.T) {
 		{name: "existing", id: "1", service: &fakeService{book: books.Book{ID: 1, Title: "Go", Author: "Author"}}, want: http.StatusOK, body: `"title":"Go"`},
 		{name: "missing", id: "99", service: &fakeService{err: books.ErrBookNotFound}, want: http.StatusNotFound, body: `"code":"book_not_found"`},
 		{name: "invalid ID", id: "zero", service: &fakeService{}, want: http.StatusBadRequest, body: `"code":"invalid_id"`},
+		{name: "internal error", id: "1", service: &fakeService{err: errors.New("database password leaked")}, want: http.StatusInternalServerError, body: `"code":"internal_error"`},
 	}
 
 	for _, test := range tests {
@@ -76,6 +79,9 @@ func TestBooksHandlerGet(t *testing.T) {
 			handler.Get(recorder, request)
 			if recorder.Code != test.want || !strings.Contains(recorder.Body.String(), test.body) {
 				t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+			}
+			if test.name == "internal error" && strings.Contains(recorder.Body.String(), "password") {
+				t.Fatalf("internal error exposed details: %s", recorder.Body.String())
 			}
 		})
 	}
@@ -185,6 +191,21 @@ func TestBooksHandlerUpdateRejectsInvalidInput(t *testing.T) {
 	}
 }
 
+func TestBooksHandlerUpdateRejectsInvalidIDWithoutCallingService(t *testing.T) {
+	service := &fakeService{}
+	handler := newTestHandler(service)
+	recorder := httptest.NewRecorder()
+	request := withRouteID(jsonRequest(`{"title":"Updated"}`), "zero")
+	handler.Update(recorder, request)
+
+	if recorder.Code != http.StatusBadRequest || !strings.Contains(recorder.Body.String(), `"code":"invalid_id"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+	if service.updateID != 0 {
+		t.Fatalf("Update called with ID %d", service.updateID)
+	}
+}
+
 func TestBooksHandlerUpdateRejectsUnsupportedMediaType(t *testing.T) {
 	handler := newTestHandler(&fakeService{})
 	recorder := httptest.NewRecorder()
@@ -250,6 +271,21 @@ func TestBooksHandlerDeleteMapsMissingBook(t *testing.T) {
 
 	if recorder.Code != http.StatusNotFound || !strings.Contains(recorder.Body.String(), `"code":"book_not_found"`) {
 		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestBooksHandlerDeleteRejectsInvalidIDWithoutCallingService(t *testing.T) {
+	service := &fakeService{}
+	handler := newTestHandler(service)
+	recorder := httptest.NewRecorder()
+	request := withRouteID(httptest.NewRequest(http.MethodDelete, "/books/zero", nil), "zero")
+	handler.Delete(recorder, request)
+
+	if recorder.Code != http.StatusBadRequest || !strings.Contains(recorder.Body.String(), `"code":"invalid_id"`) {
+		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
+	}
+	if service.deleteID != 0 {
+		t.Fatalf("Delete called with ID %d", service.deleteID)
 	}
 }
 
