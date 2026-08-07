@@ -74,10 +74,33 @@ func TestServiceCreate(t *testing.T) {
 	}
 }
 
-func TestServiceGetMapsMissingBook(t *testing.T) {
-	_, err := NewService(&fakeRepository{getErr: ErrBookNotFound}).Get(context.Background(), 99)
-	if !errors.Is(err, ErrBookNotFound) {
-		t.Fatalf("Get() error = %v, want ErrBookNotFound", err)
+func TestServiceListPropagatesRepositoryError(t *testing.T) {
+	repositoryErr := errors.New("database unavailable")
+
+	_, err := NewService(&fakeRepository{listErr: repositoryErr}).List(context.Background())
+	if !errors.Is(err, repositoryErr) {
+		t.Fatalf("List() error = %v, want %v", err, repositoryErr)
+	}
+}
+
+func TestServiceGet(t *testing.T) {
+	repositoryErr := errors.New("database unavailable")
+	tests := []struct {
+		name    string
+		repo    *fakeRepository
+		wantErr error
+	}{
+		{name: "maps missing book", repo: &fakeRepository{getErr: ErrBookNotFound}, wantErr: ErrBookNotFound},
+		{name: "propagates repository error", repo: &fakeRepository{getErr: repositoryErr}, wantErr: repositoryErr},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewService(tt.repo).Get(context.Background(), 99)
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("Get() error = %v, want %v", err, tt.wantErr)
+			}
+		})
 	}
 }
 

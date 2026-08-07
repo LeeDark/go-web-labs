@@ -106,10 +106,10 @@ repository's test-count target without a separate task.
 
 ### 2. Close unit-test gaps
 
-- [ ] Add table rows only for uncovered validation, duplicate, missing-record, state, or
+- [x] Add table rows only for uncovered validation, duplicate, missing-record, state, or
   repository-error behavior.
-- [ ] Keep fakes small, configurable, and readable; capture only inputs that a test must observe.
-- [ ] Keep service tests independent of JSON, Chi, a live server, and external state.
+- [x] Keep fakes small, configurable, and readable; capture only inputs that a test must observe.
+- [x] Keep service tests independent of JSON, Chi, a live server, and external state.
 
 ### 3. Close HTTP-contract gaps
 
