@@ -8,6 +8,11 @@ API or a shared test package: tests live beside the code whose behavior they pro
 Stage 5 focuses on choosing the closest useful test boundary. A passing test count is not a goal by
 itself.
 
+Related review artifacts:
+
+- [`test-matrix.md`](test-matrix.md) maps the selected risks to concrete tests and evidence status.
+- [`review-checklist.md`](review-checklist.md) provides a reusable boundary and safety checklist.
+
 ## Test boundaries
 
 | Boundary             | Question it answers                                                                         | Preferred tools                                                           | Current examples                                                                                  |
@@ -16,7 +21,7 @@ itself.
 | Adapter / repository | Does a concrete in-memory adapter preserve its local behavior?                              | Standard `testing`; concurrency checks when the adapter owns shared state | `labs/layered-api/internal/books/memory_repository_test.go`                                       |
 | Handler / router     | Does an HTTP request produce the promised status, headers, and JSON?                        | `httptest.NewRequest`, `httptest.NewRecorder`, fake services              | `labs/rest-api/cmd/api/handlers_test.go`, `labs/layered-api/internal/http/handlers/books_test.go` |
 | Route integration    | Are routing, middleware, handler, and real in-memory dependencies wired together correctly? | In-process `httptest` against the router                                  | `labs/layered-api/internal/http/router/router_test.go`                                            |
-| Database integration | Do migrations, SQL, driver behavior, and database constraints agree?                        | Dedicated disposable database; explicit setup and cleanup                 | Planned for API Core only; Snippetbox has an existing MySQL example                               |
+| Database integration | Do migrations, SQL, driver behavior, and database constraints agree?                        | Dedicated disposable database; explicit setup and cleanup                 | Opt-in API Core PostgreSQL test; Snippetbox has an existing MySQL example                          |
 
 Choose the lowest level that can expose the risk. Do not repeat a happy path at every layer merely
 to increase coverage.
@@ -55,8 +60,8 @@ test will instead require an explicit
 
 ### API Core PostgreSQL integration
 
-Create a dedicated disposable PostgreSQL database, apply the API Core migrations from
-`books/lets-go-further/greenlight/migrations`, and export its DSN only for the opt-in test:
+Create a dedicated empty disposable PostgreSQL database and export its DSN only for the opt-in test.
+The test applies the checked-in migrations from `books/lets-go-further/greenlight/migrations`:
 
 ```bash
 createdb greenlight_test
@@ -65,11 +70,11 @@ cd books/lets-go-further
 GOCACHE=/tmp/go-web-labs-go-cache GREENLIGHT_TEST_DB_DSN="$GREENLIGHT_TEST_DB_DSN" go test ./greenlight/internal/data -run TestMovieModelInsertAndGetWithPostgres -count=1
 ```
 
-The test applies both checked-in migrations to that disposable database, inserts one known fixture,
-verifies generated fields and the PostgreSQL `text[]` round trip, then deletes that exact row by its
-generated ID. Never point the variable at a production or shared database. Without the variable,
-ordinary `go test ./...`
-remains database-free and the integration test is skipped.
+The test applies all checked-in migrations to that disposable database, verifies a database
+constraint, inserts one known fixture, checks generated fields, the PostgreSQL `text[]` round trip,
+and optimistic locking, then deletes that exact row by its generated ID. Never point the variable at
+a production or shared database. Without the variable, ordinary `go test ./...` remains
+database-free and the integration test is skipped.
 
 ## Practical choices
 
@@ -104,5 +109,5 @@ tests may require a runtime that permits local listening sockets.
 - `testify/assert` and `testify/require` may be evaluated in one focused test later in this stage;
   do not rewrite the suite or introduce `testify/suite`
   for consistency.
-- The planned PostgreSQL integration test belongs next to API Core database code, not in this
-  folder, and must remain opt-in.
+- The PostgreSQL integration test belongs next to API Core database code, not in this folder, and
+  remains opt-in.

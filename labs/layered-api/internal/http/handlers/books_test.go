@@ -19,8 +19,10 @@ type fakeService struct {
 	book        books.Book
 	err         error
 	createInput books.CreateBookInput
+	updateCalls int
 	updateID    int64
 	updateInput books.UpdateBookInput
+	deleteCalls int
 	deleteID    int64
 }
 
@@ -31,11 +33,13 @@ func (s *fakeService) Create(_ context.Context, input books.CreateBookInput) (bo
 	return s.book, s.err
 }
 func (s *fakeService) Update(_ context.Context, id int64, input books.UpdateBookInput) (books.Book, error) {
+	s.updateCalls++
 	s.updateID = id
 	s.updateInput = input
 	return s.book, s.err
 }
 func (s *fakeService) Delete(_ context.Context, id int64) error {
+	s.deleteCalls++
 	s.deleteID = id
 	return s.err
 }
@@ -201,8 +205,8 @@ func TestBooksHandlerUpdateRejectsInvalidIDWithoutCallingService(t *testing.T) {
 	if recorder.Code != http.StatusBadRequest || !strings.Contains(recorder.Body.String(), `"code":"invalid_id"`) {
 		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
 	}
-	if service.updateID != 0 {
-		t.Fatalf("Update called with ID %d", service.updateID)
+	if service.updateCalls != 0 {
+		t.Fatalf("Update called %d times with ID %d", service.updateCalls, service.updateID)
 	}
 }
 
@@ -284,8 +288,8 @@ func TestBooksHandlerDeleteRejectsInvalidIDWithoutCallingService(t *testing.T) {
 	if recorder.Code != http.StatusBadRequest || !strings.Contains(recorder.Body.String(), `"code":"invalid_id"`) {
 		t.Fatalf("response = %d %s", recorder.Code, recorder.Body.String())
 	}
-	if service.deleteID != 0 {
-		t.Fatalf("Delete called with ID %d", service.deleteID)
+	if service.deleteCalls != 0 {
+		t.Fatalf("Delete called %d times with ID %d", service.deleteCalls, service.deleteID)
 	}
 }
 

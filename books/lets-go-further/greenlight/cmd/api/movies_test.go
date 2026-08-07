@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -39,8 +40,14 @@ func TestCreateMovieHandlerRejectsInvalidJSON(t *testing.T) {
 			if got := recorder.Header().Get("Content-Type"); got != "application/json" {
 				t.Fatalf("Content-Type = %q", got)
 			}
-			if !strings.Contains(recorder.Body.String(), `"error"`) || !strings.Contains(recorder.Body.String(), tt.want) {
-				t.Fatalf("response = %s", recorder.Body.String())
+			var response struct {
+				Error string `json:"error"`
+			}
+			if err := json.NewDecoder(recorder.Body).Decode(&response); err != nil {
+				t.Fatalf("decode response: %v", err)
+			}
+			if !strings.Contains(response.Error, tt.want) {
+				t.Fatalf("error = %q, want substring %q", response.Error, tt.want)
 			}
 		})
 	}
@@ -59,9 +66,15 @@ func TestCreateMovieHandlerReturnsValidationErrorBeforeDatabaseAccess(t *testing
 	if got := recorder.Header().Get("Content-Type"); got != "application/json" {
 		t.Fatalf("Content-Type = %q", got)
 	}
+	var response struct {
+		Error map[string]string `json:"error"`
+	}
+	if err := json.NewDecoder(recorder.Body).Decode(&response); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
 	for _, field := range []string{"title", "year", "runtime", "genres"} {
-		if !strings.Contains(recorder.Body.String(), `"`+field+`"`) {
-			t.Fatalf("validation response missing %q: %s", field, recorder.Body.String())
+		if response.Error[field] == "" {
+			t.Fatalf("validation response missing %q: %#v", field, response.Error)
 		}
 	}
 }
@@ -78,7 +91,16 @@ func TestRoutesReturnJSONForUnsupportedMethod(t *testing.T) {
 	if got := recorder.Header().Get("Content-Type"); got != "application/json" {
 		t.Fatalf("Content-Type = %q", got)
 	}
-	if !strings.Contains(recorder.Body.String(), `"error"`) || !strings.Contains(recorder.Body.String(), "PUT method is not supported") {
-		t.Fatalf("response = %s", recorder.Body.String())
+	if got := recorder.Header().Get("Allow"); got != "OPTIONS, POST" {
+		t.Fatalf("Allow = %q, want %q", got, "OPTIONS, POST")
+	}
+	var response struct {
+		Error string `json:"error"`
+	}
+	if err := json.NewDecoder(recorder.Body).Decode(&response); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !strings.Contains(response.Error, "PUT method is not supported") {
+		t.Fatalf("error = %q", response.Error)
 	}
 }

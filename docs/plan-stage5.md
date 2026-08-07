@@ -103,6 +103,7 @@ repository's test-count target without a separate task.
 - [x] Define deterministic fixture and cleanup rules.
 - [x] Explain when to use table-driven tests, fakes, `httptest.NewRecorder`, and
   `httptest.NewServer`.
+- [x] Add a concrete test matrix and reusable testing review checklist.
 
 ### 2. Close unit-test gaps
 
@@ -130,6 +131,17 @@ repository's test-count target without a separate task.
 - [x] Isolate or clean test data predictably, with the exact cleanup target known before running
   tests.
 - [x] Ensure ordinary `go test ./...` does not require a database.
+
+#### Deferred database follow-up
+
+These High findings may be completed after Step 5, but must remain visible before the final Stage 5
+handoff:
+
+- [ ] Make the migration setup repeatable for reruns against the same disposable database, or
+  document and verify an exact fresh-database lifecycle.
+- [ ] Confirm the concrete test database name, owner, purpose, and disposable non-production status;
+  then run the targeted PostgreSQL integration test and record runtime evidence separately from a
+  skipped result.
 
 ### 5. Explore Testify with a real test case
 
@@ -164,9 +176,11 @@ repository's test-count target without a separate task.
 
 ## Definition of done
 
-- [x] The selected 5–10 new tests close documented behavior gaps.
+- [ ] The selected 5–10 new tests close documented behavior gaps; PostgreSQL checks remain
+  runtime-unverified until they run against a confirmed disposable database.
 - [x] Unit, HTTP-contract, and opt-in integration boundaries are clear in the testing README.
-- [x] Commands are reproducible without hidden infrastructure.
+- [ ] Commands are reproducible without hidden infrastructure; the opt-in migration setup still
+  needs a repeatable rerun strategy.
 - [x] The integration test is safe to skip without a dedicated test database.
 - [ ] No duplicate application, unsafe database cleanup, or unnecessary testing framework was
   introduced.
