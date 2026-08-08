@@ -2,7 +2,8 @@
 
 ## Status
 
-**Planned.**
+**Stage 5 complete.** Steps 0–6 are complete; the selected test boundaries, opt-in PostgreSQL
+integration slice, Testify evaluation, documentation, and handoff checks are recorded below.
 
 Stage 5 will make the repository's testing practice explicit: add or fix a small backend behavior
 and cover the relevant risk with a focused test.
@@ -133,10 +134,9 @@ repository's test-count target without a separate task.
   tests.
 - [x] Ensure ordinary `go test ./...` does not require a database.
 
-#### Deferred database follow-up
+#### Database follow-up completed before handoff
 
-These High findings may be completed after Step 5, but must remain visible before the final Stage 5
-handoff:
+These High findings were closed before the final Stage 5 handoff:
 
 - [x] Verify the repeatable migration setup by running the targeted integration test twice against the
   same disposable database. On 2026-08-07 both runs passed with the test-only migration ledger.
@@ -157,12 +157,12 @@ handoff:
 
 ### 6. Verify and hand off
 
-- [ ] Update only README files whose actual commands or behavior changed.
-- [ ] Run the narrowest affected tests first, then `go test ./...` and
+- [x] Update only README files whose actual commands or behavior changed.
+- [x] Run the narrowest affected tests first, then `go test ./...` and
   `go vet ./...` for each affected module.
-- [ ] Run the integration command only against an explicitly configured disposable database; report
+- [x] Run the integration command only against an explicitly configured disposable database; report
   a skipped integration test accurately.
-- [ ] Run `git diff --check` and record pre-existing failures separately.
+- [x] Run `git diff --check` and record pre-existing failures separately.
 
 ## Out of scope
 
@@ -182,7 +182,7 @@ handoff:
 - [x] Commands are reproducible with an explicitly provisioned disposable database; the migration
   ledger supports repeat runs.
 - [x] The integration test is safe to skip without a dedicated test database.
-- [ ] No duplicate application, unsafe database cleanup, or unnecessary testing framework was
+- [x] No duplicate application, unsafe database cleanup, or unnecessary testing framework was
   introduced.
 
 ## Handoff

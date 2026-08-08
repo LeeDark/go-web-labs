@@ -73,7 +73,7 @@ Notes:
 
 ## Stage 5 - Testing lab
 
-Status: in progress (Steps 0-5 complete)
+Status: completed (Steps 0-6 complete)
 
 Current checkpoint (2026-08-07):
 
@@ -93,4 +93,5 @@ Current checkpoint (2026-08-07):
 
 Remaining work:
 
-- update the final Stage 5 status after the remaining step and its verification.
+- Stage 5 handoff completed after final module verification, DB evidence, documentation, and
+  focused Testify evaluation.
