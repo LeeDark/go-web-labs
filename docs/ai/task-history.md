@@ -73,7 +73,7 @@ Notes:
 
 ## Stage 5 - Testing lab
 
-Status: in progress (Steps 0-4 complete)
+Status: in progress (Steps 0-5 complete)
 
 Current checkpoint (2026-08-07):
 
@@ -88,8 +88,9 @@ Current checkpoint (2026-08-07):
   the DSN is absent;
 - verified the test-only migration ledger and database contract with two successful targeted runs
   against a local disposable database; its identifiers and credentials remain private.
+- evaluated `testify/assert` and `testify/require` in one focused table-driven HTTP test; standard
+  library assertions and manual fakes remain the default, with no `testify/mock` or `testify/suite`.
 
 Remaining work:
 
-- Step 5: evaluate Testify in one focused test and record the decision;
 - update the final Stage 5 status after the remaining step and its verification.

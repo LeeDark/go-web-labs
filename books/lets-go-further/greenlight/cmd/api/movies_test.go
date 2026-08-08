@@ -8,6 +8,9 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func newTestApplication() *application {
@@ -34,21 +37,13 @@ func TestCreateMovieHandlerRejectsInvalidJSON(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/v1/movies", strings.NewReader(tt.body))
 			app.createMovieHandler(recorder, request)
 
-			if recorder.Code != http.StatusBadRequest {
-				t.Fatalf("status = %d, want %d", recorder.Code, http.StatusBadRequest)
-			}
-			if got := recorder.Header().Get("Content-Type"); got != "application/json" {
-				t.Fatalf("Content-Type = %q", got)
-			}
+			assert.Equal(t, http.StatusBadRequest, recorder.Code)
+			assert.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
 			var response struct {
 				Error string `json:"error"`
 			}
-			if err := json.NewDecoder(recorder.Body).Decode(&response); err != nil {
-				t.Fatalf("decode response: %v", err)
-			}
-			if !strings.Contains(response.Error, tt.want) {
-				t.Fatalf("error = %q, want substring %q", response.Error, tt.want)
-			}
+			require.NoError(t, json.NewDecoder(recorder.Body).Decode(&response))
+			assert.Contains(t, response.Error, tt.want)
 		})
 	}
 }

@@ -144,9 +144,10 @@ tests may require a runtime that permits local listening sockets.
 ## Stage 5 decisions
 
 - Standard-library assertions and manual fakes are the default.
-- `testify/assert` and `testify/require` may be evaluated in one focused test later in this stage;
-  do not rewrite the suite or introduce `testify/suite`
-  for consistency.
+- `testify/assert` and `testify/require` were evaluated in one focused table-driven HTTP test; they
+  are optional readability tools, not a reason to rewrite the suite.
+- `testify/mock` was considered but not used: the existing manual fakes remain clearer when the test
+  needs only observable inputs and configurable outcomes. `testify/suite` is not introduced.
 - The PostgreSQL integration test belongs next to API Core database code, not in this folder, and
   remains opt-in.
 
@@ -158,3 +159,12 @@ tests may require a runtime that permits local listening sockets.
   keep business-rule and HTTP-contract checks at their narrower boundaries.
 - Docker Compose, Testcontainers, and CI infrastructure are appropriate when a real multi-service or
   CI reproducibility need exists. They are not a required baseline for focused local tests.
+
+### Future Testify guidance
+
+- Do not migrate the whole Greenlight suite to Testify; use `assert`/`require` selectively in new or
+  changed tests when they improve intent.
+- Keep manual fakes as the default. Use `testify/mock` only when a real interaction contract has
+  multiple collaborators, call counts, arguments, or ordering to verify.
+- Use `testify/suite` only for a genuinely stateful integration group with shared setup/teardown;
+  keep simple unit and HTTP tests as ordinary `testing` functions.

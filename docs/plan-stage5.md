@@ -145,14 +145,14 @@ handoff:
 
 ### 5. Explore Testify with a real test case
 
-- [ ] Compare standard-library assertions (`if`/`t.Fatalf`) with
+- [x] Compare standard-library assertions (`if`/`t.Fatalf`) with
   `testify/assert` and `testify/require` in one small existing or new table-driven test.
-- [ ] Evaluate readability, failure output, `require`'s early exit, and whether the additional
+- [x] Evaluate readability, failure output, `require`'s early exit, and whether the additional
   dependency helps that specific case.
-- [ ] Read about `testify/mock`, but retain the readable manual fakes from Stages 3–4 unless
+- [x] Read about `testify/mock`, but retain the readable manual fakes from Stages 3–4 unless
   interaction verification is genuinely required.
-- [ ] Do not rewrite the existing suite or introduce `testify/suite` merely for consistency.
-- [ ] Record the decision in `labs/testing/README.md`: stdlib and fakes remain the default;
+- [x] Do not rewrite the existing suite or introduce `testify/suite` merely for consistency.
+- [x] Record the decision in `labs/testing/README.md`: stdlib and fakes remain the default;
   `assert`/`require` are optional readability tools.
 
 ### 6. Verify and hand off
