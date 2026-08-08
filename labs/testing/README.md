@@ -21,7 +21,7 @@ Related review artifacts:
 | Adapter / repository | Does a concrete in-memory adapter preserve its local behavior?                              | Standard `testing`; concurrency checks when the adapter owns shared state | `labs/layered-api/internal/books/memory_repository_test.go`                                       |
 | Handler / router     | Does an HTTP request produce the promised status, headers, and JSON?                        | `httptest.NewRequest`, `httptest.NewRecorder`, fake services              | `labs/rest-api/cmd/api/handlers_test.go`, `labs/layered-api/internal/http/handlers/books_test.go` |
 | Route integration    | Are routing, middleware, handler, and real in-memory dependencies wired together correctly? | In-process `httptest` against the router                                  | `labs/layered-api/internal/http/router/router_test.go`                                            |
-| Database integration | Do migrations, SQL, driver behavior, and database constraints agree?                        | Dedicated disposable database; explicit setup and cleanup                 | Opt-in API Core PostgreSQL test; Snippetbox has an existing MySQL example                          |
+| Database integration | Do migrations, SQL, driver behavior, and database constraints agree?                        | Dedicated disposable database; explicit setup and cleanup                 | Opt-in API Core PostgreSQL test; Snippetbox has an existing MySQL example                         |
 
 Choose the lowest level that can expose the risk. Do not repeat a happy path at every layer merely
 to increase coverage.
@@ -97,10 +97,10 @@ go test ./greenlight/internal/data \
 ```
 
 The example uses a Linux local PostgreSQL socket and peer authentication. Set
-`GREENLIGHT_TEST_DB_ROLE` to the PostgreSQL role your environment provides, and adapt `host`, `port`,
-and SSL settings in the DSN when needed. If the database already exists, reuse it only after confirming
-that it is the same disposable test database; do not point the variables at a production or shared
-database.
+`GREENLIGHT_TEST_DB_ROLE` to the PostgreSQL role your environment provides, and adapt `host`,
+`port`, and SSL settings in the DSN when needed. If the database already exists, reuse it only after
+confirming that it is the same disposable test database; do not point the variables at a production
+or shared database.
 
 Before the test starts, it verifies that the DSN points to exactly
 `GREENLIGHT_TEST_DB_NAME`, requires the `_test` suffix, and logs database owner and connected user.
@@ -149,3 +149,12 @@ tests may require a runtime that permits local listening sockets.
   for consistency.
 - The PostgreSQL integration test belongs next to API Core database code, not in this folder, and
   remains opt-in.
+
+### Reference-derived decisions
+
+- A test must verify the exact disposable database identity before any destructive setup or cleanup;
+  a DSN alone is not sufficient authorization to reset a schema.
+- Use database integration tests for SQL, driver, and migration risks that fakes cannot reproduce;
+  keep business-rule and HTTP-contract checks at their narrower boundaries.
+- Docker Compose, Testcontainers, and CI infrastructure are appropriate when a real multi-service or
+  CI reproducibility need exists. They are not a required baseline for focused local tests.
