@@ -27,7 +27,8 @@ Notes:
 
 ## Stage 2 - Let's Go Further API Core
 
-Status: in progress (Chapters 1-8 complete)
+Status: Chapters 1–8 complete; Chapter 9 and the stage review are deferred until `book-social` v0.4
+needs catalog filtering, sorting, and pagination.
 
 Goal:
 
@@ -46,7 +47,7 @@ Completed work (2026-07-06 to 2026-08-08):
 - added focused unit, HTTP-contract, and opt-in PostgreSQL integration tests during Stage 5;
 - added and updated Stage 2 learning notes and the implementation README.
 
-Remaining work:
+Deferred follow-up:
 
 - Chapter 9: movie list endpoint, filters, sorting, pagination, and metadata;
 - README cleanup and Stage 2 review.

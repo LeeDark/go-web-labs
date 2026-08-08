@@ -78,8 +78,9 @@ Existing examples include:
 
 ### Parallel learning tracks
 
-- Learn Go with Tests supplies just-in-time TDD, dependency-design, concurrency/context, and
-  refactoring practice for later stages; it is not a gate before implementation.
+- Learn Go with Tests starts with a small TDD foundations unit during `book-social` v0.2.5–v0.2.6,
+  then supplies just-in-time dependency-design, concurrency/context, and refactoring practice; it is
+  not a gate before implementation.
 - PostgreSQL supplies SQL/ACID/MVCC, schema, migrations, `pgx`, transactions, pool lifecycle, and
   optimistic-concurrency practice for Stage 2 and Stage 8.
 - Docker supplies image/build, networking, volume, diagnostics, and cleanup practice for Stage 8 and
@@ -105,16 +106,25 @@ Completed:
 - Stage 4: Handler → Service → Repository;
 - Stage 5: testing lab.
 
-Active:
+Current paired work:
 
-- Stage 2: `books/lets-go-further` API Core. Chapters 1–8 are complete; Chapter 9 and the stage
-  review remain.
+- `book-social` v0.2.4 HTTP Foundation with Stage 9A production HTTP notes.
+
+Next paired work:
+
+- `book-social` v0.2.5–v0.2.6 authentication with Stage 7A MPA/auth security and TDD foundations.
+
+Deferred by trigger:
+
+- Stage 2: `books/lets-go-further` API Core. Chapters 1–8 are complete; Chapter 9 and stage review
+  resume with `book-social` v0.4 catalog filtering, sorting, and pagination.
 
 Queued:
 
 - Stage 6: OpenAPI, after a real `/api/*` slice exists in `book-social`;
-- Stage 7: API/MPA security, after a stable contract and authentication use case exist.
+- Stage 7B: API-specific security, after a real API contract exists.
 
-Later stages include PostgreSQL and Docker foundations, production API topics, external integrations,
-test automation and delivery, a bridge to `go-microservices-starter`, and an Offer 1 portfolio
-package. Learn Go with Tests is a parallel just-in-time learning track, not a stage gate.
+Later stages include PostgreSQL and Docker foundations, later production API topics, external
+integrations, test automation and delivery, a bridge to `go-microservices-starter`, and recurring
+portfolio evidence/reuse reviews. Learn Go with Tests is a parallel just-in-time learning track, not
+a stage gate.

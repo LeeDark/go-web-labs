@@ -24,14 +24,19 @@ Finished:
 4. Handler → Service → Repository.
 5. Testing lab.
 
-Active:
+Current paired work:
 
-1. Finish `Let's Go Further` API Core: Chapter 9 and stage review remain after Chapters 1–8.
+1. `book-social` v0.2.4 HTTP Foundation with the first production-HTTP unit from `Let's Go Further`.
 
-Queued:
+Next paired work:
 
-1. OpenAPI after a real `/api/*` slice exists in `book-social`.
-2. API/MPA security after a stable contract and authentication use case exist.
+1. `book-social` v0.2.5–v0.2.6 authentication with MPA security basics and Learn Go with Tests TDD
+   foundations.
+
+Deferred by product trigger:
+
+1. `Let's Go Further` API Core Chapter 9 and review resume with `book-social` v0.4 catalog
+   filtering, sorting, and pagination.
 
 Later:
 
@@ -40,8 +45,8 @@ Later:
 
 ### Parallel learning tracks
 
-- **Learn Go with Tests:** TDD foundations, testable design, concurrency/context, and advanced test
-  design; take a small relevant part before Stages 6–11 rather than treating the course as a gate.
+- **Learn Go with Tests:** start TDD foundations with `book-social` v0.2.5–v0.2.6, then take later
+  units only when their task needs them; it is not a course-completion gate.
 - **PostgreSQL:** SQL/ACID/MVCC, schema, migrations, transactions, pool lifecycle, and optimistic
   concurrency, tied to API Core and the PostgreSQL/Docker foundation stage.
 - **Docker:** images, multi-stage Go builds, build context, networking, volumes, diagnostics, and
@@ -90,8 +95,9 @@ Focus:
 - metrics;
 - build, audit, versioning, and deployment basics.
 
-Status: API Core Chapters 1–8 are complete. Finish Chapter 9 and stage review before moving to the
-production-oriented material.
+Status: API Core Chapters 1–8 are complete. Chapter 9 and stage review are deferred until
+`book-social` v0.4 needs catalog filtering, sorting, and pagination; production-HTTP notes begin
+alongside v0.2.4.
 
 ## Frameworks and routers
 
