@@ -41,7 +41,7 @@ Current application:
 
 ### `books/lets-go-further`
 
-Future study project based on *Let's Go Further*.
+Active study project based on *Let's Go Further*.
 
 Purpose:
 
@@ -58,7 +58,7 @@ Purpose:
 
 ### `labs/*`
 
-Future small labs for focused skills:
+Focused labs for reusable skills:
 
 - REST API Basic;
 - layered API;
@@ -76,6 +76,16 @@ Existing examples include:
 - Echo quick-start notes;
 - Templ hello-world spike.
 
+### Parallel learning tracks
+
+- Learn Go with Tests starts with a small TDD foundations unit during `book-social` v0.2.5–v0.2.6,
+  then supplies just-in-time dependency-design, concurrency/context, and refactoring practice; it is
+  not a gate before implementation.
+- PostgreSQL supplies SQL/ACID/MVCC, schema, migrations, `pgx`, transactions, pool lifecycle, and
+  optimistic-concurrency practice for Stage 2 and Stage 8.
+- Docker supplies image/build, networking, volume, diagnostics, and cleanup practice for Stage 8 and
+  later delivery automation.
+
 ## Relation to book-social
 
 `go-web-labs` is the learning laboratory.
@@ -86,14 +96,35 @@ Do not duplicate the full `book-social` domain here.
 
 Use `go-web-labs` for small exercises, notes, and reusable patterns.
 
-## Current stage
+## Current roadmap status
 
-Stage 1: close / refresh `books/lets-go`.
+Completed:
 
-Expected result:
+- Stage 0: repository consolidation;
+- Stage 1: `books/lets-go` closure;
+- Stage 3: REST API basics;
+- Stage 4: Handler → Service → Repository;
+- Stage 5: testing lab.
 
-- project reviewed;
-- important small fixes applied;
-- README created or updated;
-- guided exercises listed as TODO;
-- repository context prepared for future AI-assisted work.
+Current paired work:
+
+- `book-social` v0.2.4 HTTP Foundation with Stage 9A production HTTP notes.
+
+Next paired work:
+
+- `book-social` v0.2.5–v0.2.6 authentication with Stage 7A MPA/auth security and TDD foundations.
+
+Deferred by trigger:
+
+- Stage 2: `books/lets-go-further` API Core. Chapters 1–8 are complete; Chapter 9 and stage review
+  resume with `book-social` v0.4 catalog filtering, sorting, and pagination.
+
+Queued:
+
+- Stage 6: OpenAPI, after a real `/api/*` slice exists in `book-social`;
+- Stage 7B: API-specific security, after a real API contract exists.
+
+Later stages include PostgreSQL and Docker foundations, later production API topics, external
+integrations, test automation and delivery, a bridge to `go-microservices-starter`, and recurring
+portfolio evidence/reuse reviews. Learn Go with Tests is a parallel just-in-time learning track, not
+a stage gate.

@@ -27,27 +27,30 @@ Notes:
 
 ## Stage 2 - Let's Go Further API Core
 
-Status: in progress (Chapters 1-6 complete)
+Status: Chapters 1–8 complete; Chapter 9 and the stage review are deferred until `book-social` v0.4
+needs catalog filtering, sorting, and pagination.
 
 Goal:
 
 Work through the API Core portion of *Let's Go Further* using the Greenlight
 study project.
 
-Completed work (2026-07-06 to 2026-07-15):
+Completed work (2026-07-06 to 2026-08-08):
 
 - created the `books/lets-go-further` Go module and Greenlight API skeleton;
 - implemented routing, JSON responses, JSON errors, panic recovery, strict
   JSON request parsing, and movie validation;
 - configured PostgreSQL DSN settings and the connection pool;
 - added versioned migrations for the `movies` table and its constraints;
+- implemented PostgreSQL-backed create, read, update, partial update, delete, optimistic locking,
+  and request timeouts;
+- added focused unit, HTTP-contract, and opt-in PostgreSQL integration tests during Stage 5;
 - added and updated Stage 2 learning notes and the implementation README.
 
-Remaining work:
+Deferred follow-up:
 
-- Chapters 7-9: movie persistence, CRUD, filtering, sorting, and pagination;
-- verify the Chapter 6 migrations against a local PostgreSQL instance;
-- add tests when the relevant chapters introduce them.
+- Chapter 9: movie list endpoint, filters, sorting, pagination, and metadata;
+- README cleanup and Stage 2 review.
 
 ## Stage 3 - REST API Basics Lab
 
@@ -70,3 +73,28 @@ Notes:
   checks were represented by `httptest` coverage here.
 - The repository root has no `Makefile`; the unrelated Snippetbox Makefile was
   not run for this Stage 3 checkpoint.
+
+## Stage 5 - Testing lab
+
+Status: completed (Steps 0-6 complete)
+
+Current checkpoint (2026-08-07):
+
+- audited existing test boundaries and selected focused gaps;
+- documented the testing strategy and reproducible commands;
+- added service, HTTP-contract, and opt-in PostgreSQL integration tests;
+- documented the disposable API Core test database and its `GREENLIGHT_TEST_DB_DSN` guard;
+- added a concrete Stage 5 test matrix and reusable review checklist;
+- strengthened no-call HTTP assertions, validation boundaries, cleanup, constraints, and the
+  optimistic-locking scenario after Review Mode;
+- ordinary module test suites pass without PostgreSQL; the integration slice skips clearly when
+  the DSN is absent;
+- verified the test-only migration ledger and database contract with two successful targeted runs
+  against a local disposable database; its identifiers and credentials remain private.
+- evaluated `testify/assert` and `testify/require` in one focused table-driven HTTP test; standard
+  library assertions and manual fakes remain the default, with no `testify/mock` or `testify/suite`.
+
+Remaining work:
+
+- Stage 5 handoff completed after final module verification, DB evidence, documentation, and
+  focused Testify evaluation.

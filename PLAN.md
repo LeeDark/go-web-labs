@@ -51,6 +51,58 @@ portfolio proof.
 
 ## Current roadmap
 
+### Roadmap status — 2026-08-08
+
+Completed:
+
+1. Stage 0 — Repository consolidation.
+2. Stage 1 — Close / refresh `Let's Go`.
+3. Stage 3 — REST API basics.
+4. Stage 4 — Handler → Service → Repository.
+5. Stage 5 — Testing lab.
+
+Current paired work:
+
+1. `book-social` v0.2.4 HTTP Foundation, paired with Stage 9A: middleware, error behavior, headers,
+   timeout scope, and graceful shutdown.
+
+Next paired work:
+
+1. `book-social` v0.2.5–v0.2.6 authentication, paired with Stage 7A and the first Learn Go with
+   Tests TDD foundations unit.
+
+Deferred by an applied-project trigger:
+
+1. Stage 2 — `Let's Go Further` API Core: Chapters 1–8 are complete. Chapter 9 and the stage review
+   resume with `book-social` v0.4, when catalog filtering, sorting, and pagination are needed.
+2. Stage 3 follow-up: a small review-driven v2 of `labs/rest-api`, plus an applied v3 API increment
+   in `book-social` when its product scope calls for it.
+
+Queued:
+
+1. Stage 6 — OpenAPI, after a real `/api/*` slice exists in `book-social`.
+2. Stage 7 — API and MPA security basics, beginning with the v0.2.5 authentication use case.
+
+### Parallel learning tracks
+
+These are not mandatory linear gates. Take the smallest relevant unit before the implementation task
+that needs it, and record the practical result rather than attempting to finish a curriculum first.
+
+| Track               | Parts                                                                                                                 | Primary connection                       |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------|------------------------------------------|
+| Learn Go with Tests | TDD foundations; testable design and dependencies; concurrency and context; advanced test design/refactoring          | `book-social` v0.2.5 onward; Stages 7–11 |
+| PostgreSQL          | SQL/ACID/MVCC; schema and constraints; migrations; `pgx`, transactions, pool, and optimistic concurrency              | Stage 2 and Stage 8                      |
+| Docker              | container model; Go Dockerfile and multi-stage build; build context; networks, volumes, diagnostics, and safe cleanup | Stage 8 and Stage 11                     |
+
+#### Learn Go with Tests alignment
+
+| Part                       | Focus                                                                          | Stage connection                                                   |
+|----------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| 1. TDD foundations         | Small red-green-refactor loops, errors, interfaces, and HTTP behavior          | `book-social` v0.2.5–v0.2.6 auth work; Stage 7A                    |
+| 2. Testable design         | Dependency injection, spies, fakes, and when not to mock                       | Stage 7 security boundaries and Stage 10 external dependencies     |
+| 3. Concurrency and context | Cancellation, timeouts, goroutines, `select`, and safe shared state            | Stages 8–10: database calls, production behavior, and integrations |
+| 4. Advanced test design    | Refactoring tests, property-oriented thinking, and focused acceptance examples | Stage 11: one justified deeper-test or automation improvement      |
+
 ### Stage 0 — Repository consolidation
 
 **Folder:** repository root
@@ -218,7 +270,7 @@ Do not read it as an isolated exercise. Use it as a practical reference while im
 tasks.
 
 This stage covers the API core track in `books/lets-go-further`: project structure, JSON,
-validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 8 uses
+validation, migrations, CRUD, filtering, sorting, pagination, and API-focused notes. Stage 9 uses
 the same folder later for production-oriented notes and checklists.
 
 #### What to do
@@ -284,9 +336,8 @@ GET /api/genres/{slug}
 
 #### Priority
 
-Active.
-
-Use this as the next book-based API foundation before the standalone labs.
+Deferred by `book-social` v0.4. Chapters 1–8 are complete; resume Chapter 9 and the stage review
+when the applied catalog needs list filtering, sorting, pagination, and metadata.
 
 ---
 
@@ -375,7 +426,7 @@ GET /api/genres/{slug}
 
 #### Priority
 
-Active.
+Finished.
 
 ---
 
@@ -445,7 +496,7 @@ CreateBook(ctx context.Context, input CreateBookInput) (Book, error)
 
 #### Priority
 
-Active.
+Finished.
 
 If `book-social` v0.2 already covers this well, this lab can be shortened to notes and tiny example.
 
@@ -508,7 +559,7 @@ DELETE /books/{id} -> 204
 
 #### Priority
 
-Active.
+Finished.
 
 Use this to add a testing foundation for the API and layered labs.
 
@@ -577,29 +628,29 @@ labs/openapi/README.md
 
 #### Priority
 
-Active, after real API endpoint examples exist.
+Queued. Start only after real `/api/*` endpoint examples exist in `book-social`.
 
 ---
 
-### Stage 7 — API security basic
+### Stage 7 — API and MPA security basics
 
 **Folder:** `labs/security`
 
-**Goal:** cover REST API + OpenAPI + API Security basics for interviews and small freelance tasks.
+**Goal:** cover the smallest useful MPA and API security boundaries for interviews and small
+freelance tasks.
+
+Use two independently startable waves. Stage 7A is tied to `book-social` v0.2.5–v0.2.6: sessions,
+cookies, password handling, CSRF, protected routes, authorization, and safe errors. Stage 7B is for
+API-specific CORS, rate limiting, and OpenAPI-related checks after a real `/api/*` contract exists.
 
 #### What to do
 
 - Create an API security checklist.
 - Add small examples where useful.
-- Cover request size limits.
-- Cover secure headers.
-- Cover CORS basics.
-- Cover CSRF for MPA forms.
-- Cover authentication basics.
-- Cover authorization checks.
-- Cover rate limiting.
-- Cover safe error messages.
-- Cover logging without leaking secrets.
+- Stage 7A: cover secure session/cookie, password, CSRF, protected-route, authorization, safe-error,
+  and no-secret-logging decisions needed by the existing MPA auth flow.
+- Stage 7B: cover request size limits, secure headers, CORS basics, and rate limiting only for a
+  concrete API use case.
 
 #### Example
 
@@ -650,11 +701,65 @@ PATCH /books/{id}
 
 #### Priority
 
-Active.
+Queued as two waves. Start Stage 7A with `book-social` v0.2.5–v0.2.6; start Stage 7B only after a
+real API contract exists.
 
 ---
 
-### Stage 8 — `Let's Go Further`: Production API Topics
+### Stage 8 — PostgreSQL and Docker foundations
+
+**Folders:** `books/lets-go-further`, `labs/testing`, and focused notes under `docs/`
+
+**Goal:** turn the database and container topics deferred by the early labs into a small, verifiable
+foundation for a PostgreSQL-backed Go API. This is not a production platform or a second
+application.
+
+#### What to do
+
+- PostgreSQL: SQL/ACID/MVCC, schema and constraints, migrations, `pgx`, transactions, pool
+  lifecycle, cancellation, and optimistic concurrency.
+- Docker: image/container model, a Go Dockerfile, multi-stage build, `.dockerignore`, networking,
+  volumes, diagnostics, and safe cleanup.
+- Run migration and repository checks only against an explicitly disposable database.
+- Build and run one Go API image locally; use Docker Compose only when API + PostgreSQL wiring is
+  the risk being verified.
+- Record short decision notes and reproducible commands instead of adding Kubernetes, queues, or a
+  production deployment platform.
+
+#### Output
+
+- PostgreSQL schema/migration and error-mapping notes tied to a real API resource.
+- A documented Go image build, local container run, and safe database/container cleanup guidance.
+- A small acceptance matrix for migrations, repository behavior, host/container DSN, and volume
+  ownership.
+
+#### Offer mapping
+
+- Add or repair a PostgreSQL-backed endpoint.
+- Add a migration or diagnose a database constraint failure.
+- Containerize a small Go API for local handoff.
+- Explain local database, network, and cleanup requirements to a client or teammate.
+
+#### Applied in `book-social`
+
+- PostgreSQL schema and migration discipline.
+- Database error mapping, context, and optimistic concurrency where the domain needs it.
+- Dockerfile and local API + database environment only after the corresponding application slice
+  exists.
+
+#### Estimate
+
+20–40 hours, taken in focused units alongside the API work rather than as an isolated course.
+
+#### Priority
+
+Later, before relying on containerized delivery or advanced integration infrastructure. Take only
+the PostgreSQL or Docker unit justified by an applied project; it does not wait for deferred Chapter
+9.
+
+---
+
+### Stage 9 — `Let's Go Further`: Production API Topics
 
 **Folder:** `books/lets-go-further`
 
@@ -666,6 +771,12 @@ to make the API easier to run, verify, and hand off.
 
 This stage extends the same `books/lets-go-further` area used in Stage 2. It should add production
 notes and small checklist files, not restart the API core implementation.
+
+Start with Stage 9A alongside `book-social` v0.2.4 HTTP Foundation: middleware order, request
+logging/ID decisions, recovery and error behavior, secure/static-header policy, timeout scope, and
+graceful shutdown. Chapter 11 is directly relevant. Treat Chapter 10 rate limiting as a documented
+defer-or-apply decision, not as automatic v0.2.4 scope. Later Stage 9 waves remain
+product-triggered.
 
 #### What to do
 
@@ -729,11 +840,12 @@ request logging middleware
 
 #### Priority
 
-Later, after Stage 2 API Core and the Offer 1 foundation labs.
+Stage 9A is current paired work with `book-social` v0.2.4. Later waves follow actual production
+needs; they do not wait for the deferred Chapter 9 list endpoint.
 
 ---
 
-### Stage 9 — Integration / External API lab
+### Stage 10 — Integration / External API lab
 
 **Folder:** `labs/integrations`
 
@@ -800,7 +912,48 @@ Later.
 
 ---
 
-### Stage 10 — Bridge to `go-microservices-starter`
+### Stage 11 — Test automation and delivery
+
+**Folders:** `labs/testing`, `docs/checklists/`, and CI/configuration files only when a concrete
+repository need exists
+
+**Goal:** deepen the testing and delivery practices deliberately deferred by Stage 5 without making
+them default complexity for every small Go API.
+
+#### What to do
+
+- Add a narrow CI quality flow for the modules that are stable enough to support it.
+- Use `go test -race`, fuzzing, property-oriented tests, benchmarks, or load checks only where a
+  specific concurrency, parser, invariant, or performance risk justifies the tool.
+- Decide between Docker Compose and Testcontainers for reproducible database or multi-service tests;
+  document the chosen ownership, disposable-data, and cleanup contract.
+- Add browser E2E only if an actual MPA/UI flow has risk that handler, renderer, and route tests do
+  not expose.
+- Treat mutation testing as an optional investigation, not a coverage target or a Stage DoD.
+
+#### Output
+
+- A small quality/CI checklist and reproducible commands.
+- One justified deeper-test example, rather than a blanket rewrite of the suite.
+- A documented decision on local/CI infrastructure testing and safe cleanup.
+
+#### Offer mapping
+
+- Make a backend change safer through repeatable verification.
+- Diagnose a race, flaky test, or database-infrastructure mismatch.
+- Provide a credible local and CI handoff for a small Go service.
+
+#### Estimate
+
+12–28 hours, selected according to actual project risks.
+
+#### Priority
+
+Later, after Stages 8–10 create a real database, container, or external-dependency need.
+
+---
+
+### Stage 12 — Bridge to `go-microservices-starter`
 
 **Folder:** `docs/bridge-to-go-microservices-starter.md`
 
@@ -901,15 +1054,16 @@ prematurely.
 
 ---
 
-### Stage 11 — Offer 1 Basic Portfolio Package
+### Stage 13 — Portfolio evidence and reuse
 
 **Folder:** `docs/`
 
-**Goal:** package the learning and applied work into a clear portfolio proof for **Offer 1 Basic —
-Small Go Backend Fix / API Endpoint**.
+**Goal:** continuously turn accepted learning and applied work into concise portfolio evidence and
+reusable starter assets for **Offer 1 Basic — Small Go Backend Fix / API Endpoint**.
 
-This stage packages the learning and applied work into documentation that explains what the code
-demonstrates.
+This is a recurring review-and-handoff stage, not a final gate after every other stage. It packages
+accepted work into documentation that explains what the code demonstrates and identifies patterns
+that can responsibly move to `go-service-starter`.
 
 #### What to do
 
@@ -918,6 +1072,10 @@ demonstrates.
 - Create or update `docs/checklists/backend-endpoint-task.md`.
 - Link relevant `go-web-labs` folders.
 - Link applied `book-social` tasks.
+- Review the accepted Basic proof and the actual Advanced work in `go-service-starter` before
+  claiming a cross-project capability.
+- Maintain a small reuse inventory: transferable now, transferable with adaptation, and deliberately
+  project-specific patterns that must not move.
 - Add short case-study style notes.
 - Keep it concise.
 
@@ -982,6 +1140,7 @@ Possible case study structure:
 - Links from root README.
 - Clear “what this repo proves” explanation.
 - Clear mapping from a study to an applied project.
+- A review record showing which patterns can be carried into `go-service-starter` Advanced and why.
 
 #### Offer mapping
 
@@ -1003,11 +1162,9 @@ Possible case study structure:
 
 #### Priority
 
-High after:
-
-1. `Let's Go` closure;
-2. basic testing lab or notes;
-3. first meaningful `book-social` v0.2 proof.
+Start a first inventory now from completed Stages 1–5 and `book-social` v0.1–v0.2.3. Refresh it
+after each accepted `go-service-starter` proof milestone and meaningful `book-social` release. Keep
+the public portfolio package focused on real completed work.
 
 ---
 
@@ -1049,33 +1206,43 @@ Use `go-web-labs` topics as references while implementing:
 
 ### Recommended order
 
-Stages 0 and 1 are finished. The next work has two parallel tracks:
+Stages 0, 1, 3, 4, and 5 are finished. The immediate work is `book-social` v0.2.4 paired with Stage
+9A; next comes v0.2.5–v0.2.6 paired with Stage 7A and TDD foundations. Learn Go with Tests,
+PostgreSQL, and Docker are parallel just-in-time tracks, not additional completion gates.
 
-- Book learning track: Stage 2, `Let's Go Further`: API Core.
-- Offer one freelance track: Stages 3–7, covering REST basics, layering, testing, OpenAPI, and API
-  security.
-
-Keep `book-social` implementation work separate from this repository's stage order. For
-`book-social`, do not add the JSON API slice before catalog-read models are stable.
+Chapter 9 is deliberately deferred until `book-social` v0.4 needs filtering, sorting, and
+pagination. Keep `book-social` implementation work separate from this repository's stage order, but
+use these explicit pairings to decide which lab or book unit is useful now.
 
 ```text
 Finished:
 Stage 0: Repository consolidation
 Stage 1: close Let's Go
-
-Active in parallel:
-Stage 2: Let's Go Further API Core
 Stage 3: REST API basics
 Stage 4: Handler → Service → Repository
 Stage 5: Testing lab
-Stage 6: OpenAPI lab
-Stage 7: API security basic
+
+Current paired work:
+`book-social` v0.2.4 ↔ Stage 9A production HTTP foundation
+
+Next paired work:
+`book-social` v0.2.5–v0.2.6 ↔ Stage 7A MPA/auth security + TDD foundations
+
+Deferred by trigger:
+Stage 2 Chapter 9 ↔ `book-social` v0.4 filtering, sorting, and pagination
+Stage 3 v2 lab / applied v3 ↔ a proven REST/API need
+
+Queued after their prerequisites:
+Stage 6: OpenAPI lab after a real `/api/*` slice
+Stage 7B: API-specific security after a real API contract
 
 Later:
-Stage 8: Let's Go Further Production API Topics
-→ Stage 9: Integration / External API lab
-→ Stage 10: Bridge to go-microservices-starter
-→ Stage 11: Offer 1 Basic Portfolio Package
+Stage 8: PostgreSQL and Docker foundations
+→ Stage 9: Let's Go Further Production API Topics
+→ Stage 10: Integration / External API lab
+→ Stage 11: Test automation and delivery
+→ Stage 12: Bridge to go-microservices-starter
+→ Stage 13: portfolio evidence and reuse refresh
 ```
 
 ---
@@ -1088,23 +1255,36 @@ Finished:
 
 1. Stage 0: Repository consolidation.
 2. Stage 1: Close / refresh `Let's Go`.
+3. Stage 3: REST API basics.
+4. Stage 4: Handler → Service → Repository.
+5. Stage 5: Testing lab.
 
-Active in parallel:
+Current paired work:
 
-1. Stage 2: work through `Let's Go Further` API Core as the book reading/writing learning project.
-2. Stages 3–7: build the Offer 1 freelance path foundation:
-    - Stage 3: REST API basics;
-    - Stage 4: Handler → Service → Repository;
-    - Stage 5: Testing lab;
-    - Stage 6: OpenAPI lab;
-    - Stage 7: API security basic.
+1. `book-social` v0.2.4 HTTP Foundation with Stage 9A.
+
+Next paired work:
+
+1. `book-social` v0.2.5–v0.2.6 authentication with Stage 7A and Learn Go with Tests TDD foundations.
+
+Deferred by trigger:
+
+1. Stage 2: Chapter 9 and API Core review with `book-social` v0.4 catalog discovery.
+2. Stage 3: a small lab v2 or applied v3 only when a real REST/API gap justifies it.
+
+Queued:
+
+1. Stage 6: OpenAPI after a real `/api/*` slice exists in `book-social`.
+2. Stage 7B: API-specific security after a real API contract exists.
 
 Later:
 
-1. Stage 8: add `Let's Go Further` production API notes/checklists.
-2. Stage 9: build an Integration / External API lab.
-3. Stage 10: add bridge notes to `go-microservices-starter`.
-4. Stage 11: add a portfolio proof package after there is enough applied proof.
+1. Stage 8: PostgreSQL and Docker foundations.
+2. Stage 9: later production API notes/checklists after the current 9A wave.
+3. Stage 10: Integration / External API lab.
+4. Stage 11: test automation and delivery.
+5. Stage 12: bridge notes to `go-microservices-starter`.
+6. Stage 13: recurring portfolio evidence and reuse refresh.
 
 ### Not now
 
@@ -1182,20 +1362,22 @@ This repository should help demonstrate:
 
 ## Stage estimates summary
 
-| Stage | Name                                      |                                 Estimate | Priority                |
-|------:|-------------------------------------------|-----------------------------------------:|-------------------------|
-|     0 | Repository consolidation                  |                                     2–4h | Finished                |
-|     1 | Close / refresh `Let's Go`                |                                     3–6h | Finished                |
-|     2 | `Let's Go Further`: API Core              |                                   25–45h | Active                  |
-|     3 | REST API basics                           |                                    8–14h | Active                  |
-|     4 | Handler → Service → Repository            |                                    8–16h | Active                  |
-|     5 | Testing lab                               |                                    8–16h | Active                  |
-|     6 | OpenAPI lab                               |                                    6–12h | Active                  |
-|     7 | API security basic                        |                                   10–20h | Active                  |
-|     8 | `Let's Go Further`: Production API Topics |                                   15–30h | Later                   |
-|     9 | Integration / External API lab            |                                   10–18h | Later                   |
-|    10 | Bridge to `go-microservices-starter`      | 4–8h notes, 12–24h future implementation | Later                   |
-|    11 | Offer 1 Basic Portfolio Package           |                                    6–12h | High after proof exists |
+| Stage | Name                                      |                                 Estimate | Priority                               |
+|------:|-------------------------------------------|-----------------------------------------:|----------------------------------------|
+|     0 | Repository consolidation                  |                                     2–4h | Finished                               |
+|     1 | Close / refresh `Let's Go`                |                                     3–6h | Finished                               |
+|     2 | `Let's Go Further`: API Core              |                                   25–45h | Deferred to `book-social` v0.4         |
+|     3 | REST API basics                           |                                    8–14h | Finished; small v2 only by proven need |
+|     4 | Handler → Service → Repository            |                                    8–16h | Finished                               |
+|     5 | Testing lab                               |                                    8–16h | Finished                               |
+|     6 | OpenAPI lab                               |                                    6–12h | Queued after a real `/api/*` slice     |
+|     7 | API and MPA security basics               |                                   10–20h | Next: 7A with v0.2.5–v0.2.6            |
+|     8 | PostgreSQL and Docker foundations         |                                   20–40h | Later, applied-project triggered       |
+|     9 | `Let's Go Further`: Production API Topics |                                   15–30h | Current: 9A with v0.2.4                |
+|    10 | Integration / External API lab            |                                   10–18h | Later                                  |
+|    11 | Test automation and delivery              |                                   12–28h | Later                                  |
+|    12 | Bridge to `go-microservices-starter`      | 4–8h notes, 12–24h future implementation | Later                                  |
+|    13 | Portfolio evidence and reuse              |                                    6–12h | Recurring; first inventory now         |
 
 ---
 
