@@ -27,27 +27,29 @@ Notes:
 
 ## Stage 2 - Let's Go Further API Core
 
-Status: in progress (Chapters 1-6 complete)
+Status: in progress (Chapters 1-8 complete)
 
 Goal:
 
 Work through the API Core portion of *Let's Go Further* using the Greenlight
 study project.
 
-Completed work (2026-07-06 to 2026-07-15):
+Completed work (2026-07-06 to 2026-08-08):
 
 - created the `books/lets-go-further` Go module and Greenlight API skeleton;
 - implemented routing, JSON responses, JSON errors, panic recovery, strict
   JSON request parsing, and movie validation;
 - configured PostgreSQL DSN settings and the connection pool;
 - added versioned migrations for the `movies` table and its constraints;
+- implemented PostgreSQL-backed create, read, update, partial update, delete, optimistic locking,
+  and request timeouts;
+- added focused unit, HTTP-contract, and opt-in PostgreSQL integration tests during Stage 5;
 - added and updated Stage 2 learning notes and the implementation README.
 
 Remaining work:
 
-- Chapters 7-9: movie persistence, CRUD, filtering, sorting, and pagination;
-- verify the Chapter 6 migrations against a local PostgreSQL instance;
-- add tests when the relevant chapters introduce them.
+- Chapter 9: movie list endpoint, filters, sorting, pagination, and metadata;
+- README cleanup and Stage 2 review.
 
 ## Stage 3 - REST API Basics Lab
 

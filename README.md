@@ -2,9 +2,12 @@
 
 Learning and reference repository for Go web development.
 
-This repository supports the learning path for **Go Backend APIs & Integrations**. It is focused on practical Go web skills that can be reused in pet projects, portfolio work, interviews, and small freelance tasks.
+This repository supports the learning path for **Go Backend APIs & Integrations**. It is focused on
+practical Go web skills that can be reused in pet projects, portfolio work, interviews, and small
+freelance tasks.
 
-The main applied project is `book-social`. This repository is the lab; `book-social` is the place where the patterns become a real application.
+The main applied project is `book-social`. This repository is the lab; `book-social` is the place
+where the patterns become a real application.
 
 ```text
 go-web-labs  = study, notes, small isolated labs, reusable patterns
@@ -17,15 +20,32 @@ Finished:
 
 1. Repository consolidation.
 2. Close / refresh `Let's Go`.
+3. REST API basics.
+4. Handler → Service → Repository.
+5. Testing lab.
 
-Active in parallel:
+Active:
 
-1. Book learning track: work through `Let's Go Further` API Core.
-2. Offer 1 freelance track: build REST API basics, Handler → Service → Repository, testing, OpenAPI, and API security notes.
+1. Finish `Let's Go Further` API Core: Chapter 9 and stage review remain after Chapters 1–8.
+
+Queued:
+
+1. OpenAPI after a real `/api/*` slice exists in `book-social`.
+2. API/MPA security after a stable contract and authentication use case exist.
 
 Later:
 
-1. Add production API notes, integrations, bridge notes, and portfolio proof after the core stages.
+1. PostgreSQL and Docker foundations.
+2. Production API topics, external integrations, test automation, bridge notes, and portfolio proof.
+
+### Parallel learning tracks
+
+- **Learn Go with Tests:** TDD foundations, testable design, concurrency/context, and advanced test
+  design; take a small relevant part before Stages 6–11 rather than treating the course as a gate.
+- **PostgreSQL:** SQL/ACID/MVCC, schema, migrations, transactions, pool lifecycle, and optimistic
+  concurrency, tied to API Core and the PostgreSQL/Docker foundation stage.
+- **Docker:** images, multi-stage Go builds, build context, networking, volumes, diagnostics, and
+  safe cleanup, tied to containerized API work and later test automation.
 
 ## Books
 
@@ -46,7 +66,7 @@ Focus:
 - database-backed web applications;
 - basic testing.
 
-Current goal: close this work as a stable study artifact with review notes, README, run/test commands, and optional exercises as TODO.
+Status: completed as a stable study artifact; optional exercises remain TODO backlog.
 
 ### Let's Go Further
 
@@ -70,7 +90,8 @@ Focus:
 - metrics;
 - build, audit, versioning, and deployment basics.
 
-Use the API core parts after closing `Let's Go`. Use the production-oriented parts later for production notes and small checklists.
+Status: API Core Chapters 1–8 are complete. Finish Chapter 9 and stage review before moving to the
+production-oriented material.
 
 ## Frameworks and routers
 
@@ -90,16 +111,18 @@ Later comparison topic. Not a current priority.
 
 ## Go Backend Roadmap
 
-| Repo folder | Skill | Purpose |
-|---|---|---|
-| [books/lets-go](books/lets-go) | Go web fundamentals | Close the existing `Let's Go` work and document reusable patterns. |
-| [books/lets-go-further](books/lets-go-further) | REST API and production API patterns | Use API core topics after `Let's Go`, then add production notes and checklists later. |
-| [labs/rest-api](labs/rest-api) | REST API basics | Small optional API lab for routes, JSON, validation, and error responses. Do not duplicate `book-social`. |
-| [labs/layered-api](labs/layered-api) | Handler → Service → Repository | Small layering example or notes that can be compared with `book-social`. |
-| [labs/testing](labs/testing) | Testing basics | Unit tests, handler tests, fake repositories, and basic integration testing patterns. |
-| [labs/openapi](labs/openapi) | OpenAPI | Document real JSON API endpoints after `/api/*` exists in `book-social`. |
-| [labs/security](labs/security) | API security basic | Security checklist and small examples: CORS, CSRF, auth, authorization, rate limiting, safe errors. |
-| [labs/integrations](labs/integrations) | External API integrations | HTTP clients, timeouts, fake external APIs, webhook basics, tests. |
+| Repo folder                                        | Skill                                | Purpose                                                                                             |
+|----------------------------------------------------|--------------------------------------|-----------------------------------------------------------------------------------------------------|
+| [books/lets-go](books/lets-go)                     | Go web fundamentals                  | Completed study artifact with reusable MPA and testing patterns.                                    |
+| [books/lets-go-further](books/lets-go-further)     | REST API and production API patterns | API Core active; Chapters 1–8 complete, with production topics later.                               |
+| [labs/rest-api](labs/rest-api)                     | REST API basics                      | Completed focused lab for routes, JSON, validation, and error responses.                            |
+| [labs/layered-api](labs/layered-api)               | Handler → Service → Repository       | Completed layering example to compare with `book-social`.                                           |
+| [labs/testing](labs/testing)                       | Testing basics                       | Completed strategy, unit/HTTP patterns, and opt-in PostgreSQL integration guidance.                 |
+| `books/lets-go-further`, `docs/`, focused API code | PostgreSQL and Docker foundations    | Stage 8: migrations, `pgx`/pool behavior, a Go image, local networking, volumes, and safe cleanup.  |
+| `labs/testing`, `docs/checklists/`                 | Test automation and delivery         | Stage 11: justified CI, deeper tests, and Compose/Testcontainers decisions.                         |
+| [labs/openapi](labs/openapi)                       | OpenAPI                              | Document real JSON API endpoints after `/api/*` exists in `book-social`.                            |
+| [labs/security](labs/security)                     | API security basic                   | Security checklist and small examples: CORS, CSRF, auth, authorization, rate limiting, safe errors. |
+| [labs/integrations](labs/integrations)             | External API integrations            | HTTP clients, timeouts, fake external APIs, webhook basics, tests.                                  |
 
 ## Relation to `book-social`
 
@@ -161,4 +184,5 @@ docs/ai/task-history.md
 
 ## Notes
 
-This repository should stay small and useful. If a lab starts turning into a full product, move that work to `book-social` or create a dedicated demo project.
+This repository should stay small and useful. If a lab starts turning into a full product, move that
+work to `book-social` or create a dedicated demo project.

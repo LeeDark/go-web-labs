@@ -170,8 +170,8 @@ These High findings were closed before the final Stage 5 handoff:
 - [ ] Do not create a duplicate API or second domain in `labs/testing`.
 - [ ] Do not add a broad assertion or mocking framework without a concrete need.
 - [ ] Do not add browser E2E, load, fuzz, mutation, CI, Docker, or Testcontainers work in this
-  stage. Revisit Testcontainers only as backlog no earlier than Stages 9–10, when a real integration
-  or local-infrastructure need exists.
+  stage. PostgreSQL/Docker foundations belong to Stage 8; CI, Compose/Testcontainers decisions, and
+  deeper testing belong to Stage 11 when a real infrastructure or product risk exists.
 - [ ] Do not connect to, create, drop, or clean a production database.
 
 ## Definition of done

@@ -41,7 +41,7 @@ Current application:
 
 ### `books/lets-go-further`
 
-Future study project based on *Let's Go Further*.
+Active study project based on *Let's Go Further*.
 
 Purpose:
 
@@ -58,7 +58,7 @@ Purpose:
 
 ### `labs/*`
 
-Future small labs for focused skills:
+Focused labs for reusable skills:
 
 - REST API Basic;
 - layered API;
@@ -76,6 +76,15 @@ Existing examples include:
 - Echo quick-start notes;
 - Templ hello-world spike.
 
+### Parallel learning tracks
+
+- Learn Go with Tests supplies just-in-time TDD, dependency-design, concurrency/context, and
+  refactoring practice for later stages; it is not a gate before implementation.
+- PostgreSQL supplies SQL/ACID/MVCC, schema, migrations, `pgx`, transactions, pool lifecycle, and
+  optimistic-concurrency practice for Stage 2 and Stage 8.
+- Docker supplies image/build, networking, volume, diagnostics, and cleanup practice for Stage 8 and
+  later delivery automation.
+
 ## Relation to book-social
 
 `go-web-labs` is the learning laboratory.
@@ -86,14 +95,26 @@ Do not duplicate the full `book-social` domain here.
 
 Use `go-web-labs` for small exercises, notes, and reusable patterns.
 
-## Current stage
+## Current roadmap status
 
-Stage 1: close / refresh `books/lets-go`.
+Completed:
 
-Expected result:
+- Stage 0: repository consolidation;
+- Stage 1: `books/lets-go` closure;
+- Stage 3: REST API basics;
+- Stage 4: Handler → Service → Repository;
+- Stage 5: testing lab.
 
-- project reviewed;
-- important small fixes applied;
-- README created or updated;
-- guided exercises listed as TODO;
-- repository context prepared for future AI-assisted work.
+Active:
+
+- Stage 2: `books/lets-go-further` API Core. Chapters 1–8 are complete; Chapter 9 and the stage
+  review remain.
+
+Queued:
+
+- Stage 6: OpenAPI, after a real `/api/*` slice exists in `book-social`;
+- Stage 7: API/MPA security, after a stable contract and authentication use case exist.
+
+Later stages include PostgreSQL and Docker foundations, production API topics, external integrations,
+test automation and delivery, a bridge to `go-microservices-starter`, and an Offer 1 portfolio
+package. Learn Go with Tests is a parallel just-in-time learning track, not a stage gate.
