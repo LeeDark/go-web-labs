@@ -26,7 +26,7 @@ Finished:
 
 Current paired work:
 
-1. `book-social` v0.2.4 HTTP Foundation with the first production-HTTP unit from `Let's Go Further`.
+1. `book-social` v0.2.4 HTTP Foundation with Stage 9A follow-up from `Let's Go Further`.
 
 Next paired work:
 
@@ -95,9 +95,10 @@ Focus:
 - metrics;
 - build, audit, versioning, and deployment basics.
 
-Status: API Core Chapters 1–8 are complete. Chapter 9 and stage review are deferred until
-`book-social` v0.4 needs catalog filtering, sorting, and pagination; production-HTTP notes begin
-alongside v0.2.4.
+Status: API Core Chapters 1–8 are complete. Chapter 9 and the API Core review are deferred until
+`book-social` v0.4 needs catalog filtering, sorting, and pagination. Chapter 11 graceful shutdown
+is complete as the first Stage 9A study unit alongside v0.2.4; remaining production topics stay
+product-triggered.
 
 ## Frameworks and routers
 

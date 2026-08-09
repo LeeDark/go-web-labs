@@ -7,7 +7,8 @@ Study project based on *Let's Go Further* by Alex Edwards.
 This folder is for practicing production-style Go API patterns through the
 Greenlight project.
 
-Current focus: API Core. Chapters 1–8 are complete; Chapter 9 is next.
+Current focus: production API topics. API Core Chapters 1–8 are complete, and
+Chapter 11 is complete as the first Stage 9A unit. Chapter 9 remains deferred.
 
 ## Current Scope
 
@@ -20,6 +21,7 @@ Current focus: API Core. Chapters 1–8 are complete; Chapter 9 is next.
 - Migrations
 - CRUD
 - Filtering, sorting, and pagination
+- Graceful shutdown
 
 Out of current scope:
 
@@ -28,7 +30,7 @@ Out of current scope:
 - Rate limiting
 - Metrics
 - Deployment
-- Production hardening
+- Further production hardening
 
 ## Chapter Notes
 
@@ -207,6 +209,31 @@ If a movie is deleted after the handler reads it but before the update query,
 the update affects no row and returns `409 Conflict`. This is a safe and
 intentional simplification for the study project; distinguishing it from a
 stale version would need another database read.
+
+### Chapter 11: Graceful Shutdown
+
+Chapter 11 is complete. The API now moves HTTP server setup and lifecycle into
+`cmd/api/server.go` and handles `SIGINT` and `SIGTERM` with a graceful
+shutdown sequence.
+
+Implemented pieces:
+
+- `app.serve()` owns the `http.Server` lifecycle;
+- a buffered signal channel receives `SIGINT` and `SIGTERM`;
+- `srv.Shutdown()` stops accepting new requests and allows in-flight requests
+  up to 30 seconds to finish;
+- `http.ErrServerClosed` is treated as the expected result of shutdown;
+- shutdown errors are returned to `main()` and logged consistently;
+- startup and completed-shutdown events are logged.
+
+Short review:
+
+The implementation follows the chapter's intended signal → shutdown → error
+channel flow and keeps `main()` focused on application wiring. The 30-second
+shutdown context protects the process from waiting forever. The next production
+follow-up is to coordinate background goroutines explicitly; `http.Server`
+shutdown does not wait for them. Chapter 13.5 covers that extension. A focused
+shutdown test is also a useful future exercise.
 
 ## Local PostgreSQL and Migrations
 

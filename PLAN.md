@@ -51,7 +51,7 @@ portfolio proof.
 
 ## Current roadmap
 
-### Roadmap status — 2026-08-08
+### Roadmap status — 2026-08-09
 
 Completed:
 
@@ -64,7 +64,8 @@ Completed:
 Current paired work:
 
 1. `book-social` v0.2.4 HTTP Foundation, paired with Stage 9A: middleware, error behavior, headers,
-   timeout scope, and graceful shutdown.
+   timeout scope, and graceful shutdown. `Let's Go Further` Chapter 11 is now complete; the
+   remaining Stage 9A work is review and focused application decisions.
 
 Next paired work:
 
@@ -774,8 +775,9 @@ notes and small checklist files, not restart the API core implementation.
 
 Start with Stage 9A alongside `book-social` v0.2.4 HTTP Foundation: middleware order, request
 logging/ID decisions, recovery and error behavior, secure/static-header policy, timeout scope, and
-graceful shutdown. Chapter 11 is directly relevant. Treat Chapter 10 rate limiting as a documented
-defer-or-apply decision, not as automatic v0.2.4 scope. Later Stage 9 waves remain
+graceful shutdown. Chapter 11 is directly relevant and is complete in the Greenlight study project.
+Treat Chapter 10 rate limiting as a documented defer-or-apply decision, not as automatic v0.2.4
+scope. Later Stage 9 waves remain
 product-triggered.
 
 #### What to do
