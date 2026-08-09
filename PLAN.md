@@ -1201,11 +1201,12 @@ accepted `go-service-starter` milestone rather than a planned contract.
 
 #### Priority
 
-Start the Basic inventory now from completed Stages 1–5 and accepted `book-social` v0.2.4 evidence.
-Review Advanced candidates against the actual `go-service-starter` `proof/advanced` implementation,
-but do not publish an Advanced claim until `v0.2-advanced` is accepted. Refresh the matrix after
-each accepted proof milestone and meaningful `book-social` release; Professional and Ultimate remain
-planned until their target refs exist.
+Basic inventory and initial proof documents are complete for the accepted refs. The next Basic
+maintenance step is to keep the matrix current and use the endpoint, API-review, and handoff
+checklists for new evidence. Review Advanced candidates against the actual `go-service-starter`
+`proof/advanced` implementation, but do not publish an Advanced claim until `v0.2-advanced` is
+accepted. Refresh the matrix after each accepted proof milestone and meaningful `book-social` release;
+Professional and Ultimate remain planned until their target refs exist.
 
 ---
 

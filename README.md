@@ -165,6 +165,15 @@ The learning path should demonstrate:
 - handling simple integrations;
 - understanding basic API security risks.
 
+## Portfolio evidence and handoff
+
+- [Offer 1 Basic proof](docs/offer-1-basic-proof.md)
+- [Offer 1 evidence matrix](docs/portfolio/offer-1-evidence-matrix.md)
+- [Links to applied `book-social` work](docs/book-social-links.md)
+- [Backend endpoint task checklist](docs/checklists/backend-endpoint-task.md)
+- [API review checklist](docs/checklists/api-review.md)
+- [Backend handoff notes checklist](docs/checklists/handoff-notes.md)
+
 ## Suggested repository structure
 
 ```text
@@ -181,7 +190,12 @@ labs/
 docs/
   book-social-links.md
   offer-1-basic-proof.md
+  portfolio/
+    offer-1-evidence-matrix.md
   checklists/
+    backend-endpoint-task.md
+    api-review.md
+    handoff-notes.md
 AGENTS.md
 PLAN.md
 README.md
