@@ -755,8 +755,7 @@ application.
 #### Priority
 
 Later, before relying on containerized delivery or advanced integration infrastructure. Take only
-the PostgreSQL or Docker unit justified by an applied project; it does not wait for deferred Chapter
-9.
+the PostgreSQL or Docker unit justified by an applied project; it does not wait for deferred Chapter 9.
 
 ---
 
@@ -777,8 +776,7 @@ Start with Stage 9A alongside `book-social` v0.2.4 HTTP Foundation: middleware o
 logging/ID decisions, recovery and error behavior, secure/static-header policy, timeout scope, and
 graceful shutdown. Chapter 11 is directly relevant and is complete in the Greenlight study project.
 Treat Chapter 10 rate limiting as a documented defer-or-apply decision, not as automatic v0.2.4
-scope. Later Stage 9 waves remain
-product-triggered.
+scope. Later Stage 9 waves remain product-triggered.
 
 #### What to do
 
@@ -1058,26 +1056,45 @@ prematurely.
 
 ### Stage 13 — Portfolio evidence and reuse
 
-**Folder:** `docs/`
+**Folder:** `docs/` (with optional `docs/portfolio/` for the level matrix)
 
-**Goal:** continuously turn accepted learning and applied work into concise portfolio evidence and
-reusable starter assets for **Offer 1 Basic — Small Go Backend Fix / API Endpoint**.
+**Goal:** continuously turn accepted learning and applied work into concise, level-specific
+portfolio evidence and reusable starter assets for **Offer 1 — Go Backend APIs & Integrations**.
 
 This is a recurring review-and-handoff stage, not a final gate after every other stage. It packages
 accepted work into documentation that explains what the code demonstrates and identifies patterns
-that can responsibly move to `go-service-starter`.
+that can responsibly move to `go-service-starter`. Offer levels are cumulative client-facing scopes,
+not four separate implementations.
+
+#### Offer-level evidence policy
+
+| Level        | Current status                      | Minimum evidence before a public claim                                                                                                                                                                                    |
+|--------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Basic        | Partially evidenced now             | Focused endpoint/API fix, JSON and validation behavior, errors, tests, README and handoff notes; current sources include Stages 3–5, `book-social` v0.2.4, and `go-service-starter` `v0.1-basic`.                         |
+| Advanced     | In progress in `go-service-starter` | Accepted `proof/advanced` milestone: database-backed CRUD, migrations, validation, service/repository boundaries, focused DB/HTTP tests, and accurate docs; target tag `v0.2-advanced`.                                   |
+| Professional | Planned                             | Accepted `proof/professional` milestone: polished module boundaries, PostgreSQL workflow, Compose, logging/request ID, graceful shutdown, API examples/OpenAPI, testing and handoff docs; target tag `v0.3-professional`. |
+| Ultimate     | Planned                             | Accepted `proof/ultimate` milestone: reproducible final starter with REST, PostgreSQL, migrations, tests, Compose, health, lifecycle, API docs, README and handoff; target tag `v1.0-ultimate`.                           |
+
+Evidence for a higher level includes the lower-level proof. It must identify exact repository refs,
+implemented paths, verification commands, and known limitations; a planned contract or source
+pattern is not evidence of an implemented receiver capability.
 
 #### What to do
 
-- Create or update `docs/offer-1-basic-proof.md`.
+- Create or update the level matrix and only the proof documents for accepted levels.
+- Create or update `docs/offer-1-basic-proof.md` when the Basic evidence inventory is accepted.
+- Add `docs/offer-1-advanced-proof.md`, `docs/offer-1-professional-proof.md`, or
+  `docs/offer-1-ultimate-proof.md` only after the corresponding milestone is accepted.
 - Create or update `docs/book-social-links.md`.
 - Create or update `docs/checklists/backend-endpoint-task.md`.
 - Link relevant `go-web-labs` folders.
 - Link applied `book-social` tasks.
-- Review the accepted Basic proof and the actual Advanced work in `go-service-starter` before
-  claiming a cross-project capability.
-- Maintain a small reuse inventory: transferable now, transferable with adaptation, and deliberately
-  project-specific patterns that must not move.
+- Review the accepted proof at each level and the actual receiving implementation in
+  `go-service-starter` before claiming a cross-project capability.
+- Maintain a reuse inventory with three dispositions: transferable now, transferable with
+  adaptation, and deliberately project-specific patterns that must not move.
+- Record source ref/path, receiving ref/path, verification command, adaptation required, and
+  evidence status for every claimed transfer.
 - Add short case-study style notes.
 - Keep it concise.
 
@@ -1086,7 +1103,11 @@ that can responsibly move to `go-service-starter`.
 Possible files:
 
 ```text
+docs/portfolio/offer-1-evidence-matrix.md
 docs/offer-1-basic-proof.md
+docs/offer-1-advanced-proof.md
+docs/offer-1-professional-proof.md
+docs/offer-1-ultimate-proof.md
 docs/book-social-links.md
 docs/checklists/backend-endpoint-task.md
 docs/checklists/api-review.md
@@ -1096,7 +1117,18 @@ docs/checklists/handoff-notes.md
 Possible case study structure:
 
 ```md
-# Small Go Backend API Proof
+# Offer 1 Portfolio Evidence
+
+## Evidence level
+
+Basic / Advanced / Professional / Ultimate
+
+## Evidence references
+
+- source repository, branch or tag, commit;
+- receiving repository, branch or tag, commit;
+- verification command and result;
+- known limitations and deferred claims.
 
 ## What this demonstrates
 
@@ -1123,8 +1155,9 @@ Possible case study structure:
 
 - `book-social` v0.1 baseline
 - `book-social` v0.2 catalog read models
-- `book-social` read-only JSON API slice
+- `book-social` v0.2.4 HTTP Foundation
 - `book-social` tests and docs
+- A read-only JSON API slice remains a future proof item until it exists in `book-social`.
 
 ## Freelance tasks this supports
 
@@ -1136,21 +1169,25 @@ Possible case study structure:
 - add small integration
 ```
 
+The same structure is reused for higher levels, but each higher-level document must reference an
+accepted `go-service-starter` milestone rather than a planned contract.
+
 #### Output
 
 - Portfolio proof document.
 - Links from root README.
 - Clear “what this repo proves” explanation.
 - Clear mapping from a study to an applied project.
-- A review record showing which patterns can be carried into `go-service-starter` Advanced and why.
+- A level matrix showing Basic, Advanced, Professional, and Ultimate status.
+- A review record showing which patterns can be carried into `go-service-starter`, at which level,
+  and why.
 
 #### Offer mapping
 
-- Small Go backend fix.
-- REST API endpoint task.
-- API integration task.
-- Basic tests and docs.
-- Local verification and handoff notes.
+- Basic: small Go backend fix, REST endpoint, validation, errors, focused tests and handoff.
+- Advanced: database-backed CRUD, migrations, repository/service work and DB-aware verification.
+- Professional: complete module/service-block polish, local infrastructure and operational handoff.
+- Ultimate: reusable starter/MVP foundation with reproducible delivery and verification.
 
 #### Applied in `book-social`
 
@@ -1164,9 +1201,11 @@ Possible case study structure:
 
 #### Priority
 
-Start a first inventory now from completed Stages 1–5 and `book-social` v0.1–v0.2.3. Refresh it
-after each accepted `go-service-starter` proof milestone and meaningful `book-social` release. Keep
-the public portfolio package focused on real completed work.
+Start the Basic inventory now from completed Stages 1–5 and accepted `book-social` v0.2.4 evidence.
+Review Advanced candidates against the actual `go-service-starter` `proof/advanced` implementation,
+but do not publish an Advanced claim until `v0.2-advanced` is accepted. Refresh the matrix after
+each accepted proof milestone and meaningful `book-social` release; Professional and Ultimate remain
+planned until their target refs exist.
 
 ---
 
@@ -1341,7 +1380,7 @@ docs/
 
 ---
 
-## Offer 1 Basic proof checklist
+## Offer 1 proof checklist
 
 This repository should help demonstrate:
 
@@ -1358,7 +1397,8 @@ This repository should help demonstrate:
 - [ ] production API notes: graceful shutdown, metrics, build/audit/versioning;
 - [ ] bridge notes to `go-microservices-starter`;
 - [ ] links to applied implementation in `book-social`;
-- [ ] concise portfolio proof document for Offer 1 Basic.
+- [ ] concise portfolio proof document for each accepted Offer 1 level;
+- [ ] no higher-level claim is published before its target milestone/tag is accepted.
 
 ---
 
