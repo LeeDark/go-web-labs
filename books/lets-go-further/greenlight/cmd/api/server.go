@@ -22,34 +22,47 @@ func (app *application) serve() error {
 		ErrorLog:     slog.NewLogLogger(app.logger.Handler(), slog.LevelError),
 	}
 
-	shutdownError := make(chan error)
-
-	go func() {
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-		s := <-quit
-		app.logger.Info("caught signal, shutting down server", "signal", s.String())
-
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-
-		shutdownError <- srv.Shutdown(ctx)
-	}()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	app.logger.Info("starting server", "addr", srv.Addr, "env", app.config.env)
 
-	err := srv.ListenAndServe()
-	if !errors.Is(err, http.ErrServerClosed) {
+	return runServer(ctx, srv, app.logger, 30*time.Second)
+}
+
+type serverLifecycle interface {
+	ListenAndServe() error
+	Shutdown(context.Context) error
+}
+
+func runServer(ctx context.Context, srv serverLifecycle, logger *slog.Logger, shutdownTimeout time.Duration) error {
+	serverError := make(chan error, 1)
+	go func() {
+		serverError <- srv.ListenAndServe()
+	}()
+
+	select {
+	case err := <-serverError:
+		if errors.Is(err, http.ErrServerClosed) {
+			return nil
+		}
 		return err
+
+	case <-ctx.Done():
+		logger.Info("shutdown signal received", "reason", ctx.Err())
+
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer cancel()
+
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			return err
+		}
+
+		if err := <-serverError; err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+
+		logger.Info("stopped server")
+		return nil
 	}
-
-	err = <-shutdownError
-	if err != nil {
-		return err
-	}
-
-	app.logger.Info("stopped server", "addr", srv.Addr)
-
-	return nil
 }

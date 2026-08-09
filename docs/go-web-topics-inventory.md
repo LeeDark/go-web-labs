@@ -109,10 +109,11 @@ Reference only / cheat sheet.
 ## Web frameworks
 - net/http — Finished base stack / Offer 1 foundation
 - chi — Active primary router/framework
-- echo — Later comparison
-- gin — Later comparison
-- fiber — Reference only
-- gorilla/mux — Reference only
+- gin — First future comparison topic; widely used API framework
+- echo — Later `net/http` API-framework comparison
+- fiber — Later reference: uses `fasthttp`, so not a drop-in `net/http` choice
+- httprouter — Reference: minimal router and Gin dependency
+- gorilla/mux — Legacy maintenance/migration reference; do not select for a new lab
 
 ## Supporting Topics
 
