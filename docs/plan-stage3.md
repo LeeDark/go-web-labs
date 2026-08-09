@@ -83,12 +83,111 @@ Stage 3 intentionally does not add:
 These topics belong to later, focused stages. The lab is a reference, not a shared package: reuse
 its ideas and test cases only after reviewing them for the receiving application.
 
-## Follow-up: v2 as a review-driven increment
+## Follow-up: v2 technical-debt review
 
-v2 is deferred until practical API work identifies a small, proven improvement. It may include no
-more than two or three focused refinements, such as clearer DTO/response separation, more precise
-error codes, additional PATCH cases, or negative tests. It must stay an in-memory `books` lab and
-avoid a database, new domain area, or premature layering refactor.
+**Status: completed on 2026-08-09 for the selected contract-regression scope.**
+
+The response-mapping and atomic-PATCH candidates remain deferred until a
+proven need arises.
+
+v2 is a small, review-driven maintenance increment for this same lab. It is not a second Stage 3,
+and it is not an automatic follow-on from a version number in `book-social`. Start it only when a
+current API slice or a focused review demonstrates a concrete gap worth carrying into a real
+application. Keep the lab independent: it must neither import nor mirror `book-social` code or
+models.
+
+The completed review selected contract-regression coverage only: handler tests now assert the full
+public book representation for list, read, create, and PATCH, and prove that an invalid PATCH or
+oversized request does not mutate the store. The HTTP API behavior is unchanged.
+
+### Why a v2 review is still useful
+
+The original private plan listed DTO separation, PATCH semantics, error codes, deterministic data,
+and negative tests as possible v2 work. The v1 implementation has already closed much of that list:
+
+- create and PATCH input DTOs are separate from request handling;
+- PATCH distinguishes omitted fields from supplied values, rejects `null`, and validates field
+  limits;
+- JSON errors, validation errors, routing errors, and safe internal errors have stable codes;
+- the store has a deterministic seed and ordered list results;
+- focused handler tests cover CRUD and representative HTTP-boundary failures.
+
+Those items are therefore **not** a backlog to reimplement. The remaining debt is chiefly about
+making the established contract easier to preserve as the example is reviewed or adapted:
+
+1. The public response is serialized directly from the storage `Book` type. If the storage shape
+   changes, an accidental API-contract change is possible.
+2. `PATCH` performs a read followed by a separate update. v1 deliberately uses last-write-wins
+   behavior, but a review should decide whether the lab needs an explicit atomic mutation boundary
+   or a documented decision to retain that trade-off.
+3. The tests assert representative failures, but do not systematically protect every documented
+   contract edge or each refinement chosen for v2.
+
+### Entry criteria
+
+Before editing code, record a short review note that names the observed API use case or concrete
+maintenance risk, identifies the affected v1 behavior, and selects **at most three** refinements
+from the debt list below. If no concrete gap is found, close the review without changing the lab.
+
+Do not use an old `book-social` release milestone as the trigger. A real, current API requirement or
+an evidence-backed review finding is the trigger; any applied API work remains a separate task.
+
+### Candidate refinements
+
+Choose only the items justified by the entry review:
+
+| Debt                         | Smallest acceptable refinement                                                                                                                       | Required proof                                                                                                                          |
+|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Response/storage coupling    | Add a private response DTO or mapping function and keep the existing JSON representation unchanged.                                                  | Handler tests assert the complete response shape for list, read, create, and PATCH.                                                     |
+| PATCH read–update gap        | Either move the read/apply/update sequence into one lock-protected store operation, or document why last-write-wins remains sufficient for this lab. | A focused store or handler test demonstrates the chosen behavior; no optimistic concurrency, version fields, or database is introduced. |
+| Contract-regression coverage | Add table-driven negative and boundary cases that correspond to the selected refinement or an uncovered documented rule.                             | Tests assert status, JSON error code, relevant headers, and lack of unintended store mutation where applicable.                         |
+
+More precise error codes are not a default v2 task: change them only if a real client ambiguity is
+identified, preserve the common error envelope, and document any contract change explicitly.
+
+### Implementation sequence
+
+1. Review the current lab contract, handlers, store, and handler tests against the triggering use
+   case. Write down the selected one to three refinements and the invariants that must not change.
+2. Make the smallest local change in `labs/rest-api`; retain one `main` package and the concrete
+   in-memory store.
+3. Add or tighten only the focused tests needed to prove the selected behavior. Do not increase test
+   count merely to satisfy a quota.
+4. Update `labs/rest-api/README.md` only if behavior, a documented trade-off, or a manual scenario
+   changes. Add a concise “what changed and why” note for v2.
+5. Review the diff as a standalone increment. Do not combine it with `book-social` work or a
+   later-stage refactor.
+
+### Boundaries
+
+v2 must remain an in-memory `books` lab. It must not add a database, migrations, Docker, OpenAPI,
+authentication, authorization, CORS, rate limiting, another resource, a new user flow, package
+splitting, or service/repository interfaces. Do not turn the PATCH refinement into versioning or
+optimistic concurrency; those are separate production/API concerns.
+
+Any applied increment in `book-social` is separately scoped. A future read API uses its own catalog
+model and `/api/books/{slug}` contract. Write operations require a defined use case plus validation,
+authentication, authorization, ownership rules, pagination where relevant, and an error contract;
+they must not be copied from this CRUD lab for symmetry.
+
+### Definition of done and verification
+
+v2 is done when the review note shows a proven reason for every selected refinement, the diff is
+small and independently reviewable, the public contract remains unchanged unless explicitly
+documented, and the README/tests reflect the final behavior.
+
+Run from `labs/rest-api`:
+
+```sh
+gofmt -w ./cmd/api/*.go
+go test ./...
+go vet ./...
+git diff --check
+```
+
+For any changed endpoint, rerun the corresponding documented `curl` scenario from
+[`labs/rest-api/README.md`](../labs/rest-api/README.md). In restricted environments, use the focused
+`httptest` suite and report the skipped listener-based check.
 
 ## Definition of done and verification
 

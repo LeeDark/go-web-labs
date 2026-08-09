@@ -35,6 +35,23 @@ func decodeResponse(t *testing.T, recorder *httptest.ResponseRecorder) envelope 
 	return response
 }
 
+func assertBookData(t *testing.T, data any, want map[string]any) {
+	t.Helper()
+
+	book, ok := data.(map[string]any)
+	if !ok {
+		t.Fatalf("data = %#v, want book object", data)
+	}
+	if len(book) != len(want) {
+		t.Fatalf("book fields = %#v, want %#v", book, want)
+	}
+	for field, wantValue := range want {
+		if got := book[field]; got != wantValue {
+			t.Fatalf("book[%q] = %#v, want %#v", field, got, wantValue)
+		}
+	}
+}
+
 func TestListBooksHandler(t *testing.T) {
 	app := newTestApplication()
 	recorder := httptest.NewRecorder()
@@ -53,6 +70,12 @@ func TestListBooksHandler(t *testing.T) {
 	if !ok || len(books) != 1 {
 		t.Fatalf("data = %#v, want one book", response["data"])
 	}
+	assertBookData(t, books[0], map[string]any{
+		"id":          float64(1),
+		"title":       "The Left Hand of Darkness",
+		"author":      "Ursula K. Le Guin",
+		"description": "A science fiction novel.",
+	})
 }
 
 func TestShowBookHandler(t *testing.T) {
@@ -66,10 +89,12 @@ func TestShowBookHandler(t *testing.T) {
 			t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
 		}
 		response := decodeResponse(t, recorder)
-		book := response["data"].(map[string]any)
-		if book["id"] != float64(1) {
-			t.Fatalf("id = %#v, want 1", book["id"])
-		}
+		assertBookData(t, response["data"], map[string]any{
+			"id":          float64(1),
+			"title":       "The Left Hand of Darkness",
+			"author":      "Ursula K. Le Guin",
+			"description": "A science fiction novel.",
+		})
 	})
 
 	t.Run("missing", func(t *testing.T) {
@@ -91,7 +116,12 @@ func TestCreateBookHandler(t *testing.T) {
 	app := newTestApplication()
 	recorder := httptest.NewRecorder()
 
-	app.routes().ServeHTTP(recorder, newJSONRequest(t, http.MethodPost, "/books", `{"title":" Dune ","author":" Frank Herbert ","description":" A science fiction novel. "}`))
+	app.routes().ServeHTTP(recorder,
+		newJSONRequest(t, http.MethodPost,
+			"/books",
+			`{"title":" Dune ","author":" Frank Herbert ","description":" A science fiction novel. "}`,
+		),
+	)
 
 	if recorder.Code != http.StatusCreated {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusCreated)
@@ -100,10 +130,12 @@ func TestCreateBookHandler(t *testing.T) {
 		t.Fatalf("Location = %q, want /books/2", got)
 	}
 	response := decodeResponse(t, recorder)
-	book := response["data"].(map[string]any)
-	if book["title"] != "Dune" || book["author"] != "Frank Herbert" {
-		t.Fatalf("book = %#v, want normalized values", book)
-	}
+	assertBookData(t, response["data"], map[string]any{
+		"id":          float64(2),
+		"title":       "Dune",
+		"author":      "Frank Herbert",
+		"description": "A science fiction novel.",
+	})
 }
 
 func TestCreateBookValidation(t *testing.T) {
@@ -178,10 +210,40 @@ func TestPatchBookHandler(t *testing.T) {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
 	}
 	response := decodeResponse(t, recorder)
-	book := response["data"].(map[string]any)
-	if book["title"] != "A new title" || book["author"] != "Ursula K. Le Guin" || book["description"] != "A science fiction novel." {
-		t.Fatalf("book = %#v, want only title updated", book)
+	assertBookData(t, response["data"], map[string]any{
+		"id":          float64(1),
+		"title":       "A new title",
+		"author":      "Ursula K. Le Guin",
+		"description": "A science fiction novel.",
+	})
+
+	recorder = httptest.NewRecorder()
+	app.routes().ServeHTTP(recorder, newJSONRequest(t, http.MethodPatch, "/books/1", `{"title":" "}`))
+
+	if recorder.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("invalid patch status = %d, want %d", recorder.Code, http.StatusUnprocessableEntity)
 	}
+	if got := recorder.Header().Get("Content-Type"); got != "application/json" {
+		t.Fatalf("invalid patch Content-Type = %q, want application/json", got)
+	}
+	response = decodeResponse(t, recorder)
+	apiErr := response["error"].(map[string]any)
+	if apiErr["code"] != "validation_failed" {
+		t.Fatalf("error.code = %#v, want validation_failed", apiErr["code"])
+	}
+
+	recorder = httptest.NewRecorder()
+	app.routes().ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/books/1", nil))
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("read after invalid patch status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+	response = decodeResponse(t, recorder)
+	assertBookData(t, response["data"], map[string]any{
+		"id":          float64(1),
+		"title":       "A new title",
+		"author":      "Ursula K. Le Guin",
+		"description": "A science fiction novel.",
+	})
 }
 
 func TestDeleteBookHandler(t *testing.T) {
@@ -299,6 +361,9 @@ func TestHTTPBoundaryErrors(t *testing.T) {
 			if recorder.Code != test.status {
 				t.Fatalf("status = %d, want %d", recorder.Code, test.status)
 			}
+			if got := recorder.Header().Get("Content-Type"); got != "application/json" {
+				t.Fatalf("Content-Type = %q, want application/json", got)
+			}
 			response := decodeResponse(t, recorder)
 			err := response["error"].(map[string]any)
 			if err["code"] != test.code {
@@ -306,6 +371,12 @@ func TestHTTPBoundaryErrors(t *testing.T) {
 			}
 			if test.allow != "" && recorder.Header().Get("Allow") != test.allow {
 				t.Fatalf("Allow = %q, want %q", recorder.Header().Get("Allow"), test.allow)
+			}
+			if test.name == "too large" {
+				books := app.bookStore.list()
+				if len(books) != 1 || books[0].ID != 1 {
+					t.Fatalf("store after oversized request = %#v, want unchanged seed", books)
+				}
 			}
 		})
 	}

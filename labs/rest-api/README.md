@@ -2,25 +2,39 @@
 
 ## Purpose
 
-This lab will be a small API-only backend for practicing the HTTP boundary of
-one `books` resource: JSON, CRUD, validation, consistent errors, middleware,
-and focused handler tests.
+This lab will be a small API-only backend for practicing the HTTP boundary of one `books` resource:
+JSON, CRUD, validation, consistent errors, middleware, and focused handler tests.
 
-The lab is intentionally independent from `book-social`. It uses an in-memory
-store, has no users or database, and does not share domain code with the
-applied project.
+The lab is intentionally independent from `book-social`. It uses an in-memory store, has no users or
+database, and does not share domain code with the applied project.
 
-The in-memory store is intentionally non-persistent: all changes are lost when
-the server process restarts. It is suitable only for this local learning lab.
+The in-memory store is intentionally non-persistent: all changes are lost when the server process
+restarts. It is suitable only for this local learning lab.
 
-Current status: **v1 complete (Steps 0–5).** The lab has verified in-memory
-CRUD behavior, a strict JSON HTTP boundary, focused handler tests, and runnable
-local documentation.
+Current status: **v1 complete (Steps 0–5).** The lab has verified in-memory CRUD behavior, a strict
+JSON HTTP boundary, focused handler tests, and runnable local documentation.
+
+## v2 technical-debt review — 2026-08-09
+
+This review selected only contract-regression coverage. The handler tests now assert the complete
+public book representation for list, read, create, and PATCH; they also prove that an invalid PATCH
+and an oversized request do not mutate the in-memory store. The HTTP API behavior and JSON contract
+are unchanged.
+
+The following candidates remain deliberately deferred:
+
+- a response DTO/mapping is useful only if the storage shape needs to diverge from the stable API
+  representation; the explicit mapping lesson is already covered by `labs/layered-api` in Stage 4;
+- PATCH keeps its documented last-write-wins behavior unless a concrete concurrent API use case
+  justifies an atomic store mutation boundary.
+
+The review is complete when the focused checks below pass. It does not add a new resource, database,
+API version, or layering refactor.
 
 ## Planned v1 project structure
 
-The lab will stay in one small `main` package until a later stage has evidence
-that another package is useful.
+The lab will stay in one small `main` package until a later stage has evidence that another package
+is useful.
 
 ```text
 labs/rest-api/
@@ -38,42 +52,37 @@ labs/rest-api/
     └── handlers_test.go    # Step 5: focused HTTP handler tests
 ```
 
-Files marked for later steps will not be created as empty placeholders during
-Step 1.
+Files marked for later steps will not be created as empty placeholders during Step 1.
 
 ## Step 1 implementation
 
 ### Module and workspace
 
-- Initialize module `github.com/LeeDark/go-web-labs/labs/rest-api` with the Go
-  version already used by the repository workspace.
+- Initialize module `github.com/LeeDark/go-web-labs/labs/rest-api` with the Go version already used
+  by the repository workspace.
 - Add only `github.com/go-chi/chi/v5` as a direct dependency.
 - Add `./labs/rest-api` to the root `go.work` file.
-- Do not introduce a Makefile, configuration library, environment loader, or
-  another framework.
+- Do not introduce a Makefile, configuration library, environment loader, or another framework.
 
 ### Application wiring
 
 - Accept an optional `-addr` flag with `:4000` as the local default.
 - Use the standard `log/slog` package for startup and server errors.
-- Keep shared dependencies in a small `application` value containing the
-  logger and concrete `*bookStore`.
-- Initialize one deterministic seed book in `newBookStore()`: ID `1`, using the
-  title, author, and description from the contract example; the next ID is `2`.
-- Protect the store with `sync.RWMutex`; the HTTP server may call it from
-  multiple goroutines.
-- Keep the concrete store local to the lab. Do not add an interface or a
-  service/repository layer before Stage 4.
+- Keep shared dependencies in a small `application` value containing the logger and concrete
+  `*bookStore`.
+- Initialize one deterministic seed book in `newBookStore()`: ID `1`, using the title, author, and
+  description from the contract example; the next ID is `2`.
+- Protect the store with `sync.RWMutex`; the HTTP server may call it from multiple goroutines.
+- Keep the concrete store local to the lab. Do not add an interface or a service/repository layer
+  before Stage 4.
 
 ### HTTP skeleton
 
-- Build the router in `routes.go` with Chi and register only `GET /health` in
-  this step.
-- Return the contract response `{"data":{"status":"available"}}` through a
-  little JSON writer shared by later handlers.
-- Configure an explicit `http.Server` with address, handler, standard-library
-  error logging, `5s` read-header, `10s` read, `10s` write, and `60s` idle
-  timeouts.
+- Build the router in `routes.go` with Chi and register only `GET /health` in this step.
+- Return the contract response `{"data":{"status":"available"}}` through a little JSON writer shared
+  by later handlers.
+- Configure an explicit `http.Server` with address, handler, standard-library error logging, `5s`
+  read-header, `10s` read, `10s` write, and `60s` idle timeouts.
 - Keep graceful shutdown, recovery, request logging, custom `404`/`405`
   responses, and the `/books` routes out of this step.
 
@@ -102,65 +111,57 @@ Content-Type: application/json
 {"data":{"status":"available"}}
 ```
 
-The JSON writer may append a final newline. Header ordering and additional
-standard HTTP headers are not part of the contract.
+The JSON writer may append a final newline. Header ordering and additional standard HTTP headers are
+not part of the contract.
 
 ### Step 1 Definition of Done
 
-- [x] The new module is present in `go.work` and has no dependencies other than
-  Chi plus the standard library.
-- [x] `go run ./cmd/api` starts the server with no database or environment
-  setup.
-- [x] `GET /health` returns `200`, the JSON content type, and the documented data
-  envelope.
-- [x] The application owns an initialized, concurrency-safe in-memory book
-  store.
-- [x] No `/books` handler, speculative layering, middleware, or later-stage
-  feature is implemented.
+- [x] The new module is present in `go.work` and has no dependencies other than Chi plus the
+  standard library.
+- [x] `go run ./cmd/api` starts the server with no database or environment setup.
+- [x] `GET /health` returns `200`, the JSON content type, and the documented data envelope.
+- [x] The application owns an initialized, concurrency-safe in-memory book store.
+- [x] No `/books` handler, speculative layering, middleware, or later-stage feature is implemented.
 - [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed in the lab module.
-- [x] The README contains commands that have been verified against the
-  implemented skeleton.
+- [x] The README contains commands that have been verified against the implemented skeleton.
 
 ## Step 2 implementation plan
 
 ### Store reads
 
-- Add `list()` and `get(id)` methods directly to the concrete `bookStore`; do
-  not introduce a repository interface.
+- Add `list()` and `get(id)` methods directly to the concrete `bookStore`; do not introduce a
+  repository interface.
 - Protect both operations with `RLock`/`RUnlock`.
-- Return `Book` values rather than pointers into the store, so handlers cannot
-  mutate stored records accidentally.
-- Make `list()` return a non-nil empty slice when there are no books and sort
-  the copied values by ascending `id`. Map iteration order must not leak into
-  the API response.
-- Make `get(id)` return `(Book, bool)`, where the boolean reports whether the
-  record exists. The in-memory store has no internal failure to expose yet.
+- Return `Book` values rather than pointers into the store, so handlers cannot mutate stored records
+  accidentally.
+- Make `list()` return a non-nil empty slice when there are no books and sort the copied values by
+  ascending `id`. Map iteration order must not leak into the API response.
+- Make `get(id)` return `(Book, bool)`, where the boolean reports whether the record exists. The
+  in-memory store has no internal failure to expose yet.
 
 ### Routes and handlers
 
-- Add `GET /books` and `GET /books/{id}` directly to the existing Chi router.
-  Do not register trailing-slash variants or add redirect middleware.
+- Add `GET /books` and `GET /books/{id}` directly to the existing Chi router. Do not register
+  trailing-slash variants or add redirect middleware.
 - Create `books.go` with `listBooksHandler` and `showBookHandler`.
 - Add a reusable positive `int64` route-ID parser to `helpers.go`, using
   `chi.URLParam(r, "id")` and base-10 parsing.
-- Return list and single-book responses through the existing `data` envelope
-  and `writeJSON()` helper.
-- Keep the handlers thin: parse HTTP input, call the concrete store, map the
-  result to HTTP, and write JSON.
+- Return list and single-book responses through the existing `data` envelope and `writeJSON()`
+  helper.
+- Keep the handlers thin: parse HTTP input, call the concrete store, map the result to HTTP, and
+  write JSON.
 
 ### Minimal read errors
 
-- Create `errors.go` now with the common error shape and one small JSON error
-  writer. Step 4 will extend the same file instead of replacing the contract.
-- Return `400 invalid_id` when `{id}` is non-numeric, zero, negative, or outside
-  the `int64` range.
+- Create `errors.go` now with the common error shape and one small JSON error writer. Step 4 will
+  extend the same file instead of replacing the contract.
+- Return `400 invalid_id` when `{id}` is non-numeric, zero, negative, or outside the `int64` range.
 - Return `404 book_not_found` when a valid positive ID is absent.
 - Use the fixed messages `Book ID must be a positive integer` and
   `Book not found`. Error codes are the client-facing stable part.
-- Log response encoding or write failures with request method and URI. Do not
-  attempt to write a second response after the output may already have started.
-- Leave custom router-level `404`/`405`, `internal_error`, recovery, and request
-  logging for Step 4.
+- Log response encoding or write failures with request method and URI. Do not attempt to write a
+  second response after the output may already have started.
+- Leave custom router-level `404`/`405`, `internal_error`, recovery, and request logging for Step 4.
 
 ### Verification in Pair Programmer Mode
 
@@ -200,73 +201,69 @@ Every response in this table must use `Content-Type: application/json`.
 - [x] Both read routes are registered with Chi and no write route is added.
 - [x] Store reads are concurrency-safe and do not expose the internal map.
 - [x] List output is a non-nil array in deterministic ascending-ID order.
-- [x] Existing, missing, malformed, and non-positive IDs follow the documented
-  response envelopes and statuses.
-- [x] No request-body decoder, validation DTO, middleware, SQL, or speculative
-  layer is introduced.
+- [x] Existing, missing, malformed, and non-positive IDs follow the documented response envelopes
+  and statuses.
+- [x] No request-body decoder, validation DTO, middleware, SQL, or speculative layer is introduced.
 - [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed.
 - [x] All five documented `curl` checks match the contract.
 
 ## Step 3 implementation plan
 
-Step 3 completes the in-memory CRUD behavior for valid requests. Step 4 will
-harden the HTTP boundary; the temporary limitations are explicit below.
+Step 3 completes the in-memory CRUD behavior for valid requests. Step 4 will harden the HTTP
+boundary; the temporary limitations are explicit below.
 
 ### Store mutations
 
 - Add `create(book)`, `update(book)`, and `delete(id)` methods directly to
   `bookStore`; do not add an interface or another package.
 - Protect every mutation with `Lock`/`Unlock`.
-- `create()` ignores any caller-supplied ID, assigns `nextID`, increments it,
-  stores a value copy, and returns the created value.
-- `update()` preserves the supplied book ID, replaces the stored value only if
-  that ID still exists, and returns `(Book, bool)`.
+- `create()` ignores any caller-supplied ID, assigns `nextID`, increments it, stores a value copy,
+  and returns the created value.
+- `update()` preserves the supplied book ID, replaces the stored value only if that ID still exists,
+  and returns `(Book, bool)`.
 - `delete()` removes an existing ID and returns whether a record was deleted.
-- Keep last-write-wins behavior for this lab. Versioning and optimistic
-  concurrency are outside Stage 3.
+- Keep last-write-wins behavior for this lab. Versioning and optimistic concurrency are outside
+  Stage 3.
 
 ### Input DTOs and minimal validation
 
 - Add a create DTO with string fields `title`, `author`, and `description`.
-- Add a PATCH DTO with pointer string fields so omitted values can preserve the
-  stored book.
+- Add a PATCH DTO with pointer string fields so omitted values can preserve the stored book.
 - Trim leading and trailing whitespace before validation and storage.
 - For create, require non-blank `title` and `author`; omitted `description`
   becomes `""`.
 - For PATCH, require at least one supplied field. A supplied `title` or
-  `author` must remain non-blank after trimming; `description: ""` explicitly
-  clears the description.
-- Return `422 validation_failed` for these minimal semantic failures. Field
-  details and the complete Unicode length rules are added in Step 4.
+  `author` must remain non-blank after trimming; `description: ""` explicitly clears the
+  description.
+- Return `422 validation_failed` for these minimal semantic failures. Field details and the complete
+  Unicode length rules are added in Step 4.
 
 ### Minimal JSON decoding boundary
 
-- Add a small request JSON decoder to `helpers.go` and decode one request DTO
-  in each POST/PATCH handler.
-- Return `400 invalid_json` when the initial decode fails, including an empty
-  or malformed body.
-- Do not yet add body-size limiting, media-type enforcement, unknown-field
-  rejection, trailing-value checks, or exact `null` detection. Step 4 extends
-  this helper without changing handler/store responsibilities.
-- Until Step 4, a JSON `null` decoded through a pointer field can be treated as
-  omitted; it is not final v1 contract behavior.
+- Add a small request JSON decoder to `helpers.go` and decode one request DTO in each POST/PATCH
+  handler.
+- Return `400 invalid_json` when the initial decode fails, including an empty or malformed body.
+- Do not yet add body-size limiting, media-type enforcement, unknown-field rejection, trailing-value
+  checks, or exact `null` detection. Step 4 extends this helper without changing handler/store
+  responsibilities.
+- Until Step 4, a JSON `null` decoded through a pointer field can be treated as omitted; it is not
+  final v1 contract behavior.
 
 ### Routes and handlers
 
-- Register `POST /books`, `PATCH /books/{id}`, and `DELETE /books/{id}` with
-  Chi. Do not add `PUT`.
+- Register `POST /books`, `PATCH /books/{id}`, and `DELETE /books/{id}` with Chi. Do not add `PUT`.
 - `POST` constructs a book without trusting a client ID, stores it, and returns
   `201 Created`, `Location: /books/{id}`, and the created book in `data`.
-- `PATCH` reads the current value, applies only supplied fields, validates the
-  result, stores it, and returns `200 OK` with `data`.
-- If a book disappears between the PATCH read and update, map the failed
-  update to the same `404 book_not_found` response.
+- `PATCH` reads the current value, applies only supplied fields, validates the result, stores it,
+  and returns `200 OK` with `data`.
+- If a book disappears between the PATCH read and update, map the failed update to the same
+  `404 book_not_found` response.
 - `DELETE` returns `204 No Content` with no body or JSON content type.
-- Missing valid IDs return `404 book_not_found`; malformed and non-positive IDs
-  continue to return `400 invalid_id`.
+- Missing valid IDs return `404 book_not_found`; malformed and non-positive IDs continue to return
+  `400 invalid_id`.
 - Extend the existing error helpers only with `invalid_json` and
-  `validation_failed`. Leave `internal_error`, custom router `404`/`405`,
-  recovery, and request logging for Step 4.
+  `validation_failed`. Leave `internal_error`, custom router `404`/`405`, recovery, and request
+  logging for Step 4.
 
 ### Verification in Pair Programmer Mode
 
@@ -335,26 +332,23 @@ Expected outcomes:
 - [x] All three write routes are registered with Chi; no `PUT` route is added.
 - [x] Store mutations are concurrency-safe and preserve server-owned IDs.
 - [x] Create returns `201`, `Location`, and the stored book in `data`.
-- [x] PATCH updates only supplied fields, supports clearing description, and
-  rejects an empty update.
+- [x] PATCH updates only supplied fields, supports clearing description, and rejects an empty
+  update.
 - [x] DELETE returns an empty `204`; later reads return `404`.
-- [x] Minimal invalid JSON and semantic validation errors use the common error
-  envelope.
+- [x] Minimal invalid JSON and semantic validation errors use the common error envelope.
 - [x] Step 4 hardening is documented and verified separately below.
 - [x] `gofmt`, `go test ./...`, and `go vet ./...` succeed.
 - [x] All documented Step 3 `curl` scenarios match the expected behavior.
 
 ## Step 4 implementation
 
-Step 4 hardens only the HTTP boundary; the store and CRUD route set are
-unchanged.
+Step 4 hardens only the HTTP boundary; the store and CRUD route set are unchanged.
 
-- `POST` and `PATCH` require `Content-Type: application/json` (an optional
-  charset is accepted), limit a body to 1 MiB, accept exactly one JSON object,
-  and reject malformed, unknown, trailing, wrong-type, and `null` values.
-- Validation returns `422 validation_failed` with field details. The trimmed
-  limits are title 1–200, author 1–120, and description 0–1000 Unicode
-  characters.
+- `POST` and `PATCH` require `Content-Type: application/json` (an optional charset is accepted),
+  limit a body to 1 MiB, accept exactly one JSON object, and reject malformed, unknown, trailing,
+  wrong-type, and `null` values.
+- Validation returns `422 validation_failed` with field details. The trimmed limits are title 1–200,
+  author 1–120, and description 0–1000 Unicode characters.
 - Router-level `404` and `405`, request-size `413`, media-type `415`, and safe
   `500 internal_error` responses use the documented error envelope. `405`
   responses include `Allow` for the matching lab route.
@@ -363,32 +357,31 @@ unchanged.
 
 ### Step 4 Definition of Done
 
-- [x] JSON input is strict, size-limited, and has a documented media-type
-  boundary.
-- [x] Validation, invalid JSON, missing resources, routing errors, and internal
-  errors use one documented envelope.
+- [x] JSON input is strict, size-limited, and has a documented media-type boundary.
+- [x] Validation, invalid JSON, missing resources, routing errors, and internal errors use one
+  documented envelope.
 - [x] Recovery middleware prevents a panic from exposing internal error data.
 - [x] Focused `httptest` checks cover `400`, `404`, `405` plus `Allow`, `413`,
   `415`, and recovered `500` responses.
-- [x] `gofmt`, `go test ./...`, and `go vet ./...` pass with a temporary Go
-  build cache in this sandbox. A live local `curl` check cannot run here because
-  the sandbox forbids opening a listening socket.
+- [x] `gofmt`, `go test ./...`, and `go vet ./...` pass with a temporary Go build cache in this
+  sandbox. A live local `curl` check cannot run here because the sandbox forbids opening a listening
+  socket.
 
 ## Step 5 implementation
 
-The v1 test suite contains seven focused `httptest` handler tests. Together,
-they cover listing, an existing and missing book, valid and invalid create,
-partial update, deletion, and HTTP boundary failures.
+The v1 test suite contains seven focused `httptest` handler tests. Together, they cover listing, an
+existing and missing book, valid and invalid create, partial update, deletion, and HTTP boundary
+failures.
 
 ### Step 5 Definition of Done
 
 - [x] The focused handler suite covers the planned CRUD scenarios through
   `httptest` without a network listener.
-- [x] The README documents the lab purpose, architecture boundary, run/test
-  commands, `curl` scenarios, and non-persistent in-memory storage.
+- [x] The README documents the lab purpose, architecture boundary, run/test commands, `curl`
+  scenarios, and non-persistent in-memory storage.
 - [x] Final `gofmt`, `go test ./...`, `go vet ./...`, and `git diff --check`
-  pass for the lab. The repository root has no `Makefile`; its unrelated
-  Snippetbox Makefile was not used for this Stage 3 checkpoint.
+  pass for the lab. The repository root has no `Makefile`; its unrelated Snippetbox Makefile was not
+  used for this Stage 3 checkpoint.
 
 ## v1 API contract
 
@@ -412,8 +405,8 @@ A book response has this shape:
 | `author`      | string    | Required; trimmed; 1–120 Unicode characters after trimming.                      |
 | `description` | string    | Optional; trimmed; at most 1000 Unicode characters; defaults to an empty string. |
 
-The lab identifies books by numeric `id`. A human-readable `slug` belongs to
-the future applied API in `book-social` and is not part of this contract.
+The lab identifies books by numeric `id`. A human-readable `slug` belongs to the future applied API
+in `book-social` and is not part of this contract.
 
 ### Input DTOs
 
@@ -447,8 +440,8 @@ Partial update request:
 - `null` is not a valid value for any field.
 - Sending an unchanged value is valid and returns the current resource.
 
-For both DTOs, the API accepts one JSON object, rejects unknown fields and
-trailing JSON values, and limits the body to 1 MiB. `POST` and `PATCH` require
+For both DTOs, the API accepts one JSON object, rejects unknown fields and trailing JSON values, and
+limits the body to 1 MiB. `POST` and `PATCH` require
 `Content-Type: application/json`; a `charset` parameter is allowed.
 
 ### Response envelopes
@@ -466,8 +459,8 @@ A successful response with a representation uses a top-level `data` member:
 }
 ```
 
-The list endpoint returns an array in the same envelope. Books are ordered by
-ascending `id`, so the in-memory result is deterministic.
+The list endpoint returns an array in the same envelope. Books are ordered by ascending `id`, so the
+in-memory result is deterministic.
 
 ```json
 {
@@ -498,9 +491,9 @@ All error responses use an `error` member with a stable machine-readable
 }
 ```
 
-Clients may depend on `code`, but should not parse `message` or field messages.
-Internal errors are logged by the server and are never exposed in the response.
-Every response with a JSON body uses `Content-Type: application/json`.
+Clients may depend on `code`, but should not parse `message` or field messages. Internal errors are
+logged by the server and are never exposed in the response. Every response with a JSON body uses
+`Content-Type: application/json`.
 
 `DELETE` is the one successful operation without an envelope: it returns
 `204 No Content` with an empty body.
@@ -516,8 +509,8 @@ Every response with a JSON body uses `Content-Type: application/json`.
 | `PATCH /books/{id}`  |   `200` | `400`, `404`, `413`, `415`, `422`, `500` | Applies only supplied fields.                         |
 | `DELETE /books/{id}` |   `204` | `400`, `404`, `500`                      | Successful response has no body.                      |
 
-Unsupported methods return `405 Method Not Allowed` in the error envelope and
-include an explicit `Allow` header for the matching lab route.
+Unsupported methods return `405 Method Not Allowed` in the error envelope and include an explicit
+`Allow` header for the matching lab route.
 
 Error codes are fixed as follows:
 
@@ -535,39 +528,39 @@ Error codes are fixed as follows:
 
 ## Step 0 verification scenarios
 
-These scenarios define the behavior to verify manually with `curl` and, where
-noted later, with focused `httptest` cases:
+These scenarios define the behavior to verify manually with `curl` and, where noted later, with
+focused `httptest` cases:
 
 1. `GET /health` returns `200`, JSON content type, and `status: available`.
 2. `GET /books` returns `200` and a deterministically ordered JSON array.
 3. `GET /books/{existing-id}` returns `200`; a missing positive ID returns the
    `404 book_not_found` envelope; a non-positive or non-numeric ID returns
    `400 invalid_id`.
-4. A valid `POST /books` returns `201`, a `Location` header, and the normalized
-   created book with a generated ID.
+4. A valid `POST /books` returns `201`, a `Location` header, and the normalized created book with a
+   generated ID.
 5. A create request with a missing or blank required field returns
    `422 validation_failed` and field details without changing the store.
 6. A `PATCH` containing only `title` returns `200` and preserves `author` and
    `description`.
-7. An empty PATCH object returns `422 validation_failed`; a malformed body,
-   unknown field, wrong JSON type, or `null` returns `400 invalid_json`.
-8. `DELETE /books/{existing-id}` returns an empty `204`; a later read or second
-   delete returns `404 book_not_found`.
-9. An oversized body returns `413`, and a missing or unsupported request media
-   type returns `415`, both in the common error envelope.
-10. An unsupported method returns `405` in the common error envelope; an
-    unexpected server failure returns only the safe `500 internal_error`
+7. An empty PATCH object returns `422 validation_failed`; a malformed body, unknown field, wrong
+   JSON type, or `null` returns `400 invalid_json`.
+8. `DELETE /books/{existing-id}` returns an empty `204`; a later read or second delete returns
+   `404 book_not_found`.
+9. An oversized body returns `413`, and a missing or unsupported request media type returns `415`,
+   both in the common error envelope.
+10. An unsupported method returns `405` in the common error envelope; an unexpected server failure
+    returns only the safe `500 internal_error`
     response.
 
-The v1 automated suite will select 5–7 focused cases from this list while the
-full list remains the manual contract checklist.
+The v1 automated suite will select 5–7 focused cases from this list while the full list remains the
+manual contract checklist.
 
 ## Scope boundary
 
-The v1 lab will use Go, `net/http`, Chi, and a local in-memory store. It will
-not add SQL, migrations, Docker, OpenAPI, authentication, authorization, CORS,
-rate limiting, extra resources, or speculative service/repository packages.
+The v1 lab will use Go, `net/http`, Chi, and a local in-memory store. It will not add SQL,
+migrations, Docker, OpenAPI, authentication, authorization, CORS, rate limiting, extra resources, or
+speculative service/repository packages.
 
-A later review may improve this same example, but it must remain a small lab.
-Applied catalog endpoints in `book-social` will use their own models and
+A later review may improve this same example, but it must remain a small lab. Applied catalog
+endpoints in `book-social` will use their own models and
 `/api/books/{slug}` contract rather than importing this code.
