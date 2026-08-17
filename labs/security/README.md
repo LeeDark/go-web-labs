@@ -9,7 +9,48 @@ The current wave is **Stage 7A**: `book-social` v0.2.5–v0.2.6 authentication a
 foundations unit. Stage 7B (CORS, API rate limiting, and API-specific controls) does not begin until
 a stable `/api/*` contract exists.
 
-Related plan: [`docs/private/plan-stage7.ru.md`](../../docs/private/plan-stage7.ru.md).
+The applied v0.2.5–v0.2.6 scope currently limits the first slice to registration, login, logout,
+and `GET /me`; use DB-backed opaque sessions, renew the session on authentication, invalidate it on
+logout, keep `HttpOnly`/`SameSite=Lax` cookie policy, and exclude profile, activation, recovery,
+API auth, roles/RBAC routes, CORS, rate limiting, JWT, and OpenAPI.
+
+Actor model checkpoint: the first release has `anonymous` and `authenticated user` actors only.
+`GET /me` is the first protected route and is available only to the current user established by
+server-side session identity. `admin`/`is_admin` does not create a bypass or route; ownership rules
+for the future private-library resource remain deferred until that resource has an explicit contract.
+
+Route/form contract checkpoint: the first slice is `GET/POST /register`, `GET/POST /login`,
+CSRF-protected `POST /logout`, and protected `GET /me`. Successful registration/login create a new
+session and redirect to `/me`; invalid credentials return a neutral `422`; anonymous `/me` requests
+redirect to `/login`; `next` is intentionally absent and GET/HEAD never change state.
+
+Ownership checkpoint: `GET /me` authorizes only the current authenticated identity. The first release
+has no private library resource, so owner/non-owner behavior is deferred to the resource contract;
+when it appears, anonymous, owner, and non-owner cases must be tested separately. Navigation,
+hidden fields, database roles, and `is_admin` are never authorization controls by themselves.
+
+Session lifecycle checkpoint: `book-social` uses a DB-backed opaque session with cookie
+`book_social_session`; the database stores only the token hash, `user_id`, and lifecycle timestamps.
+Successful registration/login creates a new session, missing/invalid/expired tokens mean anonymous,
+logout invalidates the row and clears the cookie, the lifetime is seven days without sliding renewal,
+and expired-row cleanup is lazy. Session middleware excludes `/static/*` and `/healthz`.
+
+Password policy checkpoint: use bcrypt from one maintained auth package, with passwords 12–128
+characters and matching confirmation, and persist only the adaptive hash. Plaintext passwords and
+hashes stay out of DTOs, page models, responses, errors, logs, metrics, and fixtures. Unknown login
+and wrong password share the neutral `Invalid login or password` outcome; password reset/recovery and
+activation are deferred.
+
+Error/logging checkpoint: client responses use stable safe outcomes (`422` for validation/neutral
+credentials, redirect for anonymous session, generic `500` for internal failures); logs may contain
+request ID, route, operation, safe actor state, and typed error class only. Passwords, hashes, raw
+session/CSRF tokens, cookie or authorization headers, submitted credentials, and private content are
+denylisted. API rate limiting, CORS, login throttling, and account lockout require separate scope.
+
+Contract review checkpoint: steps 0–6 are consolidated in the applied `book-social` plan. The accepted
+contract is limited to the MPA auth foundation and explicitly separates v0.2.5 persistence/service
+work from v0.2.6 forms/UI. It is a pre-implementation contract, not evidence that the flow already
+exists.
 
 ## *Let's Go* Chapter 8: Stateful HTTP
 

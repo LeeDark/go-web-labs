@@ -9,7 +9,47 @@ Stage 7. Это не второе приложение и не общий пак
 foundations. Stage 7B (CORS, API rate limiting и API-specific controls) не начинается, пока не
 появится стабильный контракт `/api/*`.
 
-Связанный план: [`docs/private/plan-stage7.ru.md`](../../docs/private/plan-stage7.ru.md).
+Принятый scope v0.2.5–v0.2.6 ограничивает первый slice registration, login, logout и
+`GET /me`; используются DB-backed opaque sessions, renewal session при authentication, invalidation
+при logout и cookie policy с `HttpOnly`/`SameSite=Lax`. Profile, activation, recovery, API auth,
+roles/RBAC routes, CORS, rate limiting, JWT и OpenAPI в scope не входят.
+
+Контрольная точка actor model: в первом release есть только actors `anonymous` и
+`authenticated user`. `GET /me` — первый protected route, доступный только текущему пользователю,
+определённому server-side session identity. `admin`/`is_admin` не создаёт bypass или route; ownership
+правила будущего private-library resource откладываются до отдельного contract.
+
+Контрольная точка route/form contract: первый slice — `GET/POST /register`, `GET/POST /login`,
+CSRF-protected `POST /logout` и protected `GET /me`. Успешные registration/login создают новую
+session и redirect-ят на `/me`; invalid credentials возвращают нейтральный `422`; anonymous `/me`
+получает redirect на `/login`; `next` сознательно отсутствует, GET/HEAD не меняют state.
+
+Контрольная точка ownership: `GET /me` авторизует только текущую authenticated identity. В первом
+release нет private library resource, поэтому owner/non-owner behavior откладывается до contract
+конкретного ресурса; при его появлении отдельно тестируются anonymous, owner и non-owner. Navigation,
+hidden fields, database roles и `is_admin` сами по себе не являются authorization controls.
+
+Контрольная точка session lifecycle: `book-social` использует DB-backed opaque session с cookie
+`book_social_session`; database хранит только hash token, `user_id` и lifecycle timestamps. Успешные
+registration/login создают новую session, missing/invalid/expired token означает anonymous, logout
+делает invalidation row и очищает cookie, lifetime — 7 дней без sliding renewal, cleanup истёкших
+rows — lazy. Session middleware не применяется к `/static/*` и `/healthz`.
+
+Контрольная точка password policy: использовать bcrypt из одного поддерживаемого auth package,
+password длиной 12–128 символов с совпадающим confirmation и сохранять только adaptive hash.
+Plaintext password и hash не попадают в DTO, page models, responses, errors, logs, metrics или
+fixtures. Unknown login и wrong password имеют нейтральный результат `Invalid login or password`;
+password reset/recovery и activation отложены.
+
+Контрольная точка error/logging: client responses используют стабильные safe outcomes (`422` для
+validation/neutral credentials, redirect для anonymous session, generic `500` для internal failures);
+в logs допустимы только request ID, route, operation, safe actor state и typed error class. Passwords,
+hashes, raw session/CSRF tokens, cookie/authorization headers, submitted credentials и private content
+запрещены. API rate limiting, CORS, login throttling и account lockout требуют отдельного scope.
+
+Контрольная точка contract review: шаги 0–6 собраны в applied-плане `book-social`. Принятый contract
+ограничен MPA auth foundation и явно разделяет v0.2.5 persistence/service work и v0.2.6 forms/UI.
+Это pre-implementation contract, а не evidence уже существующего flow.
 
 ## Глава 8 *Let's Go*: Stateful HTTP
 
