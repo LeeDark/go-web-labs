@@ -61,13 +61,12 @@ Completed:
 4. Stage 4 — Handler → Service → Repository.
 5. Stage 5 — Testing lab.
 
-Current paired work:
+Recently completed paired work:
 
 1. `book-social` v0.2.4 HTTP Foundation, paired with Stage 9A: middleware, error behavior, headers,
-   timeout scope, and graceful shutdown. `Let's Go Further` Chapter 11 is now complete; the
-   remaining Stage 9A work is review and focused application decisions.
+   timeout scope, and graceful shutdown. `Let's Go Further` Chapter 11 is complete.
 
-Next paired work:
+Current paired work:
 
 1. `book-social` v0.2.5–v0.2.6 authentication, paired with Stage 7A and the first Learn Go with
    Tests TDD foundations unit.
@@ -755,7 +754,8 @@ application.
 #### Priority
 
 Later, before relying on containerized delivery or advanced integration infrastructure. Take only
-the PostgreSQL or Docker unit justified by an applied project; it does not wait for deferred Chapter 9.
+the PostgreSQL or Docker unit justified by an applied project; it does not wait for deferred Chapter
+9.
 
 ---
 
@@ -772,11 +772,11 @@ to make the API easier to run, verify, and hand off.
 This stage extends the same `books/lets-go-further` area used in Stage 2. It should add production
 notes and small checklist files, not restart the API core implementation.
 
-Start with Stage 9A alongside `book-social` v0.2.4 HTTP Foundation: middleware order, request
+Stage 9A was completed alongside `book-social` v0.2.4 HTTP Foundation: middleware order, request
 logging/ID decisions, recovery and error behavior, secure/static-header policy, timeout scope, and
 graceful shutdown. Chapter 11 is directly relevant and is complete in the Greenlight study project.
-Treat Chapter 10 rate limiting as a documented defer-or-apply decision, not as automatic v0.2.4
-scope. Later Stage 9 waves remain product-triggered.
+Chapter 10 rate limiting remains a documented defer-or-apply decision, not automatic v0.2.4 scope.
+Later Stage 9 waves remain product-triggered.
 
 #### What to do
 
@@ -840,8 +840,8 @@ request logging middleware
 
 #### Priority
 
-Stage 9A is current paired work with `book-social` v0.2.4. Later waves follow actual production
-needs; they do not wait for the deferred Chapter 9 list endpoint.
+Stage 9A is complete with `book-social` v0.2.4. Later waves follow actual production needs; they do
+not wait for the deferred Chapter 9 list endpoint.
 
 ---
 
@@ -1205,8 +1205,8 @@ Basic inventory and initial proof documents are complete for the accepted refs. 
 maintenance step is to keep the matrix current and use the endpoint, API-review, and handoff
 checklists for new evidence. Review Advanced candidates against the actual `go-service-starter`
 `proof/advanced` implementation, but do not publish an Advanced claim until `v0.2-advanced` is
-accepted. Refresh the matrix after each accepted proof milestone and meaningful `book-social` release;
-Professional and Ultimate remain planned until their target refs exist.
+accepted. Refresh the matrix after each accepted proof milestone and meaningful `book-social`
+release; Professional and Ultimate remain planned until their target refs exist.
 
 ---
 
@@ -1248,8 +1248,8 @@ Use `go-web-labs` topics as references while implementing:
 
 ### Recommended order
 
-Stages 0, 1, 3, 4, and 5 are finished. The immediate work is `book-social` v0.2.4 paired with Stage
-9A; next comes v0.2.5–v0.2.6 paired with Stage 7A and TDD foundations. Learn Go with Tests,
+Stages 0, 1, 3, 4, and 5 are finished, and Stage 9A is complete. The immediate work is
+`book-social` v0.2.5–v0.2.6 paired with Stage 7A and TDD foundations. Learn Go with Tests,
 PostgreSQL, and Docker are parallel just-in-time tracks, not additional completion gates.
 
 Chapter 9 is deliberately deferred until `book-social` v0.4 needs filtering, sorting, and
@@ -1264,10 +1264,10 @@ Stage 3: REST API basics
 Stage 4: Handler → Service → Repository
 Stage 5: Testing lab
 
-Current paired work:
+Recently completed paired work:
 `book-social` v0.2.4 ↔ Stage 9A production HTTP foundation
 
-Next paired work:
+Current paired work:
 `book-social` v0.2.5–v0.2.6 ↔ Stage 7A MPA/auth security + TDD foundations
 
 Deferred by trigger:
@@ -1301,11 +1301,11 @@ Finished:
 4. Stage 4: Handler → Service → Repository.
 5. Stage 5: Testing lab.
 
-Current paired work:
+Recently completed paired work:
 
 1. `book-social` v0.2.4 HTTP Foundation with Stage 9A.
 
-Next paired work:
+Current paired work:
 
 1. `book-social` v0.2.5–v0.2.6 authentication with Stage 7A and Learn Go with Tests TDD foundations.
 
@@ -1405,22 +1405,22 @@ This repository should help demonstrate:
 
 ## Stage estimates summary
 
-| Stage | Name                                      |                                 Estimate | Priority                               |
-|------:|-------------------------------------------|-----------------------------------------:|----------------------------------------|
-|     0 | Repository consolidation                  |                                     2–4h | Finished                               |
-|     1 | Close / refresh `Let's Go`                |                                     3–6h | Finished                               |
-|     2 | `Let's Go Further`: API Core              |                                   25–45h | Deferred to `book-social` v0.4         |
-|     3 | REST API basics                           |                                    8–14h | Finished; small v2 only by proven need |
-|     4 | Handler → Service → Repository            |                                    8–16h | Finished                               |
-|     5 | Testing lab                               |                                    8–16h | Finished                               |
-|     6 | OpenAPI lab                               |                                    6–12h | Queued after a real `/api/*` slice     |
-|     7 | API and MPA security basics               |                                   10–20h | Next: 7A with v0.2.5–v0.2.6            |
-|     8 | PostgreSQL and Docker foundations         |                                   20–40h | Later, applied-project triggered       |
-|     9 | `Let's Go Further`: Production API Topics |                                   15–30h | Current: 9A with v0.2.4                |
-|    10 | Integration / External API lab            |                                   10–18h | Later                                  |
-|    11 | Test automation and delivery              |                                   12–28h | Later                                  |
-|    12 | Bridge to `go-microservices-starter`      | 4–8h notes, 12–24h future implementation | Later                                  |
-|    13 | Portfolio evidence and reuse              |                                    6–12h | Recurring; first inventory now         |
+| Stage | Name                                      |                                 Estimate | Priority                                   |
+|------:|-------------------------------------------|-----------------------------------------:|--------------------------------------------|
+|     0 | Repository consolidation                  |                                     2–4h | Finished                                   |
+|     1 | Close / refresh `Let's Go`                |                                     3–6h | Finished                                   |
+|     2 | `Let's Go Further`: API Core              |                                   25–45h | Deferred to `book-social` v0.4             |
+|     3 | REST API basics                           |                                    8–14h | Finished; small v2 only by proven need     |
+|     4 | Handler → Service → Repository            |                                    8–16h | Finished                                   |
+|     5 | Testing lab                               |                                    8–16h | Finished                                   |
+|     6 | OpenAPI lab                               |                                    6–12h | Queued after a real `/api/*` slice         |
+|     7 | API and MPA security basics               |                                   10–20h | Next: 7A with v0.2.5–v0.2.6                |
+|     8 | PostgreSQL and Docker foundations         |                                   20–40h | Later, applied-project triggered           |
+|     9 | `Let's Go Further`: Production API Topics |                                   15–30h | 9A complete; later waves product-triggered |
+|    10 | Integration / External API lab            |                                   10–18h | Later                                      |
+|    11 | Test automation and delivery              |                                   12–28h | Later                                      |
+|    12 | Bridge to `go-microservices-starter`      | 4–8h notes, 12–24h future implementation | Later                                      |
+|    13 | Portfolio evidence and reuse              |                                    6–12h | Recurring; first inventory now             |
 
 ---
 

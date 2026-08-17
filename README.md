@@ -24,11 +24,11 @@ Finished:
 4. Handler → Service → Repository.
 5. Testing lab.
 
+Recently completed paired work:
+
+1. `book-social` v0.2.4 HTTP Foundation with Stage 9A from `Let's Go Further`.
+
 Current paired work:
-
-1. `book-social` v0.2.4 HTTP Foundation with Stage 9A follow-up from `Let's Go Further`.
-
-Next paired work:
 
 1. `book-social` v0.2.5–v0.2.6 authentication with MPA security basics and Learn Go with Tests TDD
    foundations.
@@ -97,7 +97,7 @@ Focus:
 
 Status: API Core Chapters 1–8 are complete. Chapter 9 and the API Core review are deferred until
 `book-social` v0.4 needs catalog filtering, sorting, and pagination. Chapter 11 graceful shutdown
-is complete as the first Stage 9A study unit alongside v0.2.4; remaining production topics stay
+is complete as the Stage 9A study unit paired with closed v0.2.4; later production topics stay
 product-triggered.
 
 ## Frameworks and routers

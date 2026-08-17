@@ -6,7 +6,7 @@ application.
 
 ## Applied baseline
 
-Current applied ref: `book-social` tag `v0.2.4` at commit `cba82f0`.
+Latest accepted applied ref: `book-social` tag `v0.2.4` at commit `cba82f0`.
 
 The release contains the normalized catalog read side and the v0.2.4 HTTP Foundation. Its current
 routes are MPA/catalog routes such as `/`, `/books`, `/books/{slug}`, `/authors/{slug}`, and
@@ -31,7 +31,7 @@ reported separately from the default test run.
 | `books/lets-go-further` — migrations, PostgreSQL, optimistic concurrency, API notes                   | `db/sqlite`, `db/postgresql`, normalized catalog migrations, repository parity              | Selected database patterns applied; Greenlight's movie API contract is a study reference, not the application domain.  |
 | Stage 9A — middleware order, request IDs, logging, recovery, headers, cache policy, timeout, shutdown | `internal/app`, `internal/http/middleware`, and `internal/app/server.go` at `v0.2.4`        | HTTP foundation is applied and tested; later auth-specific security remains in v0.2.5–v0.2.6.                          |
 | Stage 6 OpenAPI                                                                                       | No current `/api/*` receiver slice                                                          | Deferred until a real JSON API exists; do not list OpenAPI as current applied evidence.                                |
-| Stage 7A auth/MPA security                                                                            | v0.2.5 Auth Foundation and v0.2.6 are next planned releases                                 | Planned; sessions, CSRF, password handling, and protected routes are not current v0.2.4 evidence.                      |
+| Stage 7A auth/MPA security                                                                            | v0.2.5 Auth Foundation and v0.2.6 are the current planned releases                          | Current work; sessions, CSRF, password handling, and protected routes are not v0.2.4 evidence yet.                     |
 
 ## What belongs in `book-social`
 
@@ -54,14 +54,14 @@ distort the application:
 - framework comparisons and testing experiments;
 - disposable-database teaching notes and matrix/checklist templates.
 
-## Deferred applied links
+## Active and deferred applied links
 
-| Future `book-social` work                        | Related lab/stage                             | Gate                                              |
-|--------------------------------------------------|-----------------------------------------------|---------------------------------------------------|
-| v0.2.5–v0.2.6 authentication                     | Stage 7A, Learn Go with Tests TDD foundations | Auth/session scope and tests accepted             |
-| Real read-only `/api/*` slice                    | Stage 6 OpenAPI, Stage 7B API security        | At least one stable JSON API contract             |
-| Catalog filtering, sorting, pagination           | Stage 2 Chapter 9                             | `book-social` v0.4 discovery scope                |
-| Library transactions, privacy, PostgreSQL parity | Stages 7–8 and Stage 11 as justified          | Concrete library use cases and disposable DB path |
+| `book-social` work                               | Related lab/stage                             | Status or gate                                      |
+|--------------------------------------------------|-----------------------------------------------|-----------------------------------------------------|
+| v0.2.5–v0.2.6 authentication                     | Stage 7A, Learn Go with Tests TDD foundations | Current work; auth/session scope and tests accepted |
+| Real read-only `/api/*` slice                    | Stage 6 OpenAPI, Stage 7B API security        | At least one stable JSON API contract               |
+| Catalog filtering, sorting, pagination           | Stage 2 Chapter 9                             | `book-social` v0.4 discovery scope                  |
+| Library transactions, privacy, PostgreSQL parity | Stages 7–8 and Stage 11 as justified          | Concrete library use cases and disposable DB path   |
 
 ## Evidence rule
 

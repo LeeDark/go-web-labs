@@ -7,8 +7,9 @@ Study project based on *Let's Go Further* by Alex Edwards.
 This folder is for practicing production-style Go API patterns through the
 Greenlight project.
 
-Current focus: production API topics. API Core Chapters 1–8 are complete, and
-Chapter 11 is complete as the first Stage 9A unit. Chapter 9 remains deferred.
+API Core Chapters 1–8 are complete, and Chapter 11 is complete as the Stage 9A unit paired with
+closed `book-social` v0.2.4 HTTP Foundation. Chapter 9 remains deferred; later production API
+topics are product-triggered.
 
 ## Current Scope
 

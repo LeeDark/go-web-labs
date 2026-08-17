@@ -106,11 +106,11 @@ Completed:
 - Stage 4: Handler → Service → Repository;
 - Stage 5: testing lab.
 
-Current paired work:
+Recently completed paired work:
 
 - `book-social` v0.2.4 HTTP Foundation with Stage 9A production HTTP notes.
 
-Next paired work:
+Current paired work:
 
 - `book-social` v0.2.5–v0.2.6 authentication with Stage 7A MPA/auth security and TDD foundations.
 
