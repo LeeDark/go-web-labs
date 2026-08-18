@@ -130,9 +130,58 @@ hashes, raw session/CSRF tokens, cookie/authorization headers, submitted credent
 ограничен MPA auth foundation и явно разделяет v0.2.5 persistence/service work и v0.2.6 forms/UI.
 Это pre-implementation contract, а не evidence уже существующего flow.
 
+## Глава 10 *Let's Go*: User authentication
+
+Глава 10 строит поверх stateful session из главы 8 полный authentication flow приложения. В примере
+книги anonymous users могут просматривать snippets и регистрироваться, а создавать snippets могут
+только authenticated users.
+
+### Что разбирает глава
+
+- **Routes и forms.** Для signup, login и logout используются отдельные routes; все state-changing
+  действия идут через `POST`, включая logout. Формы валидируют входные данные, возвращают ошибки
+  рядом с полями, а ошибки credentials показываются как нейтральная non-field ошибка.
+- **Users model и password encryption.** В таблице хранится user ID, имя, email и bcrypt hash, но
+  не plaintext password. Signup проверяет обязательные поля, формат email, минимальную длину
+  password и duplicate email. Cost bcrypt выбирается с учётом нагрузки и пользовательского latency;
+  это не фиксированное число, которое нужно копировать без измерения.
+- **Login и session fixation.** `Authenticate` извлекает hash по email и сравнивает его через bcrypt;
+  неизвестный email и неверный password дают одинаковый `invalid credentials` outcome. После успеха
+  session ID renew-ится, затем в session записывается authenticated user ID и выполняется redirect.
+- **Logout.** Logout доступен через защищённый `POST`, renew-ит session ID, удаляет authentication
+  marker, добавляет flash message и redirect-ит на home. Это подчёркивает, что logout должен
+  прекращать server-side access, а не только менять navigation.
+- **Authorization.** Authentication status передаётся в template data, но скрытие ссылки не является
+  защитой. Отдельный middleware требует login для protected routes и добавляет `Cache-Control:
+  no-store`; anonymous request получает redirect на login.
+- **CSRF.** SameSite cookie — только defensive layer. Для state-changing forms книга добавляет
+  token middleware (`nosurf`), кладёт token в hidden field и проверяет его на server side. CSRF
+  middleware применяется ко всем dynamic routes, включая logout; static files исключаются.
+
+### Что переносится в `book-social`
+
+Книга полезна как source model для bcrypt, session renewal при изменении privilege state,
+middleware authorization и double-submit CSRF token. Но её Snippetbox routes, MySQL schema, flash
+messages и redirect на `/snippet/create` не являются нашим контрактом.
+
+Для текущего slice сохраняются только registration/login/logout и protected `GET /me`: успешные
+registration/login создают новую DB-backed session и ведут на `/me`, anonymous `/me` redirect-ится
+на `/login`, logout требует CSRF и инвалидирует session. Password policy, нейтральная ошибка login,
+`HttpOnly`/`SameSite=Lax` cookie, отсутствие `next` и исключение `/static/*`/`/healthz` уже заданы
+контрактом Stage 7A. Profile, recovery, roles/RBAC и private-resource ownership остаются за scope.
+
+### Проверяемые инварианты
+
+1. В базе есть только adaptive password hash; plaintext не попадает в responses, logs или fixtures.
+2. Login renew-ит session identity до записи current user; logout делает старую identity недействительной.
+3. Неверные credentials не раскрывают, существует ли email.
+4. Protected route проверяет server-side identity, а не navigation, hidden field или client-supplied ID.
+5. Каждая state-changing form содержит CSRF token; GET/HEAD не меняют authentication state.
+
 ## Следующий учебный шаг
 
-Контракт шагов 0–6 уже собран и проверен. Следующий applied-шаг — v0.2.5 Auth Foundation:
-migrations/seed, user и session persistence, repository/service boundaries и focused tests. Главу 10
-*Let's Go* использовать точечно при реализации CSRF, authorization и password handling; не расширять
-scope за принятый MPA contract и не считать pre-implementation notes evidence уже работающего flow.
+Контракт и главы 8 и 10 *Let's Go* уже изучены и согласованы. Следующий applied-шаг — v0.2.5 Auth
+Foundation: migrations/seed, user и session persistence, password policy, repository/service
+boundaries и focused unit tests. Затем проверить HTTP boundary: current-user lookup, CSRF и guards;
+в v0.2.6 добавить forms/UI и navigation. Сохранять scope registration/login/logout/`GET /me` и не
+считать эти notes evidence уже работающего flow.

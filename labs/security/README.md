@@ -132,10 +132,59 @@ contract is limited to the MPA auth foundation and explicitly separates v0.2.5 p
 work from v0.2.6 forms/UI. It is a pre-implementation contract, not evidence that the flow already
 exists.
 
+## *Let's Go* Chapter 10: User authentication
+
+Chapter 10 builds a complete authentication flow on top of the stateful sessions from Chapter 8. In
+the book's example, anonymous users can view snippets and sign up, while only authenticated users can
+create snippets.
+
+### What the chapter covers
+
+- **Routes and forms.** Signup, login, and logout have separate routes; every state-changing action,
+  including logout, uses `POST`. Forms validate input and render field-level errors, while credential
+  failures use a neutral non-field error.
+- **Users model and password encryption.** The users table stores an ID, name, email, and bcrypt hash,
+  never a plaintext password. Signup validates required fields, email format, password length, and
+  duplicate email. Bcrypt cost is selected against workload and user-facing latency rather than copied
+  as an unmeasured constant.
+- **Login and session fixation.** `Authenticate` loads the hash by email and compares it with bcrypt;
+  an unknown email and a wrong password produce the same invalid-credentials outcome. On success the
+  session ID is renewed, the authenticated user ID is stored in the session, and the handler redirects.
+- **Logout.** A protected `POST` renews the session ID, removes the authentication marker, adds a
+  flash message, and redirects home. Logout must end server-side access, not merely change navigation.
+- **Authorization.** Authentication status is exposed to template data, but hiding a link is not an
+  access control. Separate middleware requires authentication for protected routes and adds
+  `Cache-Control: no-store`; anonymous requests are redirected to login.
+- **CSRF.** SameSite cookies are only a defensive layer. The book adds token middleware (`nosurf`),
+  places the token in hidden form fields, and verifies it server-side for state-changing requests.
+  CSRF middleware covers dynamic routes, including logout; static files are excluded.
+
+### Applying it to `book-social`
+
+The chapter is a source model for bcrypt, session renewal when privilege state changes, authorization
+middleware, and double-submit CSRF tokens. Its Snippetbox routes, MySQL schema, flash messages, and
+redirect to `/snippet/create` are not our contract.
+
+For the current slice, keep only registration/login/logout and protected `GET /me`: successful
+registration and login create a new DB-backed session and redirect to `/me`; anonymous `/me` redirects
+to `/login`; logout requires CSRF and invalidates the session. The Stage 7A contract already fixes the
+password policy, neutral login error, `HttpOnly`/`SameSite=Lax` cookie, no `next` parameter, and the
+exclusion of `/static/*` and `/healthz`. Profile, recovery, roles/RBAC, and private-resource ownership
+remain out of scope.
+
+### Testable invariants
+
+1. The database contains only an adaptive password hash; plaintext never reaches responses, logs, or
+   fixtures.
+2. Login renews session identity before recording the current user; logout invalidates the old identity.
+3. Invalid credentials do not reveal whether an email exists.
+4. A protected route checks server-side identity, not navigation, hidden fields, or a client-supplied ID.
+5. Every state-changing form includes a CSRF token; GET/HEAD do not change authentication state.
+
 ## Next study step
 
-The contract for steps 0–6 is now assembled and reviewed. The next applied step is the v0.2.5 Auth
-Foundation: migrations/seed, user and session persistence, repository/service boundaries, and focused
-tests. Use *Let's Go* Chapter 10 selectively while implementing CSRF, authorization, and password
-handling; keep the work within the accepted MPA contract and do not treat these pre-implementation
-notes as evidence of a working flow.
+The contract and *Let's Go* Chapters 8 and 10 are now studied and aligned. The next applied step is the
+v0.2.5 Auth Foundation: migrations/seed, user and session persistence, password policy,
+repository/service boundaries, and focused unit tests. Then verify the HTTP boundary: current-user
+lookup, CSRF, and guards; add forms/UI and navigation in v0.2.6. Keep the scope to
+registration/login/logout/`GET /me` and do not treat these notes as evidence that the flow already works.
