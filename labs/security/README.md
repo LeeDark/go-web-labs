@@ -181,10 +181,56 @@ remain out of scope.
 4. A protected route checks server-side identity, not navigation, hidden fields, or a client-supplied ID.
 5. Every state-changing form includes a CSRF token; GET/HEAD do not change authentication state.
 
+## *Let's Go* Chapter 11: Using request context
+
+Chapter 11 replaces repeated session checks with a request-scoped authentication decision. The goal is
+to validate the session identity once in middleware and make the result available to later middleware,
+handlers, and templates during the same request.
+
+### What the chapter teaches
+
+- **Context is attached to the request.** A handler starts from `r.Context()`, derives a context with
+  `context.WithValue`, and passes a copied request created by `r.WithContext(ctx)` to the next handler.
+  The original request is not mutated in place.
+- **Values require type-safe keys and assertions.** String keys risk collisions with other packages;
+  the book defines a private `contextKey` type and a package-owned key. Reads use a checked type
+  assertion and fail closed when the value is absent or has the wrong type.
+- **Authentication is validated once.** Middleware reads the authenticated user ID from the session,
+  verifies that the user still exists in the database, and places the authenticated state in context.
+  An absent or deleted user is treated as anonymous; a database failure is an internal error.
+- **Authorization remains a separate decision.** The context-backed authentication helper feeds the
+  protected-route middleware, which redirects anonymous users and marks protected responses
+  `Cache-Control: no-store`. A context value does not itself grant access.
+- **Context scope is deliberately narrow.** Request context is for request-scoped data that travels
+  through the handler chain. It is not a general dependency container for databases, loggers,
+  template caches, or other application-lifetime services.
+
+### Applying it to `book-social`
+
+The book's boolean `isAuthenticated` value is a useful minimum example, but the applied contract
+needs a validated current-user boundary for `GET /me`. Middleware may load the user associated with
+the DB-backed session once and pass only request-scoped, non-secret identity data downstream. It must
+not expose raw session tokens, cookies, passwords, or client-supplied user IDs through context.
+
+Use a package-owned typed key, keep the lookup and failure behavior explicit, and make the safe fallback
+anonymous. `requireAuthentication` should consume this validated request state; templates may use it
+for navigation, but navigation remains presentation rather than authorization. The middleware chain
+must stay limited to dynamic routes that need session state, with `/static/*` and `/healthz` excluded.
+
+### Testable invariants
+
+1. A valid session whose user was deleted is treated as anonymous on the next request.
+2. The database user lookup runs once per request boundary, not once per helper/template call.
+3. Missing, malformed, or wrong-type context values fail closed and never authorize a request.
+4. Context carries only request-scoped identity/authentication state; secrets and long-lived dependencies
+   remain outside it.
+5. The protected `/me` route and navigation agree with the same validated current-user state.
+
 ## Next study step
 
-The contract and *Let's Go* Chapters 8 and 10 are now studied and aligned. The next applied step is the
-v0.2.5 Auth Foundation: migrations/seed, user and session persistence, password policy,
+The contract and *Let's Go* Chapters 8, 10, and 11 are now studied and aligned. The next applied step is
+the v0.2.5 Auth Foundation: migrations/seed, user and session persistence, password policy,
 repository/service boundaries, and focused unit tests. Then verify the HTTP boundary: current-user
-lookup, CSRF, and guards; add forms/UI and navigation in v0.2.6. Keep the scope to
-registration/login/logout/`GET /me` and do not treat these notes as evidence that the flow already works.
+lookup, typed request context, CSRF, and guards; add forms/UI and navigation in v0.2.6. Keep the scope
+to registration/login/logout/`GET /me` and do not treat these notes as evidence that the flow already
+works.

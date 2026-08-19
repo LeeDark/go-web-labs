@@ -178,10 +178,55 @@ registration/login создают новую DB-backed session и ведут н�
 4. Protected route проверяет server-side identity, а не navigation, hidden field или client-supplied ID.
 5. Каждая state-changing form содержит CSRF token; GET/HEAD не меняют authentication state.
 
+## Глава 11 *Let's Go*: Using request context
+
+Глава 11 заменяет повторные проверки session единым request-scoped решением об authentication. Цель —
+один раз проверить session identity в middleware и передать результат следующим middleware, handlers
+и templates в рамках того же request.
+
+### Что разбирает глава
+
+- **Context привязан к request.** Handler начинает с `r.Context()`, создаёт производный context через
+  `context.WithValue` и передаёт следующему handler копию request, созданную `r.WithContext(ctx)`.
+  Исходный request не изменяется на месте.
+- **Typed keys и проверка типа.** Строковые keys могут конфликтовать с другими packages; книга вводит
+  собственный тип `contextKey` и package-owned key. При чтении выполняется проверяемое type assertion;
+  отсутствие значения или неверный тип должны приводить к безопасному отказу.
+- **Authentication проверяется один раз.** Middleware читает authenticated user ID из session,
+  проверяет существование user в database и помещает authenticated state в context. Отсутствующий или
+  удалённый user считается anonymous; database failure становится internal error.
+- **Authorization остаётся отдельным решением.** Context-backed helper используется middleware
+  protected routes, которое redirect-ит anonymous users и добавляет `Cache-Control: no-store`.
+  Значение в context само по себе не даёт access.
+- **У context узкая область действия.** Request context предназначен для request-scoped data,
+  проходящих через handler chain. Это не container для database, logger, template cache или других
+  зависимостей уровня всего приложения.
+
+### Что переносится в `book-social`
+
+Boolean `isAuthenticated` из книги — полезный минимальный пример, но applied contract требует
+проверенной current-user boundary для `GET /me`. Middleware может один раз загрузить user, связанного
+с DB-backed session, и передать дальше только request-scoped identity data без secrets. Raw session
+tokens, cookies, passwords и client-supplied user IDs нельзя помещать в context.
+
+Использовать package-owned typed key, явно зафиксировать lookup и ошибки, а безопасным fallback считать
+anonymous. `requireAuthentication` должен использовать проверенное request state; templates могут
+менять navigation, но navigation остаётся presentation, а не authorization. Middleware chain должна
+ограничиваться dynamic routes, которым нужен session state; `/static/*` и `/healthz` исключаются.
+
+### Проверяемые инварианты
+
+1. Valid session с удалённым user на следующем request считается anonymous.
+2. Database lookup user выполняется один раз на request boundary, а не при каждом вызове helper/template.
+3. Отсутствующее, повреждённое или имеющее неверный type context value никогда не authorizes request.
+4. Context содержит только request-scoped identity/authentication state; secrets и long-lived dependencies
+   остаются вне него.
+5. Protected `/me` и navigation используют одно и то же проверенное current-user state.
+
 ## Следующий учебный шаг
 
-Контракт и главы 8 и 10 *Let's Go* уже изучены и согласованы. Следующий applied-шаг — v0.2.5 Auth
+Контракт и главы 8, 10 и 11 *Let's Go* уже изучены и согласованы. Следующий applied-шаг — v0.2.5 Auth
 Foundation: migrations/seed, user и session persistence, password policy, repository/service
-boundaries и focused unit tests. Затем проверить HTTP boundary: current-user lookup, CSRF и guards;
-в v0.2.6 добавить forms/UI и navigation. Сохранять scope registration/login/logout/`GET /me` и не
-считать эти notes evidence уже работающего flow.
+boundaries и focused unit tests. Затем проверить HTTP boundary: один validated current-user lookup,
+typed request context, CSRF и guards; в v0.2.6 добавить forms/UI и navigation. Сохранять scope
+registration/login/logout/`GET /me` и не считать эти notes evidence уже работающего flow.
