@@ -98,3 +98,19 @@ Remaining work:
 
 - Stage 5 handoff completed after final module verification, DB evidence, documentation, and
   focused Testify evaluation.
+
+## Stage 7A - `book-social` v0.2.5 foundation evidence
+
+Status: foundation applied; user-facing MPA flow remains v0.2.6 work.
+
+Accepted evidence (2026-08-19):
+
+- exact `book-social` implementation commit: `41a8ddb`;
+- applied boundaries: user/session persistence, bcrypt policy, neutral authentication failures,
+  opaque DB-backed sessions, cookie manager, current-user context, authentication guard, and
+  global `http.CrossOriginProtection`;
+- verification passed at the accepted ref: race-enabled `make test`, `go vet ./...`, `make lint`,
+  and the SQLite migration smoke;
+- PostgreSQL parity remained opt-in and was not rerun for this closure evidence;
+- registration/login/logout pages, production `GET /me`, flashes, and auth-aware navigation are
+  not claimed by this evidence and remain the v0.2.6 receiver slice.

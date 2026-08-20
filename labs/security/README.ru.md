@@ -5,9 +5,9 @@
 `labs/security` содержит краткие заметки по исходным материалам, чек-листы и небольшие примеры для
 Stage 7. Это не второе приложение и не общий пакет аутентификации для `book-social`.
 
-Текущая волна — **Stage 7A**: аутентификация `book-social` v0.2.5–v0.2.6 вместе с первым блоком TDD
-foundations. Stage 7B (CORS, API rate limiting и API-specific controls) не начинается, пока не
-появится стабильный контракт `/api/*`.
+Текущая волна — **Stage 7A**. Foundation `book-social` v0.2.5 применён в commit `41a8ddb`;
+v0.2.6 завершает user-facing authentication flow. Stage 7B (CORS, API rate limiting и API-specific
+controls) не начинается, пока не появится стабильный контракт `/api/*`.
 
 ## Глава 8 *Let's Go*: Stateful HTTP
 
@@ -86,12 +86,17 @@ session payload.
 Настоящий database integration test нужен только после появления конкретного persistence risk и
 должен использовать явно disposable database.
 
-## Контракт до реализации
+## Применённый foundation и контракт оставшегося flow
 
-Принятый scope v0.2.5–v0.2.6 ограничивает первый slice registration, login, logout и
+Принятый scope v0.2.5–v0.2.6 ограничивает первый user-facing slice registration, login, logout и
 `GET /me`; используются DB-backed opaque sessions, renewal session при authentication, invalidation
 при logout и cookie policy с `HttpOnly`/`SameSite=Lax`. Profile, activation, recovery, API auth,
 roles/RBAC routes, CORS, rate limiting, JWT и OpenAPI в scope не входят.
+
+Foundation v0.2.5 в `41a8ddb` реализует migrations, password и session services, repositories,
+cookie manager, current-user context, authentication guard и глобальный
+`http.CrossOriginProtection`. В нём намеренно нет production auth routes и auth-aware UI: это scope
+v0.2.6.
 
 Контрольная точка actor model: в первом release есть только actors `anonymous` и
 `authenticated user`. `GET /me` — первый protected route, доступный только текущему пользователю,
@@ -115,7 +120,8 @@ registration/login создают новую session, missing/invalid/expired to
 rows — lazy. Session middleware не применяется к `/static/*` и `/healthz`.
 
 Контрольная точка password policy: использовать bcrypt из одного поддерживаемого auth package,
-password длиной 12–128 символов с совпадающим confirmation и сохранять только adaptive hash.
+password длиной не менее 12 Unicode-символов и не более 72 UTF-8 bytes с совпадающим confirmation,
+сохраняя только adaptive hash.
 Plaintext password и hash не попадают в DTO, page models, responses, errors, logs, metrics или
 fixtures. Unknown login и wrong password имеют нейтральный результат `Invalid login or password`;
 password reset/recovery и activation отложены.
@@ -126,9 +132,9 @@ validation/neutral credentials, redirect для anonymous session, generic `500`
 hashes, raw session/CSRF tokens, cookie/authorization headers, submitted credentials и private content
 запрещены. API rate limiting, CORS, login throttling и account lockout требуют отдельного scope.
 
-Контрольная точка contract review: шаги 0–6 собраны в applied-плане `book-social`. Принятый contract
-ограничен MPA auth foundation и явно разделяет v0.2.5 persistence/service work и v0.2.6 forms/UI.
-Это pre-implementation contract, а не evidence уже существующего flow.
+Контрольная точка contract review: принятый contract явно разделяет применённый foundation v0.2.5
+и запланированные forms/UI v0.2.6. Commit `41a8ddb` является evidence только для foundation, но не
+для работающего registration/login/logout/`GET /me` flow.
 
 ## Глава 10 *Let's Go*: User authentication
 
@@ -161,14 +167,16 @@ hashes, raw session/CSRF tokens, cookie/authorization headers, submitted credent
 ### Что переносится в `book-social`
 
 Книга полезна как source model для bcrypt, session renewal при изменении privilege state,
-middleware authorization и double-submit CSRF token. Но её Snippetbox routes, MySQL schema, flash
-messages и redirect на `/snippet/create` не являются нашим контрактом.
+middleware authorization и token-based CSRF. `book-social` адаптирует browser-request protection к
+stdlib `http.CrossOriginProtection`, а не копирует `nosurf`; её Snippetbox routes, MySQL schema,
+flash messages и redirect на `/snippet/create` не являются нашим контрактом.
 
 Для текущего slice сохраняются только registration/login/logout и protected `GET /me`: успешные
 registration/login создают новую DB-backed session и ведут на `/me`, anonymous `/me` redirect-ится
-на `/login`, logout требует CSRF и инвалидирует session. Password policy, нейтральная ошибка login,
-`HttpOnly`/`SameSite=Lax` cookie, отсутствие `next` и исключение `/static/*`/`/healthz` уже заданы
-контрактом Stage 7A. Profile, recovery, roles/RBAC и private-resource ownership остаются за scope.
+на `/login`, logout должен пройти cross-origin protection boundary и инвалидировать session.
+Password policy, нейтральная ошибка login, `HttpOnly`/`SameSite=Lax` cookie, отсутствие `next` и
+исключение `/static/*`/`/healthz` уже заданы контрактом Stage 7A. Profile, recovery, roles/RBAC и
+private-resource ownership остаются за scope.
 
 ### Проверяемые инварианты
 
@@ -176,7 +184,8 @@ registration/login создают новую DB-backed session и ведут н�
 2. Login renew-ит session identity до записи current user; logout делает старую identity недействительной.
 3. Неверные credentials не раскрывают, существует ли email.
 4. Protected route проверяет server-side identity, а не navigation, hidden field или client-supplied ID.
-5. Каждая state-changing form содержит CSRF token; GET/HEAD не меняют authentication state.
+5. Unsafe cross-origin browser requests отклоняются, same-origin requests проходят, а GET/HEAD не
+   меняют authentication state.
 
 ## Глава 11 *Let's Go*: Using request context
 
@@ -225,8 +234,7 @@ anonymous. `requireAuthentication` должен использовать про�
 
 ## Следующий учебный шаг
 
-Контракт и главы 8, 10 и 11 *Let's Go* уже изучены и согласованы. Следующий applied-шаг — v0.2.5 Auth
-Foundation: migrations/seed, user и session persistence, password policy, repository/service
-boundaries и focused unit tests. Затем проверить HTTP boundary: один validated current-user lookup,
-typed request context, CSRF и guards; в v0.2.6 добавить forms/UI и navigation. Сохранять scope
-registration/login/logout/`GET /me` и не считать эти notes evidence уже работающего flow.
+Контракт и главы 8, 10 и 11 *Let's Go* изучены и согласованы. Auth Foundation v0.2.5 и его HTTP
+boundaries применены в `book-social` commit `41a8ddb`. Следующий applied-шаг — v0.2.6: связать
+registration/login/logout/`GET /me`, session lifecycle, forms, errors, flashes и auth-aware
+navigation, не утверждая до реализации, что этот flow уже работает.

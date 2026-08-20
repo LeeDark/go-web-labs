@@ -27,11 +27,11 @@ Finished:
 Recently completed paired work:
 
 1. `book-social` v0.2.4 HTTP Foundation with Stage 9A from `Let's Go Further`.
+2. `book-social` v0.2.5 Auth Foundation with the Stage 7A security foundation.
 
 Current paired work:
 
-1. `book-social` v0.2.5–v0.2.6 authentication with MPA security basics and Learn Go with Tests TDD
-   foundations.
+1. `book-social` v0.2.6 authentication MPA flow with the remaining Stage 7A security work.
 
 Deferred by product trigger:
 
@@ -45,7 +45,7 @@ Later:
 
 ### Parallel learning tracks
 
-- **Learn Go with Tests:** start TDD foundations with `book-social` v0.2.5–v0.2.6, then take later
+- **Learn Go with Tests:** use TDD foundations from `book-social` v0.2.5 onward, then take later
   units only when their task needs them; it is not a course-completion gate.
 - **PostgreSQL:** SQL/ACID/MVCC, schema, migrations, transactions, pool lifecycle, and optimistic
   concurrency, tied to API Core and the PostgreSQL/Docker foundation stage.

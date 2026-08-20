@@ -5,9 +5,9 @@
 `labs/security` contains concise source-study notes, checklists, and small examples for Stage 7. It
 is not a second application or a shared authentication package for `book-social`.
 
-The current wave is **Stage 7A**: `book-social` v0.2.5–v0.2.6 authentication alongside the first TDD
-foundations unit. Stage 7B (CORS, API rate limiting, and API-specific controls) does not begin until
-a stable `/api/*` contract exists.
+The current wave is **Stage 7A**. The `book-social` v0.2.5 foundation is applied at commit `41a8ddb`;
+v0.2.6 completes the user-facing authentication flow. Stage 7B (CORS, API rate limiting, and
+API-specific controls) does not begin until a stable `/api/*` contract exists.
 
 ## *Let's Go* Chapter 8: Stateful HTTP
 
@@ -87,12 +87,17 @@ Use `httptest`/`ServeHTTP` and a deterministic test store when testing the HTTP/
 real database integration test is needed only after a concrete persistence risk exists, and it must
 use an explicitly disposable database.
 
-## Pre-implementation contract
+## Applied foundation and remaining flow contract
 
-The applied v0.2.5–v0.2.6 scope currently limits the first slice to registration, login, logout, and
+The accepted v0.2.5–v0.2.6 scope limits the first user-facing slice to registration, login, logout, and
 `GET /me`; use DB-backed opaque sessions, renew the session on authentication, invalidate it on
 logout, keep `HttpOnly`/`SameSite=Lax` cookie policy, and exclude profile, activation, recovery, API
 auth, roles/RBAC routes, CORS, rate limiting, JWT, and OpenAPI.
+
+The v0.2.5 foundation at `41a8ddb` implements the migrations, password and session services,
+repositories, cookie manager, current-user context, authentication guard, and global
+`http.CrossOriginProtection`. It deliberately has no production auth routes or auth-aware UI; those
+belong to v0.2.6.
 
 Actor model checkpoint: the first release has `anonymous` and `authenticated user` actors only.
 `GET /me` is the first protected route and is available only to the current user established by
@@ -115,11 +120,11 @@ Successful registration/login creates a new session, missing/invalid/expired tok
 logout invalidates the row and clears the cookie, the lifetime is seven days without sliding renewal,
 and expired-row cleanup is lazy. Session middleware excludes `/static/*` and `/healthz`.
 
-Password policy checkpoint: use bcrypt from one maintained auth package, with passwords 12–128
-characters and matching confirmation, and persist only the adaptive hash. Plaintext passwords and
-hashes stay out of DTOs, page models, responses, errors, logs, metrics, and fixtures. Unknown login
-and wrong password share the neutral `Invalid login or password` outcome; password reset/recovery and
-activation are deferred.
+Password policy checkpoint: use bcrypt from one maintained auth package, with at least 12 Unicode
+characters, at most 72 UTF-8 bytes, and matching confirmation, and persist only the adaptive hash.
+Plaintext passwords and hashes stay out of DTOs, page models, responses, errors, logs, metrics, and
+fixtures. Unknown login and wrong password share the neutral `Invalid login or password` outcome;
+password reset/recovery and activation are deferred.
 
 Error/logging checkpoint: client responses use stable safe outcomes (`422` for validation/neutral
 credentials, redirect for anonymous session, generic `500` for internal failures); logs may contain
@@ -127,10 +132,9 @@ request ID, route, operation, safe actor state, and typed error class only. Pass
 session/CSRF tokens, cookie or authorization headers, submitted credentials, and private content are
 denylisted. API rate limiting, CORS, login throttling, and account lockout require separate scope.
 
-Contract review checkpoint: steps 0–6 are consolidated in the applied `book-social` plan. The accepted
-contract is limited to the MPA auth foundation and explicitly separates v0.2.5 persistence/service
-work from v0.2.6 forms/UI. It is a pre-implementation contract, not evidence that the flow already
-exists.
+Contract review checkpoint: the accepted contract explicitly separates the applied v0.2.5
+foundation from the planned v0.2.6 forms/UI. Commit `41a8ddb` is evidence for the foundation only,
+not for a working registration/login/logout/`GET /me` flow.
 
 ## *Let's Go* Chapter 10: User authentication
 
@@ -161,16 +165,17 @@ create snippets.
 
 ### Applying it to `book-social`
 
-The chapter is a source model for bcrypt, session renewal when privilege state changes, authorization
-middleware, and double-submit CSRF tokens. Its Snippetbox routes, MySQL schema, flash messages, and
-redirect to `/snippet/create` are not our contract.
+The chapter is a source model for bcrypt, session renewal when privilege state changes,
+authorization middleware, and token-based CSRF. `book-social` adapts the browser-request protection
+to the standard-library `http.CrossOriginProtection` boundary instead of copying `nosurf`; the
+Snippetbox routes, MySQL schema, flash messages, and redirect to `/snippet/create` are not our contract.
 
 For the current slice, keep only registration/login/logout and protected `GET /me`: successful
 registration and login create a new DB-backed session and redirect to `/me`; anonymous `/me` redirects
-to `/login`; logout requires CSRF and invalidates the session. The Stage 7A contract already fixes the
-password policy, neutral login error, `HttpOnly`/`SameSite=Lax` cookie, no `next` parameter, and the
-exclusion of `/static/*` and `/healthz`. Profile, recovery, roles/RBAC, and private-resource ownership
-remain out of scope.
+to `/login`; logout must pass the cross-origin protection boundary and invalidate the session. The
+Stage 7A contract already fixes the password policy, neutral login error,
+`HttpOnly`/`SameSite=Lax` cookie, no `next` parameter, and the exclusion of `/static/*` and
+`/healthz`. Profile, recovery, roles/RBAC, and private-resource ownership remain out of scope.
 
 ### Testable invariants
 
@@ -179,7 +184,8 @@ remain out of scope.
 2. Login renews session identity before recording the current user; logout invalidates the old identity.
 3. Invalid credentials do not reveal whether an email exists.
 4. A protected route checks server-side identity, not navigation, hidden fields, or a client-supplied ID.
-5. Every state-changing form includes a CSRF token; GET/HEAD do not change authentication state.
+5. Unsafe cross-origin browser requests are refused, same-origin requests succeed, and GET/HEAD do
+   not change authentication state.
 
 ## *Let's Go* Chapter 11: Using request context
 
@@ -228,9 +234,7 @@ must stay limited to dynamic routes that need session state, with `/static/*` an
 
 ## Next study step
 
-The contract and *Let's Go* Chapters 8, 10, and 11 are now studied and aligned. The next applied step is
-the v0.2.5 Auth Foundation: migrations/seed, user and session persistence, password policy,
-repository/service boundaries, and focused unit tests. Then verify the HTTP boundary: current-user
-lookup, typed request context, CSRF, and guards; add forms/UI and navigation in v0.2.6. Keep the scope
-to registration/login/logout/`GET /me` and do not treat these notes as evidence that the flow already
-works.
+The contract and *Let's Go* Chapters 8, 10, and 11 are studied and aligned. The v0.2.5 Auth
+Foundation and its HTTP boundaries are applied at `book-social` commit `41a8ddb`. The next applied
+step is v0.2.6: wire registration/login/logout/`GET /me`, session lifecycle, forms, errors, flashes,
+and auth-aware navigation without claiming that this flow already exists.

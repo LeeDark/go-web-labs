@@ -6,20 +6,27 @@ application.
 
 ## Applied baseline
 
-Latest accepted applied ref: `book-social` tag `v0.2.4` at commit `cba82f0`.
+Latest accepted implementation ref: `book-social` v0.2.5 Auth Foundation at commit `41a8ddb`.
+The latest release tag is still `v0.2.4` at commit `cba82f0`.
 
-The release contains the normalized catalog read side and the v0.2.4 HTTP Foundation. Its current
-routes are MPA/catalog routes such as `/`, `/books`, `/books/{slug}`, `/authors/{slug}`, and
-`/healthz`. It does not yet contain the planned read-only `/api/*` JSON slice.
+The v0.2.5 implementation adds user/session persistence, password services, cookie handling,
+current-user context, an authentication guard, and global unsafe cross-origin request protection.
+It intentionally adds no registration/login/logout pages, production `/me` route, auth-aware
+navigation, or flash workflow; those remain v0.2.6 work. The application also does not yet contain
+the planned read-only `/api/*` JSON slice.
 
 Verification:
 
 ```bash
-GOCACHE=/tmp/book-social-go-cache go test ./...
+GOCACHE=/tmp/book-social-go-cache make test
+GOCACHE=/tmp/book-social-go-cache go vet ./...
+GOCACHE=/tmp/book-social-go-cache GOLANGCI_LINT_CACHE=/tmp/book-social-golangci-cache make lint
+make db/migrate/smoke
 ```
 
-Result: PASS. PostgreSQL parity is opt-in through `BOOK_SOCIAL_POSTGRES_TEST_DSN` and must be
-reported separately from the default test run.
+Result at the accepted ref: PASS, including the SQLite migration smoke. PostgreSQL parity is opt-in
+through `BOOK_SOCIAL_POSTGRES_TEST_DSN`; it was not rerun for this closure evidence and remains
+separate from the default test run.
 
 ## Pattern map
 
@@ -29,9 +36,9 @@ reported separately from the default test run.
 | `labs/layered-api` — handler → service → repository responsibilities                                  | `internal/modules/books/{handler,service,repository}.go` at `v0.2.4`                        | Applied and tested in the catalog module; keep interfaces/use cases domain-specific.                                   |
 | `labs/testing` and Stage 5 matrix — unit, HTTP-contract, DB integration boundaries                    | `internal/*_test.go`, `internal/testutil`, SQLite integration and opt-in PostgreSQL helpers | Applied with SQLite as the normal test path; PostgreSQL evidence requires the opt-in DSN.                              |
 | `books/lets-go-further` — migrations, PostgreSQL, optimistic concurrency, API notes                   | `db/sqlite`, `db/postgresql`, normalized catalog migrations, repository parity              | Selected database patterns applied; Greenlight's movie API contract is a study reference, not the application domain.  |
-| Stage 9A — middleware order, request IDs, logging, recovery, headers, cache policy, timeout, shutdown | `internal/app`, `internal/http/middleware`, and `internal/app/server.go` at `v0.2.4`        | HTTP foundation is applied and tested; later auth-specific security remains in v0.2.5–v0.2.6.                          |
+| Stage 9A — middleware order, request IDs, logging, recovery, headers, cache policy, timeout, shutdown | `internal/app`, `internal/http/middleware`, and `internal/app/server.go` at `v0.2.4`        | HTTP foundation is applied and tested; v0.2.5 extends the boundary with cross-origin protection.                       |
 | Stage 6 OpenAPI                                                                                       | No current `/api/*` receiver slice                                                          | Deferred until a real JSON API exists; do not list OpenAPI as current applied evidence.                                |
-| Stage 7A auth/MPA security                                                                            | v0.2.5 Auth Foundation and v0.2.6 are the current planned releases                          | Current work; sessions, CSRF, password handling, and protected routes are not v0.2.4 evidence yet.                     |
+| Stage 7A auth/MPA security                                                                            | v0.2.5 foundation at `41a8ddb`; `internal/modules/users`, `internal/http/auth`, migrations  | Foundation applied: password/session/cookie/current-user/guard/cross-origin boundaries. Full MPA flow remains v0.2.6.  |
 
 ## What belongs in `book-social`
 
@@ -58,7 +65,8 @@ distort the application:
 
 | `book-social` work                               | Related lab/stage                             | Status or gate                                      |
 |--------------------------------------------------|-----------------------------------------------|-----------------------------------------------------|
-| v0.2.5–v0.2.6 authentication                     | Stage 7A, Learn Go with Tests TDD foundations | Current work; auth/session scope and tests accepted |
+| v0.2.5 Auth Foundation                            | Stage 7A, Learn Go with Tests TDD foundations | Applied at `41a8ddb`; foundation only               |
+| v0.2.6 authentication MPA flow                    | Stage 7A                                      | Current work; pages, routes, navigation, flashes    |
 | Real read-only `/api/*` slice                    | Stage 6 OpenAPI, Stage 7B API security        | At least one stable JSON API contract               |
 | Catalog filtering, sorting, pagination           | Stage 2 Chapter 9                             | `book-social` v0.4 discovery scope                  |
 | Library transactions, privacy, PostgreSQL parity | Stages 7–8 and Stage 11 as justified          | Concrete library use cases and disposable DB path   |

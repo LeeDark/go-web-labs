@@ -65,11 +65,13 @@ Recently completed paired work:
 
 1. `book-social` v0.2.4 HTTP Foundation, paired with Stage 9A: middleware, error behavior, headers,
    timeout scope, and graceful shutdown. `Let's Go Further` Chapter 11 is complete.
+2. `book-social` v0.2.5 Auth Foundation, paired with the Stage 7A password, session, current-user,
+   guard, and unsafe cross-origin protection boundaries.
 
 Current paired work:
 
-1. `book-social` v0.2.5–v0.2.6 authentication, paired with Stage 7A and the first Learn Go with
-   Tests TDD foundations unit.
+1. `book-social` v0.2.6 authentication MPA flow, paired with the remaining Stage 7A forms, errors,
+   session lifecycle integration, and verification work.
 
 Deferred by an applied-project trigger:
 
@@ -81,7 +83,7 @@ Deferred by an applied-project trigger:
 Queued:
 
 1. Stage 6 — OpenAPI, after a real `/api/*` slice exists in `book-social`.
-2. Stage 7 — API and MPA security basics, beginning with the v0.2.5 authentication use case.
+2. Stage 7B — API-specific security, after a real API contract exists.
 
 ### Parallel learning tracks
 
@@ -639,8 +641,9 @@ Queued. Start only after real `/api/*` endpoint examples exist in `book-social`.
 **Goal:** cover the smallest useful MPA and API security boundaries for interviews and small
 freelance tasks.
 
-Use two independently startable waves. Stage 7A is tied to `book-social` v0.2.5–v0.2.6: sessions,
-cookies, password handling, CSRF, protected routes, authorization, and safe errors. Stage 7B is for
+Use two independently startable waves. Stage 7A is tied to `book-social` v0.2.5–v0.2.6. The v0.2.5
+foundation covers persistence, passwords, cookies, current-user context, guards, and unsafe
+cross-origin request protection; v0.2.6 completes the user-facing MPA flow. Stage 7B is for
 API-specific CORS, rate limiting, and OpenAPI-related checks after a real `/api/*` contract exists.
 
 #### What to do
@@ -689,11 +692,11 @@ PATCH /books/{id}
 #### Applied in `book-social`
 
 - v0.2 HTTP middleware foundation.
-- Sessions/cookies.
-- Login/register/logout forms.
-- CSRF TODO or minimal implementation.
-- Basic protected route.
-- Safe error messages.
+- v0.2.5 Auth Foundation at commit `41a8ddb`: user/session migrations, bcrypt boundary,
+  DB-backed opaque sessions, cookie manager, current-user context, authentication guard, safe
+  error classes, and global `http.CrossOriginProtection`.
+- v0.2.6 remains planned: registration/login/logout forms, production `GET /me`, auth-aware
+  navigation, flashes, and the complete browser flow.
 
 #### Estimate
 
@@ -701,8 +704,8 @@ PATCH /books/{id}
 
 #### Priority
 
-Queued as two waves. Start Stage 7A with `book-social` v0.2.5–v0.2.6; start Stage 7B only after a
-real API contract exists.
+In progress as two waves. The Stage 7A foundation is applied at `book-social` commit `41a8ddb`; the
+remaining MPA flow continues in v0.2.6. Start Stage 7B only after a real API contract exists.
 
 ---
 
@@ -1248,9 +1251,10 @@ Use `go-web-labs` topics as references while implementing:
 
 ### Recommended order
 
-Stages 0, 1, 3, 4, and 5 are finished, and Stage 9A is complete. The immediate work is
-`book-social` v0.2.5–v0.2.6 paired with Stage 7A and TDD foundations. Learn Go with Tests,
-PostgreSQL, and Docker are parallel just-in-time tracks, not additional completion gates.
+Stages 0, 1, 3, 4, and 5 are finished, Stage 9A is complete, and the v0.2.5 part of Stage 7A is
+applied. The immediate work is `book-social` v0.2.6 paired with the remaining Stage 7A flow. Learn
+Go with Tests, PostgreSQL, and Docker are parallel just-in-time tracks, not additional completion
+gates.
 
 Chapter 9 is deliberately deferred until `book-social` v0.4 needs filtering, sorting, and
 pagination. Keep `book-social` implementation work separate from this repository's stage order, but
@@ -1266,9 +1270,10 @@ Stage 5: Testing lab
 
 Recently completed paired work:
 `book-social` v0.2.4 ↔ Stage 9A production HTTP foundation
+`book-social` v0.2.5 Auth Foundation ↔ Stage 7A foundation
 
 Current paired work:
-`book-social` v0.2.5–v0.2.6 ↔ Stage 7A MPA/auth security + TDD foundations
+`book-social` v0.2.6 ↔ remaining Stage 7A MPA/auth flow
 
 Deferred by trigger:
 Stage 2 Chapter 9 ↔ `book-social` v0.4 filtering, sorting, and pagination
@@ -1304,10 +1309,11 @@ Finished:
 Recently completed paired work:
 
 1. `book-social` v0.2.4 HTTP Foundation with Stage 9A.
+2. `book-social` v0.2.5 Auth Foundation with the Stage 7A foundation.
 
 Current paired work:
 
-1. `book-social` v0.2.5–v0.2.6 authentication with Stage 7A and Learn Go with Tests TDD foundations.
+1. `book-social` v0.2.6 authentication MPA flow with the remaining Stage 7A work.
 
 Deferred by trigger:
 
@@ -1414,7 +1420,7 @@ This repository should help demonstrate:
 |     4 | Handler → Service → Repository            |                                    8–16h | Finished                                   |
 |     5 | Testing lab                               |                                    8–16h | Finished                                   |
 |     6 | OpenAPI lab                               |                                    6–12h | Queued after a real `/api/*` slice         |
-|     7 | API and MPA security basics               |                                   10–20h | Next: 7A with v0.2.5–v0.2.6                |
+|     7 | API and MPA security basics               |                                   10–20h | In progress: 7A, v0.2.6 flow next          |
 |     8 | PostgreSQL and Docker foundations         |                                   20–40h | Later, applied-project triggered           |
 |     9 | `Let's Go Further`: Production API Topics |                                   15–30h | 9A complete; later waves product-triggered |
 |    10 | Integration / External API lab            |                                   10–18h | Later                                      |
